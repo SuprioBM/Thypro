@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-ivory: #FAF8F3;
+    --text-forest: #0E1D17;
+    --accent-ochre: #B8783A;
+    --accent-sage: #526653;
+  }
+
+  html {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #FAF8F3;
+    color: #0E1D17;
+    overflow-x: hidden;
+  }
+
+  /* Refined Editorial Serif */
+  h1, h2, h3, .font-editorial {
+    font-family: 'Newsreader', Georgia, serif;
+    font-feature-settings: "liga" 1, "dlig" 1;
+  }
+}
+
+/* Custom subtle animations */
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes maskReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-mask-reveal {
+  animation: maskReveal 1.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Subtle editorial paper grain & border utilities */
+.paper-border {
+  border: 1px solid rgba(20, 41, 33, 0.08);
+}
+
+.paper-border-strong {
+  border: 1px solid rgba(20, 41, 33, 0.16);
+}
+
+.paper-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(20, 41, 33, 0.07);
+  box-shadow: 0 4px 20px -2px rgba(14, 29, 23, 0.04);
+}
+
+/* Image reveal utilities */
+.image-clip-reveal {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  transition: clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
+  }
+}
