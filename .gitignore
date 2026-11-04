@@ -28,6 +28,8 @@ dist-ssr
 *.sw?
 Thumbs.db
 
+#emni
+
 # Environment variables
 .env
 .env.production
