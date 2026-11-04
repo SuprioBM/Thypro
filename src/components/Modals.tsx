@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, Shield, Lock, FileText, ArrowRight, AlertCircle, Heart, Loader2, Database } from 'lucide-react';
+import { CheckCircle2, Shield, Lock, FileText, Heart, Loader2, Database } from 'lucide-react';
 import { CONFIG } from '../config';
+import { ModalShell } from './ui/ModalShell';
 
 interface ModalsProps {
   isAccessModalOpen: boolean;
@@ -14,14 +15,12 @@ export const Modals: React.FC<ModalsProps> = ({
   isAccessModalOpen,
   onCloseAccessModal,
   isPrivacyModalOpen,
-  onClosePrivacyModal,
-  lang
+  onClosePrivacyModal
 }) => {
   // Access Modal Form State
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ticketId, setTicketId] = useState('');
-  const [sheetSynced, setSheetSynced] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     contact: '',
@@ -59,7 +58,6 @@ export const Modals: React.FC<ModalsProps> = ({
           },
           body: JSON.stringify(payload)
         });
-        setSheetSynced(true);
       } catch (err) {
         console.warn('Google Sheet submission warning:', err);
         // Fallback: still treat form as captured locally
@@ -76,33 +74,27 @@ export const Modals: React.FC<ModalsProps> = ({
   const resetAccessModal = () => {
     setFormSubmitted(false);
     setIsSubmitting(false);
-    setSheetSynced(false);
     onCloseAccessModal();
   };
 
   return (
     <>
       {/* 1. ACCESS / FAMILY PILOT MODAL */}
-      {isAccessModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-forest-950/70 backdrop-blur-sm animate-fade-in-up">
-          <div className="relative w-full max-w-xl bg-ivory-50 rounded-2xl border border-forest-900/15 shadow-editorial p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
-            {/* Close Button */}
-            <button
-              onClick={resetAccessModal}
-              className="absolute top-5 right-5 p-2 rounded-full text-forest-800/70 hover:text-forest-950 hover:bg-forest-900/5 transition-colors"
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
+      <ModalShell
+        open={isAccessModalOpen}
+        onClose={resetAccessModal}
+        labelledBy="access-modal-title"
+        closeLabel="Close the pilot application dialog"
+      >
+        <div>
             {!formSubmitted ? (
               <div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-ochre-100 text-ochre-800 text-[11px] font-mono font-semibold uppercase mb-3">
                   Stage 1 Family Pilot Registration
                 </div>
-                <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal mb-2">
-                  Request access to the Thypro Pilot
-                </h3>
+                <h2 id="access-modal-title" className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal mb-2">
+                  Request access to the Thypro pilot
+                </h2>
                 <p className="text-xs sm:text-sm text-forest-900/75 leading-relaxed mb-6 font-normal">
                   We are currently admitting families in Dhaka and their relatives living abroad (UK, US, Canada, UAE), along with select primary care clinic partners in Dhaka.
                 </p>
@@ -163,8 +155,7 @@ export const Modals: React.FC<ModalsProps> = ({
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                         className="w-full px-3.5 py-2.5 rounded-lg bg-white border border-forest-900/15 text-xs text-forest-950 focus:outline-none focus:ring-2 focus:ring-forest-800"
-                      >
-                      </input>
+                      />
                     </div>
                   </div>
 
@@ -208,9 +199,9 @@ export const Modals: React.FC<ModalsProps> = ({
                 <div className="w-14 h-14 rounded-full bg-sage-100 text-sage-700 flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h4 className="font-editorial text-2xl text-forest-950 font-normal mb-2">
-                  Application Received
-                </h4>
+                <h2 id="access-modal-title" className="font-editorial text-2xl text-forest-950 font-normal mb-2">
+                  Application received
+                </h2>
                 <p className="text-xs sm:text-sm text-forest-900/80 leading-relaxed max-w-sm mx-auto mb-4">
                   Thank you, <strong>{formData.name}</strong>. Your pilot application reference is{' '}
                   <span className="font-mono text-ochre-700 font-bold">{ticketId}</span>.
@@ -229,38 +220,34 @@ export const Modals: React.FC<ModalsProps> = ({
                   <div><strong>Selected Role:</strong> {formData.role}</div>
                 </div>
                 <button
+                  type="button"
                   onClick={resetAccessModal}
                   className="px-6 py-2.5 rounded-lg bg-forest-900 text-ivory-50 text-xs font-semibold uppercase tracking-wider hover:bg-forest-800 transition-all"
                 >
-                  Return to Website
+                  Return to the website
                 </button>
               </div>
             )}
-          </div>
         </div>
-      )}
+      </ModalShell>
 
       {/* 2. DATA SOVEREIGNTY & PRIVACY PRINCIPLES MODAL */}
-      {isPrivacyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-forest-950/70 backdrop-blur-sm animate-fade-in-up">
-          <div className="relative w-full max-w-2xl bg-ivory-50 rounded-2xl border border-forest-900/15 shadow-editorial p-6 sm:p-8 max-h-[85vh] overflow-y-auto">
-            {/* Close Button */}
-            <button
-              onClick={onClosePrivacyModal}
-              className="absolute top-5 right-5 p-2 rounded-full text-forest-800/70 hover:text-forest-950 hover:bg-forest-900/5 transition-colors"
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
+      <ModalShell
+        open={isPrivacyModalOpen}
+        onClose={onClosePrivacyModal}
+        labelledBy="privacy-modal-title"
+        className="max-w-2xl"
+        closeLabel="Close the data principles dialog"
+      >
+        <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-sage-100 text-forest-900 text-[11px] font-mono font-semibold uppercase mb-3">
               <Shield className="w-3.5 h-3.5 text-sage-600" />
               <span>Thypro Governance Commitments</span>
             </div>
 
-            <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal mb-2">
-              Our Ethical & Data Architecture Principles
-            </h3>
+            <h2 id="privacy-modal-title" className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal mb-2">
+              Our ethical and data architecture principles
+            </h2>
             <p className="text-xs sm:text-sm text-forest-900/75 leading-relaxed mb-6 font-normal">
               These binding commitments govern every module in the Thypro platform specification (v3.0).
             </p>
@@ -313,15 +300,15 @@ export const Modals: React.FC<ModalsProps> = ({
 
             <div className="mt-8 pt-4 border-t border-forest-900/10 flex justify-end">
               <button
+                type="button"
                 onClick={onClosePrivacyModal}
                 className="px-5 py-2.5 rounded-lg bg-forest-900 text-ivory-50 text-xs font-semibold uppercase tracking-wider hover:bg-forest-800 transition-all"
               >
-                Understood & Close
+                Understood, close
               </button>
             </div>
-          </div>
         </div>
-      )}
+      </ModalShell>
     </>
   );
 };

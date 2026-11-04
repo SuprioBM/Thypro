@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowUp, ShieldCheck, Heart, FileText, Globe } from 'lucide-react';
+import { ArrowUp, Target, Globe2 } from 'lucide-react';
+import { FullLogo } from './ui/Logo';
 
 interface FooterProps {
   onOpenAccessModal: () => void;
@@ -23,120 +24,180 @@ export const Footer: React.FC<FooterProps> = ({
     }
   };
 
+  const exploreLinks = [
+    { id: 'problem', label: lang === 'en' ? 'The Problem' : 'সমস্যা' },
+    { id: 'approach', label: lang === 'en' ? 'Our Approach' : 'আমাদের উদ্যোগ' },
+    { id: 'permissions', label: lang === 'en' ? 'People & Permissions' : 'ব্যক্তি ও নিরাপত্তা' },
+    { id: 'capabilities', label: lang === 'en' ? 'Platform Capabilities' : 'প্লাটফর্মের কার্যকারিতা' },
+    { id: 'walkthrough', label: lang === 'en' ? 'Interactive Tour' : 'সরাসরি ডেমো' },
+    { id: 'vision', label: lang === 'en' ? 'The Lifelong Vision' : 'দীর্ঘমেয়াদী লক্ষ্য' }
+  ];
+
+  const productLinks = [
+    { id: 'capabilities', label: lang === 'en' ? 'Personal health records' : 'ব্যক্তিগত স্বাস্থ্য রেকর্ড' },
+    { id: 'family-care', label: lang === 'en' ? 'Thypro Family Care' : 'থাইপ্রো ফ্যামিলি কেয়ার' },
+    { id: 'blood-network', label: lang === 'en' ? 'Blood donor network' : 'রক্তদাতা নেটওয়ার্ক' },
+    { id: 'wellness', label: lang === 'en' ? 'Wellness & emergency card' : 'সুস্থতা ও জরুরি কার্ড' },
+    { id: 'impact', label: lang === 'en' ? 'Mission & milestones' : 'লক্ষ্য ও অগ্রগতি' }
+  ];
+
   return (
-    <footer className="bg-ivory-100 border-t border-forest-900/10 text-forest-900 py-16 sm:py-20 font-sans">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-16 border-b border-forest-900/10">
-          {/* Brand & Manifesto Column (5 cols) */}
-          <div className="md:col-span-5 flex flex-col justify-between">
+    <footer className="bg-ivory-100 border-t border-forest-900/10 text-forest-900 py-14 sm:py-20 font-sans">
+      <div className="thy-container">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 sm:pb-16 border-b border-forest-900/10">
+          {/* Brand & Manifesto Column */}
+          <div className="md:col-span-4 flex flex-col justify-between">
             <div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <span className="font-editorial text-2xl text-forest-950 font-medium">Thypro</span>
-                <span className="text-xs uppercase tracking-widest text-forest-800/60 font-semibold pl-1 border-l border-forest-900/20">
-                  Connected Health
+              <FullLogo className="w-52 -ml-2 mb-3" />
+              <p className="text-sm text-forest-900/75 leading-relaxed max-w-sm mb-6 font-normal">
+                {lang === 'en'
+                  ? 'A person-owned, lifelong health record with a care layer that acts on it — so patients, families wherever they live, and clinics can manage care together.'
+                  : 'ব্যক্তির নিজস্ব নিয়ন্ত্রণাধীন দীর্ঘমেয়াদী স্বাস্থ্য রেকর্ড এবং সহায়ক সেবাস্তর—যাতে রোগী, প্রবাসী পরিবার ও ক্লিনিক একসাথে স্বাস্থ্য পরিচর্যা নিশ্চিত করতে পারে।'}
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-forest-900/12 text-[11px] font-medium text-forest-900">
+                  <Target className="w-3 h-3 text-ochre-600" aria-hidden="true" />
+                  Millennium Fellowship 2026
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-forest-900/12 text-[11px] font-medium text-forest-900">
+                  <Globe2 className="w-3 h-3 text-sage-600" aria-hidden="true" />
+                  UN SDG 3
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-forest-900/75 leading-relaxed max-w-sm mb-6 font-normal">
-                {lang === 'en'
-                  ? 'A person-owned, lifelong health record with an AI care layer that acts on it—so patients, families wherever they live, and clinics can manage care together.'
-                  : 'ব্যক্তির নিজস্ব নিয়ন্ত্রণাধীন দীর্ঘমেয়াদী স্বাস্থ্য রেকর্ড এবং এআই সমন্বয় স্তর—যাতে রোগী, প্রবাসী পরিবার ও ক্লিনিক একসাথে স্বাস্থ্য পরিচর্যা নিশ্চিত করতে পারে।'}
-              </p>
             </div>
 
-            <div className="text-xs text-forest-800/60 font-mono">
-              Thypro Architecture Specification v3.0 (October 2026) <br />
-              13 Modules · 104 Verified Requirements
+            <div className="text-[11px] text-forest-800/60 font-mono leading-relaxed">
+              Thypro Architecture Specification v3.0 (October 2026)
+              <br />
+              13 modules · 104 verified requirements
             </div>
           </div>
 
-          {/* Navigation Columns (7 cols) */}
-          <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
-            {/* Column 1: Exploration */}
+          {/* Navigation Columns */}
+          <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Explore */}
             <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
-                Explore
-              </div>
+              <h2 className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
+                {lang === 'en' ? 'Explore' : 'ঘুরে দেখুন'}
+              </h2>
+              <ul className="space-y-2.5 text-xs text-forest-800/80">
+                {exploreLinks.map((link) => (
+                  <li key={link.id}>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(link.id)}
+                      className="hover:text-forest-950 transition-colors text-left"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* What Thypro does */}
+            <div>
+              <h2 className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
+                {lang === 'en' ? 'Platform' : 'প্লাটফর্ম'}
+              </h2>
+              <ul className="space-y-2.5 text-xs text-forest-800/80">
+                {productLinks.map((link) => (
+                  <li key={link.label}>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(link.id)}
+                      className="hover:text-forest-950 transition-colors text-left"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Governance & Trust */}
+            <div>
+              <h2 className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
+                {lang === 'en' ? 'Governance' : 'নীতিমালা'}
+              </h2>
               <ul className="space-y-2.5 text-xs text-forest-800/80">
                 <li>
-                  <button onClick={() => scrollToSection('problem')} className="hover:text-forest-950 transition-colors">
-                    The Problem
+                  <button
+                    type="button"
+                    onClick={onOpenPrivacyModal}
+                    className="hover:text-forest-950 transition-colors text-left"
+                  >
+                    {lang === 'en' ? 'Data sovereignty & privacy' : 'তথ্যের মালিকানা ও গোপনীয়তা'}
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => scrollToSection('approach')} className="hover:text-forest-950 transition-colors">
-                    Our Approach
+                  <button
+                    type="button"
+                    onClick={onOpenPrivacyModal}
+                    className="hover:text-forest-950 transition-colors text-left"
+                  >
+                    {lang === 'en' ? 'No blockchain, no data sale' : 'ব্লকচেইন নয়, তথ্য বিক্রি নয়'}
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => scrollToSection('permissions')} className="hover:text-forest-950 transition-colors">
-                    People & Permissions
+                  <button
+                    type="button"
+                    onClick={onOpenPrivacyModal}
+                    className="hover:text-forest-950 transition-colors text-left"
+                  >
+                    {lang === 'en' ? 'Governed AI boundaries' : 'এআই ব্যবহারের সীমা'}
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => scrollToSection('capabilities')} className="hover:text-forest-950 transition-colors">
-                    Platform Capabilities
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => scrollToSection('walkthrough')} className="hover:text-forest-950 transition-colors">
-                    Interactive Tour
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => scrollToSection('vision')} className="hover:text-forest-950 transition-colors">
-                    The Lifelong Vision
+                  <button
+                    type="button"
+                    onClick={onOpenPrivacyModal}
+                    className="hover:text-forest-950 transition-colors text-left"
+                  >
+                    {lang === 'en' ? 'TRU07 cryptographic proof' : 'TRU07 ক্রিপ্টোগ্রাফিক প্রমাণ'}
                   </button>
                 </li>
               </ul>
             </div>
 
-            {/* Column 2: Governance & Trust */}
+            {/* Participation */}
             <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
-                Governance
-              </div>
+              <h2 className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
+                {lang === 'en' ? 'Participation' : 'অংশগ্রহণ'}
+              </h2>
               <ul className="space-y-2.5 text-xs text-forest-800/80">
                 <li>
-                  <button onClick={onOpenPrivacyModal} className="hover:text-forest-950 transition-colors text-left">
-                    Data Sovereignty & Privacy
+                  <button
+                    type="button"
+                    onClick={onOpenAccessModal}
+                    className="text-ochre-700 font-semibold hover:text-ochre-600 text-left"
+                  >
+                    {lang === 'en' ? 'Apply for the family pilot' : 'ফ্যামিলি পাইলটে আবেদন'}
                   </button>
                 </li>
                 <li>
-                  <button onClick={onOpenPrivacyModal} className="hover:text-forest-950 transition-colors text-left">
-                    No Blockchain / No Data Sale
+                  <button
+                    type="button"
+                    onClick={onOpenAccessModal}
+                    className="hover:text-forest-950 transition-colors text-left"
+                  >
+                    {lang === 'en' ? 'Clinic partner enquiries (Dhaka)' : 'ক্লিনিক অংশীদারিত্ব (ঢাকা)'}
                   </button>
                 </li>
                 <li>
-                  <button onClick={onOpenPrivacyModal} className="hover:text-forest-950 transition-colors text-left">
-                    Governed AI Boundaries
+                  <button
+                    type="button"
+                    onClick={onOpenAccessModal}
+                    className="hover:text-forest-950 transition-colors text-left"
+                  >
+                    {lang === 'en' ? 'Blood bank partnerships' : 'ব্লাড ব্যাংক অংশীদারিত্ব'}
                   </button>
                 </li>
-                <li>
-                  <button onClick={onOpenPrivacyModal} className="hover:text-forest-950 transition-colors text-left">
-                    TRU07 Cryptographic Proof
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Contact & Pilot */}
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-forest-950 font-bold mb-4">
-                Participation
-              </div>
-              <ul className="space-y-2.5 text-xs text-forest-800/80">
-                <li>
-                  <button onClick={onOpenAccessModal} className="text-ochre-700 font-semibold hover:text-ochre-600">
-                    Apply for Family Pilot
-                  </button>
-                </li>
-                <li>
-                  <button onClick={onOpenAccessModal} className="hover:text-forest-950 transition-colors text-left">
-                    Clinic Partner Inquiries (Dhaka)
-                  </button>
-                </li>
-                <li className="pt-2 text-[11px] text-forest-800/60">
-                  Initial Corridor: Dhaka, London, New York, Dubai
+                <li className="pt-2 text-[11px] text-forest-800/65 leading-relaxed">
+                  {lang === 'en'
+                    ? 'Initial corridor: Dhaka, London, New York, Dubai'
+                    : 'প্রাথমিক করিডোর: ঢাকা, লন্ডন, নিউইয়র্ক, দুবাই'}
                 </li>
               </ul>
             </div>
@@ -144,17 +205,21 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-forest-800/60 gap-4">
-          <div>
-            &copy; {new Date().getFullYear()} Thypro Health Inc. All rights reserved. Built with human care and dignity.
+        <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-forest-800/65 gap-4">
+          <div className="leading-relaxed">
+            &copy; {new Date().getFullYear()} Thypro.{' '}
+            {lang === 'en'
+              ? 'A Millennium Fellowship 2026 project in development. Thypro is not a medical provider and does not give medical advice.'
+              : 'নির্মাণাধীন একটি মিলেনিয়াম ফেলোশিপ ২০২৬ প্রকল্প। থাইপ্রো কোনো চিকিৎসা প্রতিষ্ঠান নয় এবং চিকিৎসা পরামর্শ দেয় না।'}
           </div>
 
           <button
+            type="button"
             onClick={scrollToTop}
-            className="inline-flex items-center gap-1.5 text-forest-900/80 hover:text-forest-950 transition-colors"
+            className="inline-flex items-center gap-1.5 text-forest-900/80 hover:text-forest-950 transition-colors shrink-0"
           >
-            <span>Back to top</span>
-            <ArrowUp className="w-3.5 h-3.5" />
+            <span>{lang === 'en' ? 'Back to top' : 'উপরে ফিরুন'}</span>
+            <ArrowUp className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>

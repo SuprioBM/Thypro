@@ -1,5 +1,6 @@
 import React from 'react';
-import { ShieldCheck, HeartHandshake, GitFork, Milestone, Lock } from 'lucide-react';
+import { ShieldCheck, HeartHandshake, GitFork, Milestone } from 'lucide-react';
+import { Picture } from './ui/Picture';
 
 interface LongerViewSectionProps {
   lang: 'en' | 'bn';
@@ -7,12 +8,12 @@ interface LongerViewSectionProps {
 
 export const LongerViewSection: React.FC<LongerViewSectionProps> = ({ lang }) => {
   return (
-    <section id="vision" className="py-24 sm:py-36 bg-ivory-100 border-b border-forest-900/10 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+    <section id="vision" className="thy-section bg-ivory-100 border-b border-forest-900/10 relative overflow-hidden">
+      <div className="thy-container">
         {/* Section Header */}
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-ochre-600 font-semibold mb-4">
-            <span>06 — {lang === 'en' ? 'The Lifelong View' : 'দীর্ঘমেয়াদী দর্শন'}</span>
+            <span>10 — {lang === 'en' ? 'The Lifelong View' : 'দীর্ঘমেয়াদী দর্শন'}</span>
           </div>
           <h2 className="font-editorial text-3xl sm:text-5xl lg:text-6xl text-forest-950 font-normal leading-[1.10] mb-6">
             {lang === 'en' ? (
@@ -39,11 +40,13 @@ export const LongerViewSection: React.FC<LongerViewSectionProps> = ({ lang }) =>
           {/* Left Column: Generational Portrait (6 cols) */}
           <div className="lg:col-span-6 relative">
             <div className="rounded-xl overflow-hidden border border-forest-900/15 shadow-editorial bg-ivory-200 relative">
-              <img
+              <Picture
                 src="/images/generational-continuity.jpg"
-                alt="South Asian grandfather on a sunlit veranda holding the small hand of his grandchild, representing generational continuity"
-                className="w-full h-[480px] sm:h-[580px] object-cover object-center filter contrast-[1.02]"
-                loading="lazy"
+                alt="A grandfather on a sunlit veranda holding his grandchild by the hand"
+                width={1200}
+                height={896}
+                sizes="(min-width: 1024px) 50vw, 92vw"
+                className="w-full h-[380px] sm:h-[580px] object-cover object-center filter contrast-[1.02]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-transparent" />
               

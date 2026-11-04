@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { AlertCircle, FileText, PhoneCall, History, HelpCircle } from 'lucide-react';
+import { AlertCircle, FileText, PhoneCall, History } from 'lucide-react';
+import { Picture } from './ui/Picture';
+import { Reveal } from './ui/Reveal';
 
 interface ProblemSectionProps {
   lang: 'en' | 'bn';
@@ -39,8 +41,8 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ lang }) => {
   ];
 
   return (
-    <section id="problem" className="py-24 sm:py-32 bg-ivory-50 border-b border-forest-900/10 relative">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+    <section id="problem" className="thy-section bg-ivory-50 border-b border-forest-900/10 relative">
+      <div className="thy-container">
         {/* Section Header */}
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-ochre-600 font-semibold mb-4">
@@ -67,15 +69,17 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ lang }) => {
         </div>
 
         {/* Visual Composition: The Reality of Fragmentation */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Left: Photographic Evidence of Paper Chaos with Interactive Hotspots (7 cols) */}
           <div className="lg:col-span-7 relative group">
             <div className="relative rounded-lg overflow-hidden border border-forest-900/15 shadow-editorial bg-ivory-200">
-              <img
+              <Picture
                 src="/images/fragmented-records.jpg"
-                alt="Tactile still life of scattered paper prescriptions, lab test slips, glasses, and diagnostic documents"
-                className="w-full h-[400px] sm:h-[480px] object-cover object-center filter saturate-[0.95]"
-                loading="lazy"
+                alt="Scattered paper prescriptions, lab slips and diagnostic envelopes spread across a table"
+                width={1200}
+                height={896}
+                sizes="(min-width: 1024px) 58vw, 92vw"
+                className="w-full h-[320px] sm:h-[480px] object-cover object-center filter saturate-[0.95]"
               />
 
               {/* Hotspots overlay */}
@@ -124,10 +128,10 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ lang }) => {
 
           {/* Right: Editorial Narrative Breakdown (5 cols) */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="p-6 rounded-lg bg-ivory-100 border border-forest-900/10">
+            <Reveal className="thy-card-interactive p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded bg-forest-900/5 flex items-center justify-center text-forest-800">
-                  <FileText className="w-4 h-4" />
+                <div className="w-9 h-9 rounded-lg bg-ochre-50 border border-ochre-200/70 flex items-center justify-center text-ochre-700 shrink-0">
+                  <FileText className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <h3 className="font-editorial text-xl text-forest-950 font-normal">
                   {lang === 'en' ? 'Missing Source Provenance' : 'তথ্যের উৎস ও নির্ভরযোগ্যতার অভাব'}
@@ -138,12 +142,12 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ lang }) => {
                   ? 'A lab PDF without provenance is just an image. Clinicians cannot quickly verify who signed it, when the blood draw occurred, or which medications were active at that exact date.'
                   : 'একটি ল্যাব রিপোর্ট ছবি আকারে থাকলে চিকিৎসক জানতে পারেন না রক্ত কবে নেওয়া হয়েছিল বা তখন রোগী কোন ওষুধ খাচ্ছিলেন।'}
               </p>
-            </div>
+            </Reveal>
 
-            <div className="p-6 rounded-lg bg-ivory-100 border border-forest-900/10">
+            <Reveal delay={80} className="thy-card-interactive p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded bg-forest-900/5 flex items-center justify-center text-forest-800">
-                  <PhoneCall className="w-4 h-4" />
+                <div className="w-9 h-9 rounded-lg bg-ochre-50 border border-ochre-200/70 flex items-center justify-center text-ochre-700 shrink-0">
+                  <PhoneCall className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <h3 className="font-editorial text-xl text-forest-950 font-normal">
                   {lang === 'en' ? 'The Distance Penalty' : 'দূরত্বের উদ্বেগ ও অনিশ্চয়তা'}
@@ -154,12 +158,12 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ lang }) => {
                   ? 'Family members funding care from abroad rely on second-hand phone calls. They want to verify their parents took the right dose this morning without turning every call into an interrogation.'
                   : 'প্রবাস থেকে সন্তানেরা চিকিৎসার খরচ পাঠান ঠিকই, কিন্তু নিয়মিত ওষুধ খাওয়ার খবর বা ডাক্তারের পরামর্শ জানা সবসময় সহজ হয় না।'}
               </p>
-            </div>
+            </Reveal>
 
-            <div className="p-6 rounded-lg bg-ivory-100 border border-forest-900/10">
+            <Reveal delay={160} className="thy-card-interactive p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded bg-forest-900/5 flex items-center justify-center text-forest-800">
-                  <History className="w-4 h-4" />
+                <div className="w-9 h-9 rounded-lg bg-ochre-50 border border-ochre-200/70 flex items-center justify-center text-ochre-700 shrink-0">
+                  <History className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <h3 className="font-editorial text-xl text-forest-950 font-normal">
                   {lang === 'en' ? 'Forgotten Longitudinal Context' : 'দীর্ঘমেয়াদী ইতিহাসের অনুপস্থিতি'}
@@ -170,7 +174,7 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ lang }) => {
                   ? 'Chronic conditions like diabetes, hypertension, and thyroid disorders are journeys spanning decades. Discarded paper files erase trends that could guide better decisions.'
                   : 'ডায়াবেটিস বা প্রেশারের মতো রোগগুলো বহু বছরের ধারাবাহিক চিকিৎসার বিষয়। পুরনো কাগজ হারিয়ে গেলে দীর্ঘমেয়াদী স্বাস্থ্যধারাও মুছে যায়।'}
               </p>
-            </div>
+            </Reveal>
           </div>
         </div>
       </div>
