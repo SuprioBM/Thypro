@@ -2,17 +2,70 @@
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thypro — A Clearer Picture of Your Health</title>
-    <meta name="description" content="Bring your health information together, keep the people you trust connected, and make the next step in care easier to navigate." />
-    
-    <!-- Preconnect to Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#FAF8F3" />
+
+    <title>Thypro — One health record a whole family can act on</title>
+    <meta
+      name="description"
+      content="Thypro keeps a lifelong, person-owned health record for people in Bangladesh and the families caring for them from abroad: organised prescriptions, medication reminders in Bangla, consented family access and an emergency card."
+    />
+    <link rel="canonical" href="https://thypro.app/" />
+
+    <!-- Inline favicon: the Thypro shield mark, no extra request -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- Social cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Thypro" />
+    <meta property="og:url" content="https://thypro.app/" />
+    <meta property="og:title" content="Thypro — One health record a whole family can act on" />
+    <meta
+      property="og:description"
+      content="A lifelong, person-owned health record for Bangladesh — with Family Care for parents at home, children abroad, and the clinics in between."
+    />
+    <meta property="og:image" content="https://thypro.app/images/hero-family.jpg" />
+    <meta property="og:image:alt" content="A daughter and her elderly father reviewing health records together in Dhaka" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Thypro — Your Health. Our Care." />
+    <meta
+      name="twitter:description"
+      content="One health record. A whole family. Better care, together. A Millennium Fellowship 2026 project working towards UN SDG 3."
+    />
+    <meta name="twitter:image" content="https://thypro.app/images/hero-family.jpg" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- The hero image is the largest paint; start it before the bundle parses -->
+    <link rel="preload" as="image" href="/images/hero-family.webp" type="image/webp" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Thypro",
+        "url": "https://thypro.app/",
+        "slogan": "Your Health. Our Care.",
+        "description": "A person-owned, lifelong health record and family care platform for Bangladesh and the families caring from abroad.",
+        "areaServed": "Bangladesh",
+        "knowsAbout": [
+          "Personal health records",
+          "Family care coordination",
+          "Medication adherence",
+          "Blood donation coordination"
+        ]
+      }
+    </script>
   </head>
-  <body class="bg-ivory-100 text-forest-900 font-sans antialiased selection:bg-ochre-100 selection:text-forest-950">
+  <body
+    class="bg-ivory-100 text-forest-900 font-sans antialiased selection:bg-ochre-100 selection:text-forest-950"
+  >
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

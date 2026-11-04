@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, CalendarClock, Users, Bot, ArrowRight, Check, AlertCircle, Sparkles, ShieldCheck } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 
 interface CapabilitiesSectionProps {
   lang: 'en' | 'bn';
@@ -62,8 +62,8 @@ export const CapabilitiesSection: React.FC<CapabilitiesSectionProps> = ({ lang }
   const active = pillars[selectedPillar];
 
   return (
-    <section id="capabilities" className="py-24 sm:py-32 bg-ivory-100 border-b border-forest-900/10">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+    <section id="capabilities" className="thy-section bg-ivory-100 border-b border-forest-900/10">
+      <div className="thy-container">
         {/* Header */}
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-ochre-600 font-semibold mb-4">
@@ -97,10 +97,19 @@ export const CapabilitiesSection: React.FC<CapabilitiesSectionProps> = ({ lang }
               <div
                 key={item.id}
                 onClick={() => setSelectedPillar(idx)}
-                className={`p-5 rounded-lg cursor-pointer transition-all border ${
+                role="button"
+                tabIndex={0}
+                aria-pressed={selectedPillar === idx}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedPillar(idx);
+                  }
+                }}
+                className={`p-5 rounded-card cursor-pointer transition-all duration-300 ease-editorial border ${
                   selectedPillar === idx
                     ? 'bg-white border-forest-900/20 shadow-soft'
-                    : 'bg-ivory-200/50 border-forest-900/8 hover:bg-white/70'
+                    : 'bg-ivory-200/50 border-forest-900/8 hover:bg-white/70 hover:border-forest-900/16'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">

@@ -6,15 +6,12 @@ import {
   CalendarCheck,
   Smartphone,
   CheckCircle2,
-  Link as LinkIcon,
-  Eye,
   Shield,
-  CreditCard,
-  ChevronRight,
   ArrowRight,
   Clock,
   MapPin,
-  Check
+  Check,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface InteractiveWalkthroughProps {
@@ -35,12 +32,12 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
   ];
 
   return (
-    <section id="walkthrough" className="py-24 sm:py-32 bg-ivory-50 border-b border-forest-900/10">
+    <section id="walkthrough" className="thy-section bg-ivory-50 border-b border-forest-900/10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="max-w-3xl mb-12">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-ochre-600 font-semibold mb-4">
-            <span>05 — {lang === 'en' ? 'Interactive Demonstration' : 'সরাসরি প্রোডাক্ট ডেমো'}</span>
+            <span>08 — {lang === 'en' ? 'Interactive Demonstration' : 'সরাসরি প্রোডাক্ট ডেমো'}</span>
           </div>
           <h2 className="font-editorial text-3xl sm:text-5xl text-forest-950 font-normal leading-[1.12] mb-6">
             {lang === 'en' ? (

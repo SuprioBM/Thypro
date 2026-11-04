@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowRight, Shield, Check, Heart, MapPin } from 'lucide-react';
+import { ArrowRight, Shield, Heart, MapPin, Target } from 'lucide-react';
+import { Picture } from './ui/Picture';
 
 interface FinalCtaSectionProps {
   onOpenAccessModal: () => void;
@@ -13,16 +14,16 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
   lang
 }) => {
   return (
-    <section className="py-24 sm:py-36 bg-forest-950 text-ivory-50 relative overflow-hidden">
+    <section id="pilot" className="thy-section bg-forest-950 text-ivory-50 relative overflow-hidden on-dark">
       {/* Background architectural grid */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.05] bg-[radial-gradient(#FAF8F3_1px,transparent_1px)] [background-size:28px_28px]" />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 relative">
+      <div className="thy-container relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Typographic Invitation (7 cols) */}
           <div className="lg:col-span-7 flex flex-col justify-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ivory-100/10 border border-ivory-100/15 text-ivory-200 text-xs font-mono mb-6 self-start">
-              <span className="w-1.5 h-1.5 rounded-full bg-ochre-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-ember-400" aria-hidden="true" />
               <span>{lang === 'en' ? 'Phase 1 Controlled Rollout' : 'প্রথম ধাপের পাইলট'}</span>
             </div>
 
@@ -30,12 +31,12 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
               {lang === 'en' ? (
                 <>
                   Bring your healthcare <br />
-                  <span className="italic text-ochre-200">into a clearer picture.</span>
+                  <span className="italic text-ember-200">into a clearer picture.</span>
                 </>
               ) : (
                 <>
                   আপনার চিকিৎসা ব্যবস্থাকে <br />
-                  <span className="italic text-ochre-200">আনুন এক সুস্পষ্ট রূপরেখায়।</span>
+                  <span className="italic text-ember-200">আনুন এক সুস্পষ্ট রূপরেখায়।</span>
                 </>
               )}
             </h2>
@@ -49,7 +50,7 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
             <div className="flex flex-wrap items-center gap-4 mb-10">
               <button
                 onClick={onOpenAccessModal}
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded bg-ochre-500 text-forest-950 font-semibold text-sm hover:bg-ochre-400 transition-all shadow-soft active:translate-y-0.5 group"
+                className="thy-btn-accent group"
               >
                 <span>{lang === 'en' ? 'Request Pilot Access' : 'পাইলট এক্সেসের জন্য আবেদন'}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -57,9 +58,9 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
 
               <button
                 onClick={onOpenPrivacyModal}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded border border-ivory-200/20 text-ivory-100 hover:bg-ivory-100/10 text-sm font-medium transition-all"
+                className="thy-btn px-5 py-3.5 border border-ivory-200/25 text-ivory-100 hover:bg-ivory-100/10 hover:border-ivory-200/45"
               >
-                <Shield className="w-4 h-4 text-ochre-300" />
+                <Shield className="w-4 h-4 text-ember-300" aria-hidden="true" />
                 <span>{lang === 'en' ? 'Data Sovereignty Principles' : 'তথ্য সুরক্ষার মূলনীতি'}</span>
               </button>
             </div>
@@ -67,12 +68,16 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
             {/* Launch Corridor Footnote */}
             <div className="pt-6 border-t border-ivory-100/15 flex flex-wrap items-center gap-6 text-xs text-ivory-200/70 font-sans">
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-ochre-300" />
+                <MapPin className="w-3.5 h-3.5 text-ember-300" aria-hidden="true" />
                 <span>Dhaka City Pilot Cohort</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <Heart className="w-3.5 h-3.5 text-ochre-300" />
-                <span>Cross-Border Family Care (UK · US · UAE)</span>
+                <Heart className="w-3.5 h-3.5 text-ember-300" aria-hidden="true" />
+                <span>Cross-border family care (UK · US · UAE)</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5 text-ember-300" aria-hidden="true" />
+                <span>Millennium Fellowship 2026 · UN SDG 3</span>
               </span>
             </div>
           </div>
@@ -80,11 +85,13 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
           {/* Right Column: Warm Tactile Photographic Anchor (5 cols) */}
           <div className="lg:col-span-5 relative">
             <div className="rounded-xl overflow-hidden border border-ivory-100/15 shadow-editorial relative bg-forest-900">
-              <img
+              <Picture
                 src="/images/hands-prescription.jpg"
-                alt="Close-up of South Asian family hands gently reviewing health plan together at table"
-                className="w-full h-[380px] sm:h-[460px] object-cover object-center filter saturate-[0.95]"
-                loading="lazy"
+                alt="Close-up of family hands reviewing a health plan together at a table"
+                width={1200}
+                height={896}
+                sizes="(min-width: 1024px) 40vw, 92vw"
+                className="w-full h-[320px] sm:h-[460px] object-cover object-center filter saturate-[0.95]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-transparent to-transparent" />
               

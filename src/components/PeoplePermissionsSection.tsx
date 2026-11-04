@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Eye, CreditCard, Lock, CheckCircle2, UserX, AlertCircle } from 'lucide-react';
+import { ShieldCheck, UserCheck, Eye, Lock, CheckCircle2 } from 'lucide-react';
+import { Picture } from './ui/Picture';
 
 interface PeoplePermissionsSectionProps {
   lang: 'en' | 'bn';
@@ -77,8 +78,8 @@ export const PeoplePermissionsSection: React.FC<PeoplePermissionsSectionProps> =
   const current = personas[activePersona];
 
   return (
-    <section id="permissions" className="py-24 sm:py-32 bg-ivory-50 border-b border-forest-900/10">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+    <section id="permissions" className="thy-section bg-ivory-50 border-b border-forest-900/10">
+      <div className="thy-container">
         {/* Section Heading */}
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-ochre-600 font-semibold mb-4">
@@ -148,9 +149,13 @@ export const PeoplePermissionsSection: React.FC<PeoplePermissionsSectionProps> =
           {/* Dominant Editorial Photography (5 cols) */}
           <div className="lg:col-span-5 relative">
             <div className="h-full rounded-lg overflow-hidden border border-forest-900/15 shadow-editorial relative bg-ivory-200 min-h-[380px]">
-              <img
+              <Picture
+                key={current.image}
                 src={current.image}
-                alt={current.name}
+                alt={current.name + ', ' + current.role}
+                width={1200}
+                height={896}
+                sizes="(min-width: 1024px) 42vw, 92vw"
                 className="w-full h-full object-cover object-center filter saturate-[0.98] transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-forest-950/75 via-forest-950/20 to-transparent" />
