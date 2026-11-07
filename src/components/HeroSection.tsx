@@ -9,20 +9,24 @@ import {
   Users,
   Droplet,
   Activity,
-  Target
+  Target,
+  Sparkles
 } from 'lucide-react';
+import { translate } from '../i18n';
 import { Picture } from './ui/Picture';
 
 interface HeroSectionProps {
   onDiscoverClick: () => void;
   onHowItWorksClick: () => void;
   onOpenAccessModal: () => void;
+  onContinueAsGuest: () => void;
   lang: 'en' | 'bn';
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   onDiscoverClick,
   onHowItWorksClick,
+  onContinueAsGuest,
   lang
 }) => {
   /* Three-word answer to "what is this?", shown directly under the headline. */
@@ -116,6 +120,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   className="w-4 h-4 transition-transform group-hover:translate-x-1"
                   aria-hidden="true"
                 />
+              </button>
+
+              <button type="button" onClick={onContinueAsGuest} className="thy-btn-accent">
+                <Sparkles className="w-4 h-4" aria-hidden="true" />
+                <span>{translate(lang, 'entry.guest')}</span>
               </button>
 
               <button type="button" onClick={onHowItWorksClick} className="thy-btn-ghost">

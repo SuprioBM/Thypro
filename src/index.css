@@ -280,6 +280,35 @@ img { transition: opacity 0.6s ease; }
   display: none;
 }
 
+
+/* ---- Habit app (hash route #/app) ------------------------------------ */
+.stagger-in { animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.route-in { animation: fadeInSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes popRing { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes drawStroke { to { stroke-dashoffset: 0; } }
+.animate-pop-ring { animation: popRing 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-draw-circle { stroke-dasharray: 150; stroke-dashoffset: 150; animation: drawStroke 0.7s ease-out 0.1s forwards; }
+.animate-draw-check { stroke-dasharray: 40; stroke-dashoffset: 40; animation: drawStroke 0.45s ease-out 0.55s forwards; }
+
+/* Scripts the Latin UI fonts do not cover */
+.app-root[lang='bn'], .app-root[lang='bn'] h1, .app-root[lang='bn'] h2, .app-root[lang='bn'] h3, .app-root[lang='bn'] .font-editorial {
+  font-family: 'Noto Sans Bengali', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+.app-root[lang='hi'], .app-root[lang='hi'] h1, .app-root[lang='hi'] h2, .app-root[lang='hi'] h3, .app-root[lang='hi'] .font-editorial {
+  font-family: 'Noto Sans Devanagari', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+.app-root[lang='ur'], .app-root[lang='ur'] h1, .app-root[lang='ur'] h2, .app-root[lang='ur'] h3, .app-root[lang='ur'] .font-editorial {
+  font-family: 'Noto Naskh Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
+  line-height: 1.75;
+}
+.app-root[lang='bn'] *, .app-root[lang='hi'] * { letter-spacing: 0; }
+.app-root[dir='rtl'] .flip-rtl { transform: scaleX(-1); }
+
+@media print {
+  .no-print { display: none !important; }
+}
+
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
@@ -292,6 +321,7 @@ img { transition: opacity 0.6s ease; }
     transition-duration: 0s !important;
   }
 
+  .stagger-in, .route-in { animation: none !important; }
   .thy-reveal, [data-reveal] {
     opacity: 1;
     transform: none;

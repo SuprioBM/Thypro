@@ -1,16 +1,19 @@
 import React from 'react';
-import { ArrowRight, Shield, Heart, MapPin, Target } from 'lucide-react';
+import { ArrowRight, Shield, Heart, MapPin, Target, Sparkles } from 'lucide-react';
+import { translate } from '../i18n';
 import { Picture } from './ui/Picture';
 
 interface FinalCtaSectionProps {
   onOpenAccessModal: () => void;
   onOpenPrivacyModal: () => void;
+  onContinueAsGuest: () => void;
   lang: 'en' | 'bn';
 }
 
 export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
   onOpenAccessModal,
   onOpenPrivacyModal,
+  onContinueAsGuest,
   lang
 }) => {
   return (
@@ -54,6 +57,14 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({
               >
                 <span>{lang === 'en' ? 'Request Pilot Access' : 'পাইলট এক্সেসের জন্য আবেদন'}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+
+              <button
+                onClick={onContinueAsGuest}
+                className="thy-btn px-5 py-3.5 border border-ivory-200/25 text-ivory-100 hover:bg-ivory-100/10 hover:border-ivory-200/45"
+              >
+                <Sparkles className="w-4 h-4 text-ember-300" aria-hidden="true" />
+                <span>{translate(lang, 'entry.guest')}</span>
               </button>
 
               <button
