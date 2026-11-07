@@ -224,6 +224,7 @@ export const hi: Dict = {
   'review.runTitle': 'मौजूदा सिलसिला',
   'review.run': 'लगातार {n} दिन',
   'review.runZero': 'अभी कोई सिलसिला नहीं है। नई शुरुआत हमेशा तैयार है।',
+  'review.runOne': 'लगातार 1 दिन',
   'review.best': 'पिछले 4 हफ़्तों का सबसे अच्छा सिलसिला: {n}',
   'review.trendTitle': 'पिछले सप्ताह से तुलना',
   'review.trend.up': 'ज़्यादा दिन पूरे हुए',

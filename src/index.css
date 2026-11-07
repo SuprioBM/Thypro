@@ -55,8 +55,8 @@
     outline-color: #FFCBA6;
   }
 
-  /* Images never collapse layout while loading */
-  img {
+  /* Photos get a soft placeholder while loading. Logos (plain <img>) stay transparent. */
+  picture > img {
     background-color: #F4EFE6;
   }
 }

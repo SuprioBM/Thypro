@@ -84,7 +84,7 @@ export const Review: React.FC = () => {
         <div className="flex items-center gap-5">
           <Ring value={week.fill} size={116} label={t('review.ringLabel', { done: week.done })}>
             <span className="font-editorial text-4xl leading-none text-forest-950">{week.done}</span>
-            <span className="text-xs text-forest-800/65">/ 7</span>
+            <span dir="ltr" className="text-xs text-forest-800/65">/ 7</span>
           </Ring>
           <dl className="grid flex-1 grid-cols-2 gap-x-3 gap-y-2">
             {stats.map((s) => (
@@ -115,7 +115,7 @@ export const Review: React.FC = () => {
         <Card index={3}>
           <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/70">{t('review.runTitle')}</h2>
           <p className="mt-1 font-editorial text-xl text-forest-950">
-            {week.currentRun > 0 ? t('review.run', { n: week.currentRun }) : t('review.runZero')}
+            {week.currentRun > 1 ? t('review.run', { n: week.currentRun }) : week.currentRun === 1 ? t('review.runOne') : t('review.runZero')}
           </p>
           {week.bestRun > 0 && <p className="mt-1 text-xs text-forest-800/70">{t('review.best', { n: week.bestRun })}</p>}
         </Card>

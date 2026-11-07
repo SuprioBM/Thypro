@@ -222,6 +222,7 @@ export const en = {
   'review.runTitle': 'Current run',
   'review.run': '{n} days in a row',
   'review.runZero': 'No current run. A fresh start is always ready.',
+  'review.runOne': '1 day in a row',
   'review.best': 'Best run in the last 4 weeks: {n}',
   'review.trendTitle': 'Compared with the week before',
   'review.trend.up': 'More days done',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppShell } from './AppShell';
 import { Entry } from './Entry';
-import { go, useRoute, type Screen } from './router';
+import { go, parseHash, useRoute, type Screen } from './router';
 import { readSession, startSession } from './session';
 import { StoreProvider } from './store';
 import type { Lang, SessionMode } from '../domain/types';
@@ -16,8 +16,11 @@ const AppRoot: React.FC = () => {
   const [session, setSession] = useState(() => readSession());
 
   useEffect(() => {
-    if (session && route.screen === 'start') go('today');
-    if (!session && route.screen !== 'start') go('start');
+    // Read the live hash, not React state: right after "Start", state can still say 'start'
+    // while the hash already points at the screen we just chose (e.g. setup).
+    const current = parseHash(window.location.hash).screen;
+    if (session && current === 'start') go('today');
+    if (!session && current !== 'start') go('start');
   }, [session, route.screen]);
 
   useEffect(() => {

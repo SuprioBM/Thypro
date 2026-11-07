@@ -224,6 +224,7 @@ export const ur: Dict = {
   'review.runTitle': 'موجودہ سلسلہ',
   'review.run': 'مسلسل {n} دن',
   'review.runZero': 'ابھی کوئی سلسلہ نہیں ہے۔ نیا آغاز ہمیشہ تیار ہے۔',
+  'review.runOne': 'مسلسل 1 دن',
   'review.best': 'پچھلے 4 ہفتوں کا بہترین سلسلہ: {n}',
   'review.trendTitle': 'پچھلے ہفتے سے موازنہ',
   'review.trend.up': 'زیادہ دن مکمل ہوئے',

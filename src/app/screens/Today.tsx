@@ -63,7 +63,7 @@ export const Today: React.FC = () => {
         <div className="flex items-center gap-5">
           <Ring value={week.fill} size={104} label={t('review.ringLabel', { done: week.done })}>
             <span className="font-editorial text-3xl leading-none text-forest-950">{week.done}</span>
-            <span className="text-[11px] text-forest-800/65">/ 7</span>
+            <span dir="ltr" className="text-[11px] text-forest-800/65">/ 7</span>
           </Ring>
           <div className="min-w-0">
             <h2 id="week-title" className="font-editorial text-lg text-forest-950">

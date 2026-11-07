@@ -224,6 +224,7 @@ export const bn: Dict = {
   'review.runTitle': 'চলমান ধারা',
   'review.run': 'টানা {n} দিন',
   'review.runZero': 'এখন কোনো চলমান ধারা নেই। নতুন করে শুরু করার সুযোগ সবসময় আছে।',
+  'review.runOne': 'টানা 1 দিন',
   'review.best': 'গত 4 সপ্তাহে সেরা ধারা: {n}',
   'review.trendTitle': 'আগের সপ্তাহের সঙ্গে তুলনা',
   'review.trend.up': 'বেশি দিন সম্পন্ন',

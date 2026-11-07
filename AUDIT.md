@@ -52,7 +52,11 @@ Written before any code was changed. Date: 2026-11-07.
 11. **Translations** for Bangla, Hindi and Urdu are my own and **must be reviewed by native speakers** before public use.
 12. **No ESLint** is configured and adding one is out of scope; `tsc` strict + unused checks serve as the lint gate.
 13. **Only new dev dependency:** `vitest` (test runner). No runtime dependencies added.
-14. **Screenshots** are captured with the in-app browser (Playwright is unavailable offline), at 360px and desktop widths, into `docs/demo-screens/`.
+14. **Latin digits everywhere.** Bangla, Hindi and Urdu UI text uses 0-9 so times, doses, phone numbers and emergency numbers are unambiguous. Dates use localized month and weekday names.
+15. **Guest language.** "Continue as Guest" from the landing page opens in the language the visitor was viewing (English by default); the demo persona is a Bangla speaker and the banner says so. The start screen (`#/app`) has an explicit language picker first.
+16. **Bundle split.** The habit app is a lazy chunk, so marketing-page visitors do not download it. The marketing page imports the i18n dictionaries (for the guest button label), which grew its main bundle by about 65 kB.
+17. **Crash handling.** A top-level error boundary plus a per-screen boundary mean a broken screen shows a recovery message, never a blank page.
+18. **Screenshots** are captured with the in-app browser (Playwright is unavailable offline), at 360px and desktop widths, into `docs/demo-screens/`.
 
 ## 4. Planned order of work
 
@@ -62,3 +66,9 @@ Written before any code was changed. Date: 2026-11-07.
 4. Screens: setup, today/check-in, plan, review; then family, reminders, export, audit.
 5. Motion, a11y, 360px pass.
 6. Tests, build, walkthrough screenshots, final report.
+
+## 5. Outcome (filled in after the build)
+
+* All 13 features are implemented; see `docs/demo-screens/` for the walkthrough at 360px and desktop widths.
+* Tests: `npm test` (vitest, 106 tests: safety engine, plan generation, week/restart logic, family consent, FHIR export + validator, PDF report, reminders, language layer, i18n completeness, guest isolation).
+* Not verifiable here: the browser print dialog itself (PDF), real speech-recognition audio, and Bangla/Hindi/Urdu wording quality (needs native review).

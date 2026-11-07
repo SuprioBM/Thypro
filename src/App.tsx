@@ -1,7 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { Landing } from './Landing';
-import { go, useRoute } from './app/router';
+import { go, leaveApp, useRoute } from './app/router';
 import { startSession } from './app/session';
+import { ErrorBoundary, ErrorState } from './app/ui/kit';
+import { translate } from './i18n';
 
 // The habit app is its own chunk: visitors to the marketing page never download it.
 const AppRoot = lazy(() => import('./app/AppRoot'));
@@ -17,9 +19,22 @@ export const App: React.FC = () => {
   const route = useRoute();
   if (route.inApp) {
     return (
-      <Suspense fallback={<AppFallback />}>
-        <AppRoot />
-      </Suspense>
+      <ErrorBoundary
+        fallback={() => (
+          <div className="mx-auto max-w-lg px-4 py-10">
+            <ErrorState
+              title={translate('en', 'shell.errorTitle')}
+              body={translate('en', 'shell.errorBody')}
+              retryLabel={translate('en', 'nav.website')}
+              onRetry={leaveApp}
+            />
+          </div>
+        )}
+      >
+        <Suspense fallback={<AppFallback />}>
+          <AppRoot />
+        </Suspense>
+      </ErrorBoundary>
     );
   }
   return (
