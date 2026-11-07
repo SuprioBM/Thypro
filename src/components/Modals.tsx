@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { CheckCircle2, Shield, Lock, FileText, Heart, Loader2, Database } from 'lucide-react';
 import { CONFIG } from '../config';
 import { ModalShell } from './ui/ModalShell';
+import { translate } from '../i18n';
 
 interface ModalsProps {
   isAccessModalOpen: boolean;
   onCloseAccessModal: () => void;
   isPrivacyModalOpen: boolean;
   onClosePrivacyModal: () => void;
+  onContinueAsGuest: () => void;
   lang: 'en' | 'bn';
 }
 
@@ -15,7 +17,9 @@ export const Modals: React.FC<ModalsProps> = ({
   isAccessModalOpen,
   onCloseAccessModal,
   isPrivacyModalOpen,
-  onClosePrivacyModal
+  onClosePrivacyModal,
+  onContinueAsGuest,
+  lang
 }) => {
   // Access Modal Form State
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -186,6 +190,13 @@ export const Modals: React.FC<ModalsProps> = ({
                       ) : (
                         <span>Submit Pilot Application</span>
                       )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onContinueAsGuest}
+                      className="mt-3 w-full min-h-[44px] rounded-lg border border-forest-900/20 text-xs font-semibold uppercase tracking-wider text-forest-900 hover:bg-forest-900/5"
+                    >
+                      {translate(lang, 'entry.guest')}
                     </button>
                     <p className="text-[11px] text-center text-forest-800/60 mt-2 font-mono flex items-center justify-center gap-1.5">
                       <Database className="w-3 h-3 text-sage-600" />

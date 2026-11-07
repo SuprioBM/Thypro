@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ArrowUpRight, ShieldCheck, Globe } from 'lucide-react';
 import { Wordmark } from './ui/Logo';
+import { translate } from '../i18n';
 
 interface NavbarProps {
+  onContinueAsGuest: () => void;
   onOpenAccessModal: () => void;
   onOpenPrivacyModal: () => void;
   lang: 'en' | 'bn';
@@ -10,6 +12,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
+  onContinueAsGuest,
   onOpenAccessModal,
   onOpenPrivacyModal,
   lang,
@@ -167,8 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         isActive ? 'text-white' : 'text-forest-900/75 hover:text-forest-950'
                       }`}
                     >
-                      <span className="3xl:hidden">{link.label}</span>
-                      <span className="hidden 3xl:inline">{link.full}</span>
+                      {link.label}
                     </button>
                   );
                 })}
@@ -189,10 +191,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={onOpenPrivacyModal}
-                className="hidden 3xl:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-forest-800 hover:bg-forest-900/5 transition-colors"
+                title={en ? 'Data principles' : 'তথ্যনীতি'}
+                aria-label={en ? 'Data principles' : 'তথ্যনীতি'}
+                className="hidden xl:flex h-10 w-10 items-center justify-center rounded-full text-forest-800 hover:bg-forest-900/5 transition-colors"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-forest-600" aria-hidden="true" />
-                <span>{en ? 'Data principles' : 'তথ্যনীতি'}</span>
+                <ShieldCheck className="w-4 h-4 text-forest-600" aria-hidden="true" />
               </button>
 
               <button
@@ -275,6 +278,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {en ? 'Data principles' : 'তথ্যনীতি'}
               </button>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onContinueAsGuest();
+              }}
+              className="w-full min-h-[48px] py-3 text-center text-sm font-semibold rounded-full border border-forest-900/20 text-forest-900"
+            >
+              {translate(lang, 'entry.guest')}
+            </button>
             <button
               type="button"
               onClick={() => {
