@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   FileUp,
   UserCheck,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Reveal } from './ui/Reveal';
 import { SectionHeading } from './ui/SectionHeading';
+import { RotateProgress, useAutoRotate } from './ui/autoRotate';
 
 interface FamilyCareSectionProps {
   lang: 'en' | 'bn';
@@ -27,14 +28,15 @@ type FlowStage = 'upload' | 'review' | 'remind';
  * Shows how a paper prescription becomes a reviewed medication schedule and a
  * daily reminder, then the coordination services that sit around it.
  */
-export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) => {
-  const [stage, setStage] = useState<FlowStage>('review');
+const STAGES: { id: FlowStage; label: string; labelBn: string; icon: typeof FileUp }[] = [
+  { id: 'upload', label: 'Upload prescription', labelBn: 'ব্যবস্থাপত্র আপলোড', icon: FileUp },
+  { id: 'review', label: 'Human review', labelBn: 'মানুষের যাচাই', icon: UserCheck },
+  { id: 'remind', label: 'Daily reminder', labelBn: 'দৈনিক রিমাইন্ডার', icon: BellRing }
+];
 
-  const stages: { id: FlowStage; label: string; labelBn: string; icon: typeof FileUp }[] = [
-    { id: 'upload', label: 'Upload prescription', labelBn: 'ব্যবস্থাপত্র আপলোড', icon: FileUp },
-    { id: 'review', label: 'Human review', labelBn: 'মানুষের যাচাই', icon: UserCheck },
-    { id: 'remind', label: 'Daily reminder', labelBn: 'দৈনিক রিমাইন্ডার', icon: BellRing }
-  ];
+export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) => {
+  const rot = useAutoRotate(STAGES.length, 0, 2000);
+  const stage = STAGES[rot.index].id;
 
   const services = [
     {
@@ -89,12 +91,6 @@ export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) =>
       id="family-care"
       className="thy-section bg-ivory-50 border-b border-forest-900/10 relative overflow-hidden"
     >
-      {/* Soft ambient wash anchoring the section without competing with content */}
-      <div
-        aria-hidden="true"
-        className="absolute -top-32 -right-24 w-[32rem] h-[32rem] rounded-full bg-ochre-100/35 blur-3xl pointer-events-none"
-      />
-
       <div className="thy-container relative">
         <SectionHeading
           index="05"
@@ -110,51 +106,63 @@ export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) =>
         />
 
         {/* Prescription -> schedule -> reminder flow */}
-        <Reveal className="mb-6">
-          <div
-            className="flex items-center gap-2 overflow-x-auto thy-scroll-x pb-1"
-            role="tablist"
-            aria-label={lang === 'en' ? 'Family Care flow stages' : 'ফ্যামিলি কেয়ার ধাপসমূহ'}
-          >
-            {stages.map((s, i) => {
-              const Icon = s.icon;
-              const isActive = stage === s.id;
-              return (
-                <React.Fragment key={s.id}>
+        <Reveal>
+        <div {...rot.bind} className="mb-16">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div
+              className="thy-seg"
+              role="tablist"
+              aria-label={lang === 'en' ? 'Family Care flow stages' : 'ফ্যামিলি কেয়ার ধাপসমূহ'}
+            >
+              {STAGES.map((s, i) => {
+                const Icon = s.icon;
+                const isActive = rot.index === i;
+                return (
                   <button
+                    key={s.id}
                     type="button"
                     role="tab"
                     id={`familycare-tab-${s.id}`}
                     aria-selected={isActive}
                     aria-controls={`familycare-panel-${s.id}`}
-                    onClick={() => setStage(s.id)}
-                    className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ease-editorial ${
-                      isActive
-                        ? 'bg-forest-900 text-ivory-50 shadow-soft-sm'
-                        : 'bg-white text-forest-900/75 border border-forest-900/12 hover:border-forest-900/30 hover:text-forest-950'
-                    }`}
+                    onClick={() => rot.select(i)}
+                    className="thy-seg-btn"
                   >
-                    <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span
+                      className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-mono transition-colors duration-500 ${
+                        isActive ? 'bg-ochre-500 text-white' : i < rot.index ? 'bg-forest-900 text-ivory-50' : 'bg-forest-900/10 text-forest-800'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {i < rot.index ? <Check className="h-3 w-3" /> : i + 1}
+                    </span>
+                    <Icon className="w-3.5 h-3.5 hidden xs:block" aria-hidden="true" />
                     <span>{lang === 'en' ? s.label : s.labelBn}</span>
+                    <RotateProgress
+                      active={isActive}
+                      autoplay={rot.autoplay}
+                      running={rot.running}
+                      intervalMs={rot.intervalMs}
+                      onDone={rot.next}
+                      cycleKey={rot.index}
+                      tone="dark"
+                    />
                   </button>
-                  {i < stages.length - 1 && (
-                    <span className="hidden sm:block w-5 h-px bg-forest-900/20 shrink-0" aria-hidden="true" />
-                  )}
-                </React.Fragment>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </Reveal>
 
-        <Reveal>
           <div
+            key={stage}
             id={`familycare-panel-${stage}`}
             role="tabpanel"
             aria-labelledby={`familycare-tab-${stage}`}
-            className="thy-panel p-5 sm:p-8 lg:p-10 mb-16"
+            aria-live={rot.autoplay ? 'off' : 'polite'}
+            className="thy-luxe p-5 sm:p-8 lg:p-10"
           >
             {stage === 'upload' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center animate-fade-in-up">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center thy-swap">
                 <div>
                   <h3 className="font-editorial text-xl sm:text-2xl text-forest-950 mb-3">
                     {lang === 'en'
@@ -218,7 +226,7 @@ export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) =>
             )}
 
             {stage === 'review' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center animate-fade-in-up">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center thy-swap">
                 <div>
                   <h3 className="font-editorial text-xl sm:text-2xl text-forest-950 mb-3">
                     {lang === 'en'
@@ -282,7 +290,7 @@ export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) =>
             )}
 
             {stage === 'remind' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center animate-fade-in-up">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center thy-swap">
                 <div>
                   <h3 className="font-editorial text-xl sm:text-2xl text-forest-950 mb-3">
                     {lang === 'en'
@@ -353,6 +361,7 @@ export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) =>
               </div>
             )}
           </div>
+        </div>
         </Reveal>
 
         {/* Coordination services */}
@@ -362,9 +371,9 @@ export const FamilyCareSection: React.FC<FamilyCareSectionProps> = ({ lang }) =>
             const status = statusLabel(service.status);
             return (
               <Reveal key={service.title} delay={i * 70}>
-                <article className="thy-card-interactive h-full p-6 flex flex-col">
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <span className="w-10 h-10 rounded-lg bg-ochre-50 border border-ochre-200/70 flex items-center justify-center text-ochre-700 shrink-0">
+                <article className="thy-luxe group h-full p-6 sm:p-7 flex flex-col transition-transform duration-500 ease-editorial hover:-translate-y-1">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <span className="w-11 h-11 rounded-xl bg-forest-900 flex items-center justify-center text-ochre-300 shrink-0 transition-colors duration-500 group-hover:bg-ochre-500 group-hover:text-white">
                       <Icon className="w-[18px] h-[18px]" aria-hidden="true" />
                     </span>
                     <span className={`${status.cls} shrink-0`}>{status.text}</span>

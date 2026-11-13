@@ -1,92 +1,95 @@
-import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Eye, Lock, CheckCircle2 } from 'lucide-react';
+import React from 'react';
+import { ShieldCheck, UserCheck, Eye, Lock, Check, Minus } from 'lucide-react';
 import { Picture } from './ui/Picture';
+import { RotateProgress, useAutoRotate } from './ui/autoRotate';
 
 interface PeoplePermissionsSectionProps {
   lang: 'en' | 'bn';
 }
 
+type Access = { meds: boolean; results: boolean; history: boolean; manage: boolean };
+
+const PERSONAS = [
+  {
+    id: 'patient',
+    tab: 'The Patient',
+    tabBn: 'রোগী',
+    icon: UserCheck,
+    name: 'Tariq Ahmed',
+    role: 'Patient, Dhaka',
+    image: '/images/hero-family.jpg',
+    quote: 'My children support me from London and Dubai, but my medical dignity belongs to me.',
+    badge: 'Owner',
+    level: 'Owns the record and decides who else sees it',
+    rights: [
+      'Gives or removes access for family and clinics with one tap',
+      'Keeps sensitive history, such as reproductive or mental health notes, private by default',
+      'Gets a short daily check-in call in Bangla',
+      'Can download the whole record at any time, in open formats'
+    ],
+    access: { meds: true, results: true, history: true, manage: true } as Access
+  },
+  {
+    id: 'coordinator',
+    tab: 'Family Coordinator',
+    tabBn: 'পারিবারিক সমন্বয়কারী',
+    icon: Eye,
+    name: 'Samira Ahmed',
+    role: 'Daughter and coordinator, London',
+    image: '/images/daughter-coordination.jpg',
+    quote: 'Living five thousand miles away, I don’t want to interrogate my father every evening. I just need to know his care plan is working.',
+    badge: 'Invited by Tariq',
+    level: 'Sees what Tariq has shared, nothing more',
+    rights: [
+      'Sees whether medicines were taken and the morning check-in answered',
+      'Books appointments and a companion for visits in Dhaka',
+      'Pays clinic and pharmacy bills from abroad',
+      'Cannot open sensitive notes unless Tariq shares them separately'
+    ],
+    access: { meds: true, results: true, history: false, manage: false } as Access
+  },
+  {
+    id: 'clinician',
+    tab: 'The Clinician',
+    tabBn: 'চিকিৎসক',
+    icon: ShieldCheck,
+    name: 'Dr. Reza Rahman',
+    role: 'Consultant cardiologist, Dhaka',
+    image: '/images/doctor-consultation.jpg',
+    quote: 'When Tariq walks into my clinic, I don’t spend 15 minutes hunting for lost lab papers. I see his verified timeline immediately.',
+    badge: 'Registered doctor',
+    level: 'Access during the visit, and every view is logged',
+    rights: [
+      'Reads the timeline of vitals, lab results and medicines',
+      'Checks extracted values against the original lab scan',
+      'Signs visit notes and adjusts the prescription',
+      'Access ends with the visit; every view is recorded'
+    ],
+    access: { meds: true, results: true, history: true, manage: false } as Access
+  }
+] as const;
+
+const ACCESS_ROWS: { key: keyof Access; label: string }[] = [
+  { key: 'meds', label: 'Medicines and check-ins' },
+  { key: 'results', label: 'Lab results' },
+  { key: 'history', label: 'Full history, incl. sensitive notes' },
+  { key: 'manage', label: 'Decide who else has access' }
+];
+
 export const PeoplePermissionsSection: React.FC<PeoplePermissionsSectionProps> = ({ lang }) => {
-  const [activePersona, setActivePersona] = useState<'patient' | 'coordinator' | 'clinician'>('coordinator');
-
-  const personas = {
-    patient: {
-      name: 'Tariq Ahmed',
-      role: 'The Patient (Dhaka)',
-      image: '/images/hero-family.jpg',
-      quote: 'My children support me from London and Dubai, but my medical dignity belongs to me.',
-      tag: 'Full Sovereign Ownership',
-      rights: [
-        'Grants and revokes family or clinic access with a single tap',
-        'Sensitive reproductive and psychiatric history remains private by default (REC04)',
-        'Receives daily automated voice check-in in natural Bangla (FAM02)',
-        'Can export full medical history anytime in open standard formats'
-      ],
-      permissionPreview: {
-        accessLevel: 'Owner & Sovereign Controller',
-        badge: 'Zero-Lockin',
-        canSeeDiagnostics: true,
-        canSeeMedications: true,
-        canSeeFullHistory: true,
-        canRevokeOthers: true
-      }
-    },
-    coordinator: {
-      name: 'Samira Ahmed',
-      role: 'Family Coordinator (London)',
-      image: '/images/daughter-coordination.jpg',
-      quote: 'Living five thousand miles away, I don’t want to interrogate my father every evening. I just need to know his care plan is working.',
-      tag: 'Care Coordinator Role',
-      rights: [
-        'Views medication adherence and morning check-in confirmations',
-        'Coordinates appointments and books hospital companions in Dhaka',
-        'Direct settlement of clinic and pharmacy bills in GBP or USD',
-        'Cannot inspect sensitive medical records without explicit separate consent'
-      ],
-      permissionPreview: {
-        accessLevel: 'Care Coordinator (Consented by Tariq)',
-        badge: 'FAM01 Delegation',
-        canSeeDiagnostics: true,
-        canSeeMedications: true,
-        canSeeFullHistory: false,
-        canRevokeOthers: false
-      }
-    },
-    clinician: {
-      name: 'Dr. Reza Rahman',
-      role: 'Consultant Cardiologist (Dhaka)',
-      image: '/images/doctor-consultation.jpg',
-      quote: 'When Tariq walks into my clinic, I don’t spend 15 minutes hunting for lost lab papers. I see his verified timeline immediately.',
-      tag: 'Clinical Workspace',
-      rights: [
-        'Reviews longitudinal timeline of vitals, lab reports, and medication trends',
-        'Confirms extracted diagnostic data against original laboratory scans',
-        'Signs clinical encounter notes and prescribes adjustments',
-        'Access strictly limited to active encounter duration with audited logging'
-      ],
-      permissionPreview: {
-        accessLevel: 'Verified Physician (BMDC Registered)',
-        badge: 'TRU01 Verified',
-        canSeeDiagnostics: true,
-        canSeeMedications: true,
-        canSeeFullHistory: true,
-        canRevokeOthers: false
-      }
-    }
-  };
-
-  const current = personas[activePersona];
+  const en = lang === 'en';
+  const rot = useAutoRotate(PERSONAS.length, 1, 2000);
+  const current = PERSONAS[rot.index];
 
   return (
     <section id="permissions" className="thy-section bg-ivory-50 border-b border-forest-900/10">
       <div className="thy-container">
-        {/* Section Heading */}
-        <div className="max-w-3xl mb-16">
+        <div className="max-w-3xl mb-12 sm:mb-14">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-ochre-600 font-semibold mb-4">
-            <span>03 — {lang === 'en' ? 'Sovereignty & Trust' : 'ব্যক্তি ও নিরাপত্তা'}</span>
+            <span>03 — {en ? 'Sovereignty & Trust' : 'ব্যক্তি ও নিরাপত্তা'}</span>
           </div>
           <h2 className="font-editorial text-3xl sm:text-5xl text-forest-950 font-normal leading-[1.12] mb-6">
-            {lang === 'en' ? (
+            {en ? (
               <>
                 Keep the right people <br className="hidden sm:inline" />
                 <span className="italic text-forest-800">connected to care.</span>
@@ -98,117 +101,142 @@ export const PeoplePermissionsSection: React.FC<PeoplePermissionsSectionProps> =
               </>
             )}
           </h2>
-          <p className="text-base sm:text-lg text-forest-900/80 leading-relaxed font-normal">
-            {lang === 'en'
-              ? 'Healthcare is rarely solitary. It involves patients, loving family members, and trusted clinicians. Thypro enables granular collaboration while ensuring the patient maintains absolute privacy and consent.'
-              : 'চিকিৎসা কখনোই একার বিষয় নয়। এর সাথে জড়িয়ে থাকেন রোগী, দূর-দূরান্তে থাকা প্রিয়জন এবং চিকিৎসক। থাইপ্রো নিশ্চিত করে স্বজনদের সহযোগিতা এবং রোগীর তথ্যের পূর্ণ স্বাধীনতা।'}
+          <p className="text-base sm:text-lg text-forest-900/80 leading-relaxed">
+            {en
+              ? 'Care involves the patient, the family and the doctor. Each sees what they need for their part, and the patient decides who that is.'
+              : 'চিকিৎসা কখনোই একার বিষয় নয়। এর সাথে জড়িয়ে থাকেন রোগী, দূর-দূরান্তে থাকা প্রিয়জন এবং চিকিৎসক। থাইপ্রো নিশ্চিত করে স্বজনদের সহযোগিতা এবং রোগীর তথ্যের পূর্ণ স্বাধীনতা।'}
           </p>
         </div>
 
-        {/* Persona Selector Tabs */}
-        <div className="flex flex-wrap items-center gap-3 mb-10 pb-4 border-b border-forest-900/10">
-          <button
-            onClick={() => setActivePersona('patient')}
-            className={`px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 ${
-              activePersona === 'patient'
-                ? 'bg-forest-900 text-ivory-50 shadow-soft-sm'
-                : 'bg-ivory-200/80 text-forest-900/75 hover:bg-ivory-300'
-            }`}
-          >
-            <UserCheck className="w-3.5 h-3.5" />
-            <span>The Patient</span>
-          </button>
-
-          <button
-            onClick={() => setActivePersona('coordinator')}
-            className={`px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 ${
-              activePersona === 'coordinator'
-                ? 'bg-forest-900 text-ivory-50 shadow-soft-sm'
-                : 'bg-ivory-200/80 text-forest-900/75 hover:bg-ivory-300'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Family Coordinator</span>
-          </button>
-
-          <button
-            onClick={() => setActivePersona('clinician')}
-            className={`px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 ${
-              activePersona === 'clinician'
-                ? 'bg-forest-900 text-ivory-50 shadow-soft-sm'
-                : 'bg-ivory-200/80 text-forest-900/75 hover:bg-ivory-300'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>The Clinician</span>
-          </button>
-        </div>
-
-        {/* Persona Visual & Permission Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Dominant Editorial Photography (5 cols) */}
-          <div className="lg:col-span-5 relative">
-            <div className="h-full rounded-lg overflow-hidden border border-forest-900/15 shadow-editorial relative bg-ivory-200 min-h-[380px]">
-              <Picture
-                key={current.image}
-                src={current.image}
-                alt={current.name + ', ' + current.role}
-                width={1200}
-                height={896}
-                sizes="(min-width: 1024px) 42vw, 92vw"
-                className="w-full h-full object-cover object-center filter saturate-[0.98] transition-all duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-forest-950/75 via-forest-950/20 to-transparent" />
-              
-              <div className="absolute bottom-0 inset-x-0 p-6 text-ivory-50">
-                <span className="text-[11px] font-mono uppercase tracking-widest text-ochre-300 font-semibold mb-1 block">
-                  {current.tag}
-                </span>
-                <div className="font-editorial text-2xl text-ivory-50 mb-1">{current.name}</div>
-                <div className="text-xs text-ivory-200/80 mb-3">{current.role}</div>
-                <blockquote className="text-xs italic text-ivory-200 font-serif border-l-2 border-ochre-400 pl-3 leading-snug">
-                  "{current.quote}"
-                </blockquote>
-              </div>
+        <div {...rot.bind}>
+          {/* Persona tabs */}
+          <div className="mb-8 flex items-center justify-between gap-3">
+            <div className="thy-seg" role="tablist" aria-label={en ? 'Who is looking' : 'কে দেখছেন'}>
+              {PERSONAS.map((p, i) => {
+                const Icon = p.icon;
+                const active = rot.index === i;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    role="tab"
+                    id={`persona-tab-${p.id}`}
+                    aria-selected={active}
+                    aria-controls="persona-panel"
+                    onClick={() => rot.select(i)}
+                    className="thy-seg-btn"
+                  >
+                    <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{en ? p.tab : p.tabBn}</span>
+                    <RotateProgress
+                      active={active}
+                      autoplay={rot.autoplay}
+                      running={rot.running}
+                      intervalMs={rot.intervalMs}
+                      onDone={rot.next}
+                      cycleKey={rot.index}
+                      tone="dark"
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Persona Rights & Permission Matrix (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-8 rounded-lg bg-white border border-forest-900/15 shadow-soft">
-            <div>
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-forest-900/10">
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-forest-800/60 font-semibold">
-                    Permission Scope & Governance
-                  </div>
-                  <div className="text-lg font-editorial text-forest-950 font-medium">
-                    {current.permissionPreview.accessLevel}
-                  </div>
-                </div>
-                <span className="text-xs font-mono bg-sage-100 text-forest-900 px-3 py-1 rounded-full border border-sage-300">
-                  {current.permissionPreview.badge}
-                </span>
-              </div>
-
-              {/* Rights list */}
-              <div className="space-y-3.5 mb-8">
-                {current.rights.map((right, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-sage-600 shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm text-forest-900/85 leading-relaxed font-normal">
-                      {right}
-                    </span>
+          <div
+            id="persona-panel"
+            role="tabpanel"
+            aria-labelledby={`persona-tab-${current.id}`}
+            aria-live={rot.autoplay ? 'off' : 'polite'}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch"
+          >
+            {/* Photograph: all three stacked, cross-faded */}
+            <div className="lg:col-span-5">
+              <div className="thy-luxe relative h-full min-h-[400px] overflow-hidden !bg-forest-950">
+                {PERSONAS.map((p, i) => (
+                  <div
+                    key={p.id}
+                    aria-hidden={rot.index !== i}
+                    className={`absolute inset-0 transition-all duration-[1100ms] ease-editorial ${
+                      rot.index === i ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.04]'
+                    }`}
+                  >
+                    <Picture
+                      src={p.image}
+                      alt={rot.index === i ? `${p.name}, ${p.role}` : ''}
+                      width={1200}
+                      height={896}
+                      sizes="(min-width: 1024px) 42vw, 92vw"
+                      className="h-full w-full object-cover object-center"
+                    />
                   </div>
                 ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-forest-950/90 via-forest-950/25 to-transparent" />
+
+                <div key={current.id} className="absolute inset-x-0 bottom-0 p-6 sm:p-7 text-ivory-50">
+                  <span className="thy-swap mb-3 inline-flex rounded-full bg-ochre-500 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white">
+                    {current.badge}
+                  </span>
+                  <div className="thy-swap thy-swap-1 font-editorial text-2xl sm:text-[1.75rem] leading-tight">{current.name}</div>
+                  <div className="thy-swap thy-swap-1 mb-4 text-xs text-ivory-200/80">{current.role}</div>
+                  <blockquote className="thy-swap thy-swap-2 border-l-2 border-ochre-400 pl-3 font-editorial text-[15px] italic leading-snug text-ivory-100/95">
+                    “{current.quote}”
+                  </blockquote>
+                </div>
               </div>
             </div>
 
-            {/* Crucial Ethical Boundary Notice (FAM01 Principle) */}
-            <div className="p-4 rounded bg-ivory-100 border border-forest-900/10">
-              <div className="flex items-start gap-2.5">
-                <Lock className="w-4 h-4 text-ochre-600 shrink-0 mt-0.5" />
-                <div className="text-xs text-forest-900/80 leading-relaxed">
-                  <strong className="text-forest-950 font-semibold">The Payer Privacy Principle:</strong> Under Thypro's FAM01 standard, paying for care does not automatically grant unrestricted access to private clinical records. A family member in Dubai can pay hospital bills and pharmacy deliveries without reading sensitive notes unless Tariq explicitly grants that scope.
+            {/* What this person can do */}
+            <div className="lg:col-span-7 thy-luxe flex flex-col p-6 sm:p-8">
+              <div key={current.id} className="flex-1">
+                <div className="thy-swap mb-6 border-b border-forest-900/[0.08] pb-5">
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-ochre-600">
+                    {en ? 'What they can do' : 'তাঁদের ভূমিকা'}
+                  </div>
+                  <div className="font-editorial text-xl sm:text-2xl text-forest-950">{current.level}</div>
+                </div>
+
+                <ul className="mb-8 space-y-3">
+                  {current.rights.map((right, idx) => (
+                    <li key={right} className={`thy-swap thy-swap-${Math.min(idx + 1, 4)} flex items-start gap-3`}>
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-forest-900 text-ivory-50">
+                        <Check className="h-3 w-3" aria-hidden="true" />
+                      </span>
+                      <span className="text-sm leading-relaxed text-forest-900/85">{right}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Access at a glance */}
+                <div className="thy-swap thy-swap-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {ACCESS_ROWS.map((row) => {
+                    const on = current.access[row.key];
+                    return (
+                      <div
+                        key={row.key}
+                        className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-xs transition-colors duration-500 ${
+                          on ? 'border-forest-900/10 bg-ivory-50 text-forest-950' : 'border-dashed border-forest-900/15 bg-transparent text-forest-800/55'
+                        }`}
+                      >
+                        <span>{row.label}</span>
+                        {on ? (
+                          <Check className="h-3.5 w-3.5 shrink-0 text-forest-800" aria-label={en ? 'Allowed' : 'অনুমোদিত'} />
+                        ) : (
+                          <Minus className="h-3.5 w-3.5 shrink-0" aria-label={en ? 'Not allowed' : 'অনুমোদিত নয়'} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="thy-luxe-dark mt-6 !rounded-2xl p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <Lock className="mt-0.5 h-4 w-4 shrink-0 text-ochre-400" aria-hidden="true" />
+                  <p className="text-xs leading-relaxed text-ivory-200/90">
+                    <strong className="font-semibold text-ivory-50">Paying is not the same as reading. </strong>
+                    A relative in Dubai can settle hospital and pharmacy bills without seeing private notes, unless Tariq chooses to share them.
+                  </p>
                 </div>
               </div>
             </div>
