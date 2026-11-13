@@ -39,15 +39,10 @@ describe('weeklyStats', () => {
     expect(weeklyStats([ci('2026-11-07', 'unknown')], TODAY).unknown).toBe(1);
   });
 
-  it('does not break a run just because today is not logged yet', () => {
-    const w = weeklyStats([ci('2026-11-06'), ci('2026-11-05'), ci('2026-11-04')], TODAY);
-    expect(w.currentRun).toBe(3);
-  });
-
-  it('a skipped day ends the run without any penalty value', () => {
+  it('has no streak field that could reset to zero', () => {
     const w = weeklyStats([ci('2026-11-07'), ci('2026-11-06', 'skipped'), ci('2026-11-05')], TODAY);
-    expect(w.currentRun).toBe(1);
-    expect(w.bestRun).toBe(1);
+    expect(Object.keys(w)).not.toContain('currentRun');
+    expect(Object.keys(w)).not.toContain('bestRun');
     expect(w.fill).toBeGreaterThanOrEqual(0);
   });
 

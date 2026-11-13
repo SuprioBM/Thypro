@@ -1,7 +1,7 @@
-import React, { Suspense, lazy } from 'react';
-import { ArrowLeft, BellRing, CalendarCheck, ClipboardList, Home, LayoutGrid, LogOut, Users, X, FileDown, ScrollText } from 'lucide-react';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { ArrowLeft, BarChart3, BellRing, BookOpen, CalendarCheck, ClipboardList, FileDown, Home, LayoutGrid, Lightbulb, LogOut, MessageSquare, PieChart, ScrollText, SlidersHorizontal, Users, Volume2, X } from 'lucide-react';
 import { LogoMark } from '../components/ui/Logo';
-import { useI18n } from '../i18n';
+import { useI18n, type Key } from '../i18n';
 import { LanguageSelect } from './components/LanguageSelect';
 import { leaveApp, go, type Screen } from './router';
 import { useStore } from './store';
@@ -18,6 +18,11 @@ const Family = lazy(() => import('./screens/Family').then((m) => ({ default: m.F
 const Reminders = lazy(() => import('./screens/Reminders').then((m) => ({ default: m.Reminders })));
 const Export = lazy(() => import('./screens/Export').then((m) => ({ default: m.Export })));
 const Audit = lazy(() => import('./screens/Audit').then((m) => ({ default: m.Audit })));
+const Settings = lazy(() => import('./screens/Settings').then((m) => ({ default: m.Settings })));
+const Story = lazy(() => import('./screens/Story').then((m) => ({ default: m.Story })));
+const Techniques = lazy(() => import('./screens/Techniques').then((m) => ({ default: m.Techniques })));
+const Sponsor = lazy(() => import('./screens/Sponsor').then((m) => ({ default: m.Sponsor })));
+const Pilot = lazy(() => import('./screens/Pilot').then((m) => ({ default: m.Pilot })));
 
 const SCREENS: Record<Exclude<Screen, 'start'>, React.ReactNode> = {
   today: <Today />,
@@ -29,7 +34,12 @@ const SCREENS: Record<Exclude<Screen, 'start'>, React.ReactNode> = {
   export: <Export />,
   audit: <Audit />,
   setup: <Setup />,
-  clinician: <ClinicianPath />
+  clinician: <ClinicianPath />,
+  settings: <Settings />,
+  story: <Story />,
+  techniques: <Techniques />,
+  sponsor: <Sponsor />,
+  pilot: <Pilot />
 };
 
 const TABS: { screen: Screen; icon: typeof Home; key: 'nav.today' | 'nav.plan' | 'nav.review' | 'nav.family' | 'nav.more' }[] = [
@@ -40,17 +50,29 @@ const TABS: { screen: Screen; icon: typeof Home; key: 'nav.today' | 'nav.plan' |
   { screen: 'more', icon: LayoutGrid, key: 'nav.more' }
 ];
 
-const SIDE: { screen: Screen; icon: typeof Home; key: 'nav.reminders' | 'nav.export' | 'nav.audit' }[] = [
+const SIDE: { screen: Screen; icon: typeof Home; key: Key }[] = [
+  { screen: 'settings', icon: SlidersHorizontal, key: 'nav.settings' },
+  { screen: 'story', icon: BookOpen, key: 'nav.story' },
   { screen: 'reminders', icon: BellRing, key: 'nav.reminders' },
+  { screen: 'techniques', icon: Lightbulb, key: 'nav.techniques' },
   { screen: 'export', icon: FileDown, key: 'nav.export' },
-  { screen: 'audit', icon: ScrollText, key: 'nav.audit' }
+  { screen: 'audit', icon: ScrollText, key: 'nav.audit' },
+  { screen: 'pilot', icon: BarChart3, key: 'nav.pilot' },
+  { screen: 'sponsor', icon: PieChart, key: 'nav.sponsor' }
 ];
+
+const NOTICE_ICON = { 'in-app': BellRing, message: MessageSquare, voice: Volume2, info: BellRing } as const;
 
 export const AppShell: React.FC<{ screen: Exclude<Screen, 'start'> }> = ({ screen }) => {
   const { t, lang, dir } = useI18n();
   const { state, notices, dismissNotice, exitSession } = useStore();
   const guest = state.mode === 'guest';
   const activeTab = (['today', 'plan', 'review', 'family'] as Screen[]).includes(screen) ? screen : 'more';
+
+  // A new screen starts at the top instead of keeping the last screen's scroll.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen]);
 
   const navBtn = (active: boolean) =>
     `flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${
@@ -144,15 +166,27 @@ export const AppShell: React.FC<{ screen: Exclude<Screen, 'start'> }> = ({ scree
       </nav>
 
       <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex flex-col items-center gap-2 px-4 md:bottom-6" aria-live="polite" role="status">
-        {notices.map((n) => (
-          <div key={n.id} className="stagger-in pointer-events-auto flex max-w-md items-center gap-3 rounded-2xl bg-forest-900 px-4 py-3 text-sm text-ivory-50 shadow-lift">
-            <BellRing className="h-4 w-4 shrink-0 text-ochre-300" aria-hidden="true" />
-            <span className="flex-1">{n.text}</span>
+        {notices.map((n) => {
+          const Icon = NOTICE_ICON[n.kind];
+          const bubble =
+            n.kind === 'message'
+              ? 'rounded-2xl rounded-es-sm bg-sage-100 text-forest-950 border border-sage-300'
+              : n.kind === 'voice'
+                ? 'rounded-full bg-ochre-500 text-white'
+                : 'rounded-2xl bg-forest-900 text-ivory-50';
+          return (
+          <div key={n.id} className={`stagger-in pointer-events-auto flex max-w-md items-center gap-3 px-4 py-3 text-sm shadow-lift ${bubble}`}>
+            <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="flex-1">
+              <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-75">{n.kind === 'info' ? '' : t(`channel.${n.kind}` as Key)}</span>
+              {n.text}
+            </span>
             <button type="button" onClick={() => dismissNotice(n.id)} aria-label={t('rem.dismiss')} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10">
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

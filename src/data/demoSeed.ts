@@ -7,10 +7,10 @@
  * no-shame restart prompt appear.
  */
 
-import type { AppState, AuditEntry, CheckIn, DeliveryLogEntry, Feel, GoalSetup } from '../domain/types';
+import { DEFAULT_CONTEXT, type AppState, type AuditEntry, type CheckIn, type DeliveryLogEntry, type Feel, type GoalSetup } from '../domain/types';
 import { shiftDate } from '../domain/week';
 import { generatePlan } from '../plan/generate';
-import { DEFAULT_CONSENT } from '../app/reducer';
+import { DEFAULT_CONSENT, NO_CONSENT, emptyState } from '../app/reducer';
 
 type Pattern = 'done' | 'skipped' | 'unknown' | null;
 
@@ -41,7 +41,8 @@ export const DEMO_SETUP: GoalSetup = {
     kidneyDisease: 'unknown',
     insulinDiabetes: 'no',
     otherHighRisk: 'no'
-  }
+  },
+  context: { ...DEFAULT_CONTEXT, heat: 'hot' }
 };
 
 export function createDemoState(today: string): AppState {
@@ -57,8 +58,11 @@ export function createDemoState(today: string): AppState {
       feel,
       redFlags: [],
       input: 'text',
-      createdAt: at(date, '20:10')
+      createdAt: at(date, '20:10'),
+      activityMinutes: status === 'done' ? 10 + (i % 3) * 2 : undefined
     };
+    if (i === 6 || i === 17) checkin.bp = i === 6 ? { systolic: 128, diastolic: 82 } : { systolic: 124, diastolic: 80 };
+    if (i === 6 || i === 17) checkin.weightKg = i === 6 ? 74.5 : 74.1;
     if (i === 4) {
       checkin.note = {
         original: 'আজ খুব গরম ছিল, তাই মলের ভেতরে হাঁটলাম।',
@@ -120,6 +124,7 @@ export function createDemoState(today: string): AppState {
   });
 
   return {
+    ...emptyState('guest', 'bn'),
     mode: 'guest',
     profile: {
       id: 'demo-guest',
@@ -127,7 +132,8 @@ export function createDemoState(today: string): AppState {
       lang: 'bn',
       city: 'Abu Dhabi',
       synthetic: true,
-      familyContact: { name: 'Nasrin (demo)', relation: 'Sister', phone: '+971 50 000 0000 (demo)' }
+      familyContact: { name: 'Nasrin (demo)', relation: 'Sister', phone: '+971 50 000 0000 (demo)' },
+      demographics: { gender: 'male', ageGroup: '30-44' }
     },
     setup: DEMO_SETUP,
     plans: [generated.plan],
@@ -135,6 +141,8 @@ export function createDemoState(today: string): AppState {
     reminders: [{ id: 'rem-1', time: '19:15', enabled: true, channel: 'in-app' }],
     deliveryLog,
     audit,
-    consent: { ...DEFAULT_CONSENT }
+    consent: { ...DEFAULT_CONSENT },
+    progress: { level: 2 },
+    people: [{ id: 'coach-1', name: 'Coach Farid (demo)', relation: 'Coach', consent: { ...NO_CONSENT, weeklyCompletion: true } }]
   };
 }

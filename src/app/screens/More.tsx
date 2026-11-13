@@ -1,15 +1,21 @@
 import React from 'react';
-import { BellRing, ChevronRight, FileDown, Globe, LogOut, ScrollText } from 'lucide-react';
+import { BarChart3, BellRing, BookOpen, ChevronRight, FileDown, Globe, Lightbulb, LogOut, PieChart, ScrollText, SlidersHorizontal } from 'lucide-react';
+import type { Key } from '../../i18n';
 import { useI18n } from '../../i18n';
 import { go, type Screen } from '../router';
 import { useStore } from '../store';
 import { Card, ScreenHeader } from '../ui/kit';
 import { LanguageSelect } from '../components/LanguageSelect';
 
-const LINKS: { screen: Screen; icon: typeof BellRing; key: 'nav.reminders' | 'nav.export' | 'nav.audit' }[] = [
+const LINKS: { screen: Screen; icon: typeof BellRing; key: Key }[] = [
+  { screen: 'settings', icon: SlidersHorizontal, key: 'nav.settings' },
+  { screen: 'story', icon: BookOpen, key: 'nav.story' },
   { screen: 'reminders', icon: BellRing, key: 'nav.reminders' },
+  { screen: 'techniques', icon: Lightbulb, key: 'nav.techniques' },
   { screen: 'export', icon: FileDown, key: 'nav.export' },
-  { screen: 'audit', icon: ScrollText, key: 'nav.audit' }
+  { screen: 'audit', icon: ScrollText, key: 'nav.audit' },
+  { screen: 'pilot', icon: BarChart3, key: 'nav.pilot' },
+  { screen: 'sponsor', icon: PieChart, key: 'nav.sponsor' }
 ];
 
 export const More: React.FC = () => {

@@ -1,6 +1,15 @@
 import React from 'react';
 import { ArrowUp, Target, Globe2 } from 'lucide-react';
 import { FullLogo } from './ui/Logo';
+import { SITE_PAGES } from '../app/router';
+import { translate, type Key } from '../i18n';
+
+const PAGE_TITLES: Record<(typeof SITE_PAGES)[number], Key> = {
+  'how-suggestions-work': 'tech.title',
+  rights: 'site.rights.title',
+  accessibility: 'site.a11y.title',
+  pilot: 'site.pilot.title'
+};
 
 interface FooterProps {
   onOpenAccessModal: () => void;
@@ -158,6 +167,13 @@ export const Footer: React.FC<FooterProps> = ({
                     {lang === 'en' ? 'TRU07 cryptographic proof' : 'TRU07 ক্রিপ্টোগ্রাফিক প্রমাণ'}
                   </button>
                 </li>
+                {SITE_PAGES.map((p) => (
+                  <li key={p}>
+                    <a href={`#/page/${p}`} className="hover:text-forest-950 transition-colors">
+                      {translate(lang, PAGE_TITLES[p])}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -196,8 +212,8 @@ export const Footer: React.FC<FooterProps> = ({
                 </li>
                 <li className="pt-2 text-[11px] text-forest-800/65 leading-relaxed">
                   {lang === 'en'
-                    ? 'Initial corridor: Dhaka, London, New York, Dubai'
-                    : 'প্রাথমিক করিডোর: ঢাকা, লন্ডন, নিউইয়র্ক, দুবাই'}
+                    ? 'Initial corridor: Dhaka, London, New York, Dubai, Abu Dhabi'
+                    : 'প্রাথমিক করিডোর: ঢাকা, লন্ডন, নিউইয়র্ক, দুবাই, আবুধাবি'}
                 </li>
               </ul>
             </div>

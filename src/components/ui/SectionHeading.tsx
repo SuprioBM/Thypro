@@ -32,9 +32,7 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
   >
     <div className={`thy-eyebrow mb-4 ${align === 'center' ? 'justify-center' : ''}`}>
       <span className="w-6 h-px bg-ochre-500/60" aria-hidden="true" />
-      <span>
-        {index} — {eyebrow}
-      </span>
+      <span>{index ? `${index} — ${eyebrow}` : eyebrow}</span>
     </div>
     <h2 className="thy-h2 mb-5">
       {title}

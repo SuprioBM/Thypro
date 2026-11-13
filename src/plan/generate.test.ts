@@ -29,7 +29,7 @@ describe('generatePlan', () => {
     expect(r.status).toBe('ok');
     if (r.status !== 'ok') return;
     expect(r.plan.templateId).toBe('tpl-activity-walk');
-    expect(r.plan.templateVersion).toBe('1.0.0');
+    expect(r.plan.templateVersion).toBe(getTemplate('walk').version);
     expect(r.plan.version).toBe(1);
     expect(r.plan.ruleVersion).toBe(SAFETY_RULES_CONFIG.version);
     expect(r.plan.items.map((i) => i.templateItemId)).toEqual(['walk', 'cool', 'listen']);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ExternalLink, ShieldCheck } from 'lucide-react';
-import { resolvePlanItem } from '../../plan/templates';
+import { maxLevel, resolvePlanItem } from '../../plan/templates';
+import { techniqueText } from '../../techniques/techniques';
 import { useI18n, type Key } from '../../i18n';
 import { go } from '../router';
 import { useStore } from '../store';
@@ -49,6 +50,7 @@ export const Plan: React.FC = () => {
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             {t('plan.rulesPassed', { v: activePlan.ruleVersion })}
           </Chip>
+          <Chip tone="info">{t('ladder.level', { n: activePlan.level ?? state.progress.level, max: maxLevel(activePlan.goalType) })}</Chip>
           <Chip tone="warn">{t('plan.reviewPending')}</Chip>
           {activePlan.restart && <Chip tone="neutral">{t('plan.restartBadge')}</Chip>}
           {state.profile.synthetic && <Chip tone="warn">{t('shell.demoChip')}</Chip>}
@@ -97,6 +99,20 @@ export const Plan: React.FC = () => {
                   <div>
                     <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('plan.templateLabel')}</dt>
                     <dd className="font-mono text-xs">{text.templateId}</dd>
+                  </div>
+                  <div className="rounded-lg border border-ochre-200 bg-white p-2.5">
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-ochre-700">
+                      {t('plan.technique')}: {techniqueText(text.technique, lang).name}
+                    </dt>
+                    <dd className="mt-1">{techniqueText(text.technique, lang).rationale}</dd>
+                    <dd className="mt-1 text-xs text-forest-800/75">
+                      <span className="font-semibold">{t('tech.limits')}:</span> {techniqueText(text.technique, lang).limits}
+                    </dd>
+                    <dd className="mt-1">
+                      <button type="button" onClick={() => go('techniques')} className="min-h-[36px] text-xs font-medium text-ochre-700 underline">
+                        {t('nav.techniques')}
+                      </button>
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('plan.guidance')}</dt>

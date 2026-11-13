@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Check, Minus } from 'lucide-react';
+import { cumulativeDays } from '../../domain/ladder';
 import { restartState, shiftDate, weeklyStats, type DayState } from '../../domain/week';
 import { useI18n, type Key } from '../../i18n';
 import { RestartCard } from '../components/RestartCard';
+import { TotalDays } from '../components/LoopCards';
 import { go } from '../router';
 import { useStore } from '../store';
 import { Card, EmptyState, Ring, ScreenHeader } from '../ui/kit';
@@ -77,7 +79,7 @@ export const Review: React.FC = () => {
       <ScreenHeader title={t('review.title')} subtitle={t('review.last7')} />
 
       {!blocked && activePlan && restart.needed && !dismissed && (
-        <RestartCard days={restart.daysSince} canRestart={!activePlan.restart} onRestart={restartPlan} onLater={() => setDismissed(true)} />
+        <RestartCard days={restart.daysSince} canRestart={(activePlan.level ?? 2) > 1} onRestart={restartPlan} onLater={() => setDismissed(true)} />
       )}
 
       <Card index={1}>
@@ -113,11 +115,7 @@ export const Review: React.FC = () => {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card index={3}>
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/70">{t('review.runTitle')}</h2>
-          <p className="mt-1 font-editorial text-xl text-forest-950">
-            {week.currentRun > 1 ? t('review.run', { n: week.currentRun }) : week.currentRun === 1 ? t('review.runOne') : t('review.runZero')}
-          </p>
-          {week.bestRun > 0 && <p className="mt-1 text-xs text-forest-800/70">{t('review.best', { n: week.bestRun })}</p>}
+          <TotalDays total={cumulativeDays(state.checkins)} />
         </Card>
         <Card index={4}>
           <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/70">{t('review.trendTitle')}</h2>

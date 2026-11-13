@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Landing } from './Landing';
+import { InfoPage } from './components/InfoPage';
 import { go, leaveApp, useRoute } from './app/router';
 import { startSession } from './app/session';
 import { ErrorBoundary, ErrorState } from './app/ui/kit';
@@ -37,11 +38,16 @@ export const App: React.FC = () => {
       </ErrorBoundary>
     );
   }
+  if (route.page) return <InfoPage key={route.page} slug={route.page} />;
   return (
     <Landing
       onContinueAsGuest={(lang) => {
         startSession('guest', lang);
         go('today');
+      }}
+      onTryLoop={(lang) => {
+        startSession('guest', lang);
+        go('story');
       }}
     />
   );
