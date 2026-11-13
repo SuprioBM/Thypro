@@ -72,3 +72,69 @@ Written before any code was changed. Date: 2026-11-07.
 * All 13 features are implemented; see `docs/demo-screens/` for the walkthrough at 360px and desktop widths.
 * Tests: `npm test` (vitest, 106 tests: safety engine, plan generation, week/restart logic, family consent, FHIR export + validator, PDF report, reminders, language layer, i18n completeness, guest isolation).
 * Not verifiable here: the browser print dialog itself (PDF), real speech-recognition audio, and Bangla/Hindi/Urdu wording quality (needs native review).
+
+---
+
+# Phase 2 — the habit loop (Future Health Challenge addendum)
+
+Date: 2026-11-14. Branch `feature/habit-loop-phase2`. The 13 features above were **extended, not rebuilt**; every old test still passes.
+
+## 6. What existed at the start of phase 2
+
+| Area | State before phase 2 |
+|---|---|
+| Behaviours | Walk, eating, sleep, medicine routine. No tobacco. |
+| Context | Dietary pattern and allergies only. No shift work, fasting, heat, budget, literacy or disability inputs. |
+| Progress | Weekly completion plus "current run / best run" streak counters. No levels. |
+| Lapses | Restart offer after missed days. No barrier question, no adaptation. |
+| Reminders | One in-app channel + simulated delivery log. No quiet hours, no channel choice. |
+| Sharing | One family contact with per-field consent. |
+| Reporting | None for sponsors or pilots. |
+| Website | Landing with "Continue as Guest", en/bn toggle, Dubai in the corridor list. |
+
+## 7. What changed (existing code)
+
+* `GoalType` gained `tobacco`; plans gained a `level`; check-ins gained optional activity minutes, blood pressure and weight; state gained prefs, progress, barriers, proposal, people and pilot signals. Saved local data moves from schema 1 to schema 2 through `normalizeState` (the local "migration"; old saves load unchanged, missing fields get defaults). Tested.
+* **Streak counters removed** (`currentRun`/`bestRun`). Replaced by cumulative "days done in total", which never resets.
+* Templates rewritten (v1.1.0) with context variants and a small-step ladder; the safety config is now `2026.11.2` with a tobacco rule and a per-behaviour coverage map.
+* Reminders now go through a delivery planner (frequency, quiet hours, preferred → fallback channel). Suppressed reminders are logged, not dropped.
+* Family view supports several people, each with their own consent toggles.
+* Website: header and hero gained **Try the Habit Loop**; a "Sustaining healthy habits" section; Abu Dhabi next to Dubai; Hindi and Urdu in the language switch; four public pages.
+
+## 8. What was added
+
+| # | Item | Where |
+|---|---|---|
+| 1 | Tobacco: referral-only template; safety rule `T-REFERRAL-ONLY` blocks any item other than refer / support / no-advice | `src/plan/templates.ts`, `src/safety/` |
+| 2 | Context profile read by templates (pure, tested) | `ContextProfile` in `src/domain/types.ts`, `matchesContext`/`pickVariant` |
+| 3 | Small-step ladder (2 misses in a row → one step down per lapse; step-up offered after a good week, declinable, 7-day cooldown) | `src/domain/ladder.ts`, `src/plan/generate.ts` |
+| 4 | Lapse detector + one-tap barrier question (8 barriers) | `detectLapse`, `BarrierCard` |
+| 5 | Channels: in-app, simulated message, simulated voice (browser text-to-speech), quiet hours | `src/app/reminders.ts`, `src/app/speech.ts` |
+| 6 | Rule-based adaptation engine `adapt-2026.11.1`, every change logged to the audit log; "personal best time and tone" tracker that only records | `src/adapt/` |
+| 7 | Six technique cards (rationale, limits, source) in 4 languages | `src/techniques/techniques.ts` |
+| 8 | My controls: goal, quiet hours, channels, frequency, per-person sharing, export, delete, voice-first, large text, picture mode | `Settings.tsx` |
+| 9 | Sponsor view: group totals only, groups under 20 show "not enough data" (with secondary suppression of totals), fixed banner, synthetic in demo | `src/pilot/aggregate.ts`, `Sponsor.tsx` |
+| 10 | Outcome + equity logging; pilot report flags gaps over 10 percentage points | `src/domain/outcomes.ts`, `equityReport`, `Pilot.tsx` |
+| 11 | "One person's week" scenario, replayed through the real reducer | `src/scenario/week.ts`, `Story.tsx` |
+| 12 | Technique transparency screen + public "How suggestions work" page generated from the same data | `Techniques.tsx`, `InfoPage.tsx` |
+
+## 9. Phase 2 decisions
+
+1. **No machine learning.** Adaptation is a fixed, versioned rules table. The "personal best time and tone" tracker only records; nothing reads it.
+2. **Tobacco is referral-only.** No nicotine-replacement, medicine or dosage content exists in the templates, and the safety engine blocks a plan that contains any.
+3. **Voice channel = browser text-to-speech**, not recorded audio. If the browser has no speech synthesis, the reminder falls back to the next chosen channel and the log says so.
+4. **Message and voice are simulated** behind the existing `ReminderChannel` interface. Nothing is sent anywhere.
+5. **Step-up is only offered**, never applied automatically. Step-down is applied once per lapse episode and explained.
+6. **Sponsor and pilot data are synthetic** (seeded generator, three invented sites, one under 20 to show suppression). No real participants, partners or results are claimed.
+7. **Technique mapping is a design choice, not a validated intervention.** Cards cite the BCT Taxonomy v1 (Michie et al., 2013) as the vocabulary source only; each card states its limits.
+8. **Rule owners** (safety, tobacco, adaptation) are named placeholders pending appointment and clinical review.
+9. **Header buttons**: Continue as Guest / Try the Habit Loop show in the header from 1024px; below that they are in the hero and the menu, so the header never overflows (checked at 360, 768, 1024, 1280, 1536).
+10. **Older landing sections stay en/bn.** In Hindi or Urdu, the new habit-loop section and public pages are translated; older marketing sections show English with a notice.
+11. **Playwright still unavailable**, so the walk (including the replayed week) was driven in the in-app browser; screenshots 20–32 are in `docs/demo-screens/`.
+12. **No new dependencies** in phase 2.
+
+## 10. Phase 2 outcome
+
+* `npm run typecheck`: 0 errors. `npm test`: 179 tests in 13 files pass (73 new: adaptation engine, ladder, lapse, tobacco rule, context matching, sponsor under-20 threshold, equity gap, delivery planning, schema migration, scenario replay). `npm run build`: succeeds.
+* No console errors on any app screen in guest and local mode, or on the landing page and the four public pages.
+* Known limits: the landing bundle is about 475 kB (153 kB gzip) because it imports the four dictionaries and technique data; Bangla/Hindi/Urdu wording needs native-speaker review; numeric limits and rule owners need clinical sign-off.

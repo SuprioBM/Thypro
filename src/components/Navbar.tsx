@@ -1,22 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ArrowUpRight, ShieldCheck, Globe } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Globe, RotateCcw, Sparkles } from 'lucide-react';
+import { LANGS, type Lang } from '../domain/types';
+import { LANG_NAMES } from '../i18n';
 import { Wordmark } from './ui/Logo';
 import { translate } from '../i18n';
 
 interface NavbarProps {
   onContinueAsGuest: () => void;
+  onTryLoop: () => void;
+  uiLang: Lang;
+  onSetLang: (lang: Lang) => void;
   onOpenAccessModal: () => void;
   onOpenPrivacyModal: () => void;
   lang: 'en' | 'bn';
-  onToggleLang: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   onContinueAsGuest,
+  onTryLoop,
+  uiLang,
+  onSetLang,
   onOpenAccessModal,
   onOpenPrivacyModal,
-  lang,
-  onToggleLang
+  lang
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -146,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
 
             {/* Link rail with sliding active pill */}
-            <nav className="hidden xl:block min-w-0 flex-1 max-w-fit" aria-label="Main navigation">
+            <nav className="hidden 2xl:block min-w-0 flex-1 max-w-fit" aria-label="Main navigation">
               <div ref={railRef} className="relative flex items-center gap-0.5 rounded-full bg-forest-900/[0.04] p-1">
                 <span
                   aria-hidden="true"
@@ -178,34 +184,48 @@ export const Navbar: React.FC<NavbarProps> = ({
             </nav>
 
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <label className="hidden sm:flex items-center gap-1 rounded-full px-2 text-xs font-medium text-forest-800 hover:bg-forest-900/5">
+                <Globe className="w-3.5 h-3.5 text-ochre-600" aria-hidden="true" />
+                <span className="sr-only">{translate(uiLang, 'shell.language')}</span>
+                <select
+                  value={uiLang}
+                  onChange={(e) => onSetLang(e.target.value as Lang)}
+                  className="min-h-[40px] cursor-pointer bg-transparent py-2 pe-1 text-xs font-medium focus:outline-none"
+                >
+                  {LANGS.map((l) => (
+                    <option key={l} value={l} lang={l}>
+                      {LANG_NAMES[l]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
               <button
                 type="button"
-                onClick={onToggleLang}
-                className="hidden sm:flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-forest-800 hover:bg-forest-900/5 transition-colors"
-                aria-label={en ? 'Switch language preview to Bangla' : 'ইংরেজিতে পরিবর্তন করুন'}
+                onClick={onContinueAsGuest}
+                className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-forest-900/15 px-3 py-2 text-xs font-semibold text-forest-900 hover:border-forest-900/35 hover:bg-forest-900/5 transition-colors"
               >
-                <Globe className="w-3.5 h-3.5 text-ochre-600" aria-hidden="true" />
-                <span>{en ? 'বাংলা' : 'English'}</span>
+                <Sparkles className="w-3.5 h-3.5 text-ochre-600" aria-hidden="true" />
+                {translate(uiLang, 'entry.guest')}
               </button>
 
               <button
                 type="button"
-                onClick={onOpenPrivacyModal}
-                title={en ? 'Data principles' : 'তথ্যনীতি'}
-                aria-label={en ? 'Data principles' : 'তথ্যনীতি'}
-                className="hidden xl:flex h-10 w-10 items-center justify-center rounded-full text-forest-800 hover:bg-forest-900/5 transition-colors"
+                onClick={onTryLoop}
+                className="hidden lg:inline-flex items-center gap-1.5 rounded-full bg-forest-800 px-3 py-2 text-xs font-semibold text-ivory-50 hover:bg-forest-700 transition-colors"
               >
-                <ShieldCheck className="w-4 h-4 text-forest-600" aria-hidden="true" />
+                <RotateCcw className="w-3.5 h-3.5 text-ochre-300" aria-hidden="true" />
+                {translate(uiLang, 'site.tryLoop')}
               </button>
 
               <button
                 type="button"
                 onClick={onOpenAccessModal}
-                className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-ochre-400 to-ember-600 px-4 py-2.5 text-xs font-semibold text-white shadow-soft-sm transition-all duration-300 ease-editorial hover:shadow-lift hover:-translate-y-px active:translate-y-0"
+                className="group inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-gradient-to-br from-ochre-400 to-ember-600 px-3 sm:px-4 py-2.5 text-xs font-semibold text-white shadow-soft-sm transition-all duration-300 ease-editorial hover:shadow-lift hover:-translate-y-px active:translate-y-0"
               >
                 <span>{en ? 'Pilot Access' : 'পাইলট এক্সেস'}</span>
                 <ArrowUpRight
-                  className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  className="hidden min-[380px]:block w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                   aria-hidden="true"
                 />
               </button>
@@ -214,7 +234,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ref={menuButtonRef}
                 type="button"
                 onClick={() => setMobileMenuOpen((o) => !o)}
-                className="xl:hidden p-2 rounded-full text-forest-900 hover:bg-forest-900/5 transition-colors"
+                className="2xl:hidden p-2 rounded-full text-forest-900 hover:bg-forest-900/5 transition-colors"
                 aria-label={en ? 'Toggle navigation menu' : 'মেনু খুলুন বা বন্ধ করুন'}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-navigation"
@@ -239,7 +259,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div
           id="mobile-navigation"
-          className="fixed inset-0 z-40 bg-ivory-100/98 backdrop-blur-lg pt-28 px-6 flex flex-col justify-between pb-8 xl:hidden animate-fade-in-up overflow-y-auto"
+          className="fixed inset-0 z-40 bg-ivory-100/98 backdrop-blur-lg pt-28 px-6 flex flex-col justify-between pb-8 2xl:hidden animate-fade-in-up overflow-y-auto"
         >
           <nav className="flex flex-col gap-3" aria-label="Mobile navigation">
             {navLinks.map((link, i) => (
@@ -259,14 +279,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="pt-6 mt-6 border-t border-forest-900/10 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-3 text-xs text-forest-800/80">
-              <button
-                type="button"
-                onClick={onToggleLang}
-                className="flex items-center gap-1.5 py-2 px-3 border border-forest-900/15 rounded-full"
-              >
+              <label className="flex items-center gap-1.5 py-1 px-3 border border-forest-900/15 rounded-full">
                 <Globe className="w-3.5 h-3.5 text-ochre-600" aria-hidden="true" />
-                <span>{en ? 'বাংলায় দেখুন' : 'View in English'}</span>
-              </button>
+                <span className="sr-only">{translate(uiLang, 'shell.language')}</span>
+                <select value={uiLang} onChange={(e) => onSetLang(e.target.value as Lang)} className="min-h-[40px] bg-transparent text-xs">
+                  {LANGS.map((l) => (
+                    <option key={l} value={l} lang={l}>
+                      {LANG_NAMES[l]}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <button
                 type="button"
                 onClick={() => {
@@ -286,7 +309,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="w-full min-h-[48px] py-3 text-center text-sm font-semibold rounded-full border border-forest-900/20 text-forest-900"
             >
-              {translate(lang, 'entry.guest')}
+              {translate(uiLang, 'entry.guest')}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onTryLoop();
+              }}
+              className="w-full min-h-[48px] py-3 text-center text-sm font-semibold rounded-full bg-forest-800 text-ivory-50"
+            >
+              {translate(uiLang, 'site.tryLoop')}
             </button>
             <button
               type="button"

@@ -10,8 +10,10 @@ import {
   Droplet,
   Activity,
   Target,
-  Sparkles
+  Sparkles,
+  RotateCcw
 } from 'lucide-react';
+import type { Lang } from '../domain/types';
 import { translate } from '../i18n';
 import { Picture } from './ui/Picture';
 
@@ -20,6 +22,8 @@ interface HeroSectionProps {
   onHowItWorksClick: () => void;
   onOpenAccessModal: () => void;
   onContinueAsGuest: () => void;
+  onTryLoop: () => void;
+  uiLang: Lang;
   lang: 'en' | 'bn';
 }
 
@@ -27,6 +31,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onDiscoverClick,
   onHowItWorksClick,
   onContinueAsGuest,
+  onTryLoop,
+  uiLang,
   lang
 }) => {
   /* Three-word answer to "what is this?", shown directly under the headline. */
@@ -124,7 +130,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
               <button type="button" onClick={onContinueAsGuest} className="thy-btn-accent">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
-                <span>{translate(lang, 'entry.guest')}</span>
+                <span>{translate(uiLang, 'entry.guest')}</span>
+              </button>
+
+              <button type="button" onClick={onTryLoop} className="thy-btn-ghost" lang={uiLang}>
+                <RotateCcw className="w-4 h-4 text-ochre-700" aria-hidden="true" />
+                <span>{translate(uiLang, 'site.tryLoop')}</span>
               </button>
 
               <button type="button" onClick={onHowItWorksClick} className="thy-btn-ghost">

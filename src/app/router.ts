@@ -31,9 +31,16 @@ const SCREENS: readonly Screen[] = [
 export interface Route {
   inApp: boolean;
   screen: Screen;
+  /** Public website page under #/page/<slug>, if any. */
+  page?: string;
 }
 
+export const SITE_PAGES = ['how-suggestions-work', 'rights', 'accessibility', 'pilot'] as const;
+export type SitePage = (typeof SITE_PAGES)[number];
+
 export function parseHash(hash: string): Route {
+  const page = /^#\/page\/([\w-]+)\/?$/.exec(hash);
+  if (page) return { inApp: false, screen: 'start', page: page[1] };
   const m = /^#\/app(?:\/([\w-]+))?\/?$/.exec(hash);
   if (!m) return { inApp: false, screen: 'start' };
   const screen = (m[1] ?? 'start') as Screen;
@@ -42,6 +49,11 @@ export function parseHash(hash: string): Route {
 
 export function go(screen: Screen): void {
   window.location.hash = `#/app/${screen}`;
+}
+
+export function goPage(slug: SitePage): void {
+  window.location.hash = `#/page/${slug}`;
+  window.scrollTo({ top: 0 });
 }
 
 export function leaveApp(): void {

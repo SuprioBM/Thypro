@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { ArrowLeft, BarChart3, BellRing, BookOpen, CalendarCheck, ClipboardList, FileDown, Home, LayoutGrid, Lightbulb, LogOut, MessageSquare, PieChart, ScrollText, SlidersHorizontal, Users, Volume2, X } from 'lucide-react';
 import { LogoMark } from '../components/ui/Logo';
 import { useI18n, type Key } from '../i18n';
@@ -69,13 +69,18 @@ export const AppShell: React.FC<{ screen: Exclude<Screen, 'start'> }> = ({ scree
   const guest = state.mode === 'guest';
   const activeTab = (['today', 'plan', 'review', 'family'] as Screen[]).includes(screen) ? screen : 'more';
 
+  // A new screen starts at the top instead of keeping the last screen's scroll.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen]);
+
   const navBtn = (active: boolean) =>
     `flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${
       active ? 'bg-forest-800 text-ivory-50' : 'text-forest-900 hover:bg-forest-900/[0.05]'
     }`;
 
   return (
-    <div className={`app-root min-h-screen bg-ivory-100 text-forest-900`} lang={lang} dir={dir}>
+    <div className="app-root min-h-screen bg-ivory-100 text-forest-900" lang={lang} dir={dir}>
       <a href="#app-main" className="thy-skip-link" onClick={(e) => { e.preventDefault(); document.getElementById('app-main')?.focus(); }}>
         {t('shell.skip')}
       </a>

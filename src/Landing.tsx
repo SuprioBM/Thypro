@@ -14,9 +14,17 @@ import { LongerViewSection } from './components/LongerViewSection';
 import { FinalCtaSection } from './components/FinalCtaSection';
 import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
+import { HabitLoopSection } from './components/HabitLoopSection';
+import type { Lang } from './domain/types';
+import { isRtl, translate } from './i18n';
 
-export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void }> = ({ onContinueAsGuest }) => {
-  const [lang, setLang] = useState<'en' | 'bn'>('en');
+export const Landing: React.FC<{ onContinueAsGuest: (lang: Lang) => void; onTryLoop: (lang: Lang) => void }> = ({
+  onContinueAsGuest,
+  onTryLoop
+}) => {
+  /** Full UI language (four languages). Older sections exist in English and Bangla only. */
+  const [uiLang, setUiLang] = useState<Lang>('en');
+  const lang: 'en' | 'bn' = uiLang === 'bn' ? 'bn' : 'en';
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
@@ -45,10 +53,6 @@ export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void 
     return () => io.disconnect();
   }, []);
 
-  const toggleLanguage = () => {
-    setLang((prev) => (prev === 'en' ? 'bn' : 'en'));
-  };
-
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -66,12 +70,25 @@ export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void 
 
       {/* Editorial Navigation */}
       <Navbar
-        onContinueAsGuest={() => onContinueAsGuest(lang)}
+        onContinueAsGuest={() => onContinueAsGuest(uiLang)}
+        onTryLoop={() => onTryLoop(uiLang)}
         onOpenAccessModal={() => setIsAccessModalOpen(true)}
         onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
         lang={lang}
-        onToggleLang={toggleLanguage}
+        uiLang={uiLang}
+        onSetLang={setUiLang}
       />
+
+      {(uiLang === 'hi' || uiLang === 'ur') && (
+        <p
+          role="status"
+          lang={uiLang}
+          dir={isRtl(uiLang) ? 'rtl' : 'ltr'}
+          className="fixed inset-x-0 top-[5.25rem] z-40 mx-auto w-fit max-w-[92vw] rounded-full border border-ochre-300 bg-ochre-50 px-4 py-1.5 text-center text-xs text-forest-950 shadow-soft-sm"
+        >
+          {translate(uiLang, 'site.langNote')}
+        </p>
+      )}
 
       {/* Main Narrative Flow */}
       <main id="main-content" className="flex-1">
@@ -80,7 +97,9 @@ export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void 
           onDiscoverClick={() => scrollToSection('problem')}
           onHowItWorksClick={() => scrollToSection('walkthrough')}
           onOpenAccessModal={() => setIsAccessModalOpen(true)}
-          onContinueAsGuest={() => onContinueAsGuest(lang)}
+          onContinueAsGuest={() => onContinueAsGuest(uiLang)}
+          onTryLoop={() => onTryLoop(uiLang)}
+          uiLang={uiLang}
           lang={lang}
         />
 
@@ -95,6 +114,9 @@ export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void 
 
         {/* 04 — Core Capabilities */}
         <CapabilitiesSection lang={lang} />
+
+        {/* Sustaining healthy habits: the habit loop (all four languages) */}
+        <HabitLoopSection lang={uiLang} onReplay={() => onTryLoop(uiLang)} />
 
         {/* 05 — Thypro Family Care */}
         <FamilyCareSection lang={lang} />
@@ -118,7 +140,7 @@ export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void 
         <FinalCtaSection
           onOpenAccessModal={() => setIsAccessModalOpen(true)}
           onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
-          onContinueAsGuest={() => onContinueAsGuest(lang)}
+          onContinueAsGuest={() => onContinueAsGuest(uiLang)}
           lang={lang}
         />
       </main>
@@ -138,7 +160,7 @@ export const Landing: React.FC<{ onContinueAsGuest: (lang: 'en' | 'bn') => void 
         onClosePrivacyModal={() => setIsPrivacyModalOpen(false)}
         onContinueAsGuest={() => {
           setIsAccessModalOpen(false);
-          onContinueAsGuest(lang);
+          onContinueAsGuest(uiLang);
         }}
         lang={lang}
       />
