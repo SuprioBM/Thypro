@@ -3,6 +3,7 @@ import { createDemoState } from '../data/demoSeed';
 import { translate } from '../i18n';
 import type { Lang } from '../domain/types';
 import { buildReportHtml, escapeHtml } from './report';
+import { SAFETY_RULES_CONFIG } from '../safety/rules.config';
 
 const NOW = new Date('2026-11-07T09:30:00.000Z');
 const html = (lang: Lang, state = createDemoState('2026-11-07')) =>
@@ -12,7 +13,7 @@ describe('PDF report (print HTML)', () => {
   it('has provenance, rules version, template id, disclaimer and the demo flag', () => {
     const out = html('en');
     expect(out).toContain(NOW.toISOString());
-    expect(out).toContain('2026.11.1');
+    expect(out).toContain(SAFETY_RULES_CONFIG.version);
     expect(out).toContain('tpl-activity-walk');
     expect(out).toContain('not a medical device');
     expect(out).toContain('demo data only');

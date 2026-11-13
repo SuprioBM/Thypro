@@ -3,7 +3,8 @@
  *
  * Principles baked in here:
  *  - Missing data is reported as missing. It is never counted as a failure.
- *  - No penalties, no negative scores. A streak of 0 is simply "no current run".
+ *  - No penalties, no negative scores, and no streak that resets to zero:
+ *    progress is counted as cumulative done days (see ladder.ts).
  *  - Trend wording is neutral; it never judges the person.
  */
 
@@ -29,10 +30,6 @@ export interface WeekStats {
   fill: number;
   previousDone: number;
   trend: Trend;
-  /** Consecutive "done" days ending today (or yesterday if today is not logged yet). */
-  currentRun: number;
-  /** Longest run of consecutive "done" days in the last 28 days. */
-  bestRun: number;
 }
 
 export function toDateKey(d: Date): string {
@@ -83,27 +80,6 @@ export function weeklyStats(checkins: CheckIn[], today: string): WeekStats {
   else if (done < previousDone) trend = 'down';
   else trend = 'same';
 
-  // Current run: if today is not logged yet, begin from yesterday so a day in
-  // progress never reads as a broken streak.
-  const byDate = indexByDate(checkins);
-  let cursor = byDate.has(today) ? today : shiftDate(today, -1);
-  let currentRun = 0;
-  while (byDate.get(cursor)?.status === 'done') {
-    currentRun += 1;
-    cursor = shiftDate(cursor, -1);
-  }
-
-  let bestRun = 0;
-  let run = 0;
-  for (const d of buildDays(checkins, today, 28)) {
-    if (d.state === 'done') {
-      run += 1;
-      bestRun = Math.max(bestRun, run);
-    } else {
-      run = 0;
-    }
-  }
-
   return {
     days,
     done,
@@ -112,9 +88,7 @@ export function weeklyStats(checkins: CheckIn[], today: string): WeekStats {
     missing: countState(days, 'missing'),
     fill: done / 7,
     previousDone,
-    trend,
-    currentRun,
-    bestRun
+    trend
   };
 }
 

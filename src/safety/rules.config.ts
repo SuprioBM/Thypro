@@ -40,6 +40,14 @@ export interface EscalationRules {
   unwellStreakDays: number;
 }
 
+export interface TobaccoRules {
+  owner: string;
+  /** The only plan items a tobacco plan may contain: referral and support, never nicotine or drug advice. */
+  allowedItems: string[];
+}
+
+export type Behaviour = 'movement' | 'nutrition' | 'sleep' | 'tobacco';
+
 export interface SafetyRulesConfig {
   version: string;
   owner: string;
@@ -47,12 +55,15 @@ export interface SafetyRulesConfig {
   range: RangeRule[];
   screening: ScreeningRule[];
   escalation: EscalationRules;
+  tobacco: TobaccoRules;
+  /** Which rules protect each behaviour. Checked by a test so no behaviour is left uncovered. */
+  coverage: Record<Behaviour, string[]>;
 }
 
 const PENDING_OWNER = 'Clinical safety owner — to be appointed (placeholder)';
 
 export const SAFETY_RULES_CONFIG: SafetyRulesConfig = {
-  version: '2026.11.1',
+  version: '2026.11.2',
   owner: PENDING_OWNER,
   reviewStatus: 'pending_clinical_review',
   range: [
@@ -113,5 +124,15 @@ export const SAFETY_RULES_CONFIG: SafetyRulesConfig = {
     urgentRedFlags: ['chestPain', 'breathing', 'fainting', 'severePain', 'selfHarm'],
     glucoseMgDl: { low: 70, high: 300 },
     unwellStreakDays: 3
+  },
+  tobacco: {
+    owner: PENDING_OWNER,
+    allowedItems: ['refer', 'support', 'noadvice']
+  },
+  coverage: {
+    movement: ['R-EX-DAY-MAX', 'R-EX-WEEK-MAX', 'S-HEART', 'S-PREG'],
+    nutrition: ['R-CAL-MIN', 'R-CAL-MAX', 'R-FAST-MAX', 'S-ED', 'S-KIDNEY', 'S-INSULIN'],
+    sleep: ['R-SLEEP-RANGE', 'S-OTHER'],
+    tobacco: ['T-REFERRAL-ONLY', 'S-PREG']
   }
 };

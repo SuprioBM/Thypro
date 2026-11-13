@@ -29,7 +29,8 @@ const GOAL_TEXT: Record<GoalType, string> = {
   walk: 'Build a daily walking habit',
   sleep: 'Keep a regular sleep routine',
   eating: 'Eat a balanced plate with local foods',
-  medicine: 'Take prescribed medicine as a daily routine'
+  medicine: 'Take prescribed medicine as a daily routine',
+  tobacco: 'Get support from a licensed cessation service (referral only)'
 };
 
 const ref = (type: string, id: string) => ({ reference: `${type}/${id}` });
@@ -103,6 +104,57 @@ function observationForCheckin(c: CheckIn): Json[] {
       effectiveDateTime: c.date,
       valueQuantity: { value: c.glucose.value, unit: 'mg/dL', system: 'http://unitsofmeasure.org', code: 'mg/dL' },
       method: { text: 'Glucose meter, entered by the person' }
+    });
+  }
+
+  const vitalSigns = [
+    { system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs', display: 'Vital Signs' }
+  ];
+
+  // Optional self-recorded values. Exported as recorded; Thypro never interprets them.
+  if (c.bp) {
+    out.push({
+      resourceType: 'Observation',
+      id: `bp-${c.date}`,
+      status: 'final',
+      category: [{ coding: vitalSigns }],
+      code: { coding: [{ system: 'http://loinc.org', code: '85354-9', display: 'Blood pressure panel' }], text: 'Blood pressure (self-recorded)' },
+      subject,
+      effectiveDateTime: c.date,
+      component: [
+        {
+          code: { coding: [{ system: 'http://loinc.org', code: '8480-6', display: 'Systolic blood pressure' }] },
+          valueQuantity: { value: c.bp.systolic, unit: 'mm[Hg]', system: 'http://unitsofmeasure.org', code: 'mm[Hg]' }
+        },
+        {
+          code: { coding: [{ system: 'http://loinc.org', code: '8462-4', display: 'Diastolic blood pressure' }] },
+          valueQuantity: { value: c.bp.diastolic, unit: 'mm[Hg]', system: 'http://unitsofmeasure.org', code: 'mm[Hg]' }
+        }
+      ]
+    });
+  }
+  if (c.weightKg !== undefined) {
+    out.push({
+      resourceType: 'Observation',
+      id: `weight-${c.date}`,
+      status: 'final',
+      category: [{ coding: vitalSigns }],
+      code: { coding: [{ system: 'http://loinc.org', code: '29463-7', display: 'Body weight' }], text: 'Body weight (self-recorded)' },
+      subject,
+      effectiveDateTime: c.date,
+      valueQuantity: { value: c.weightKg, unit: 'kg', system: 'http://unitsofmeasure.org', code: 'kg' }
+    });
+  }
+  if (c.activityMinutes !== undefined) {
+    out.push({
+      resourceType: 'Observation',
+      id: `activity-${c.date}`,
+      status: 'final',
+      category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'activity', display: 'Activity' }] }],
+      code: { coding: [{ system: CS, code: 'activity-minutes', display: 'Activity minutes (self-recorded)' }], text: 'Activity minutes (self-recorded)' },
+      subject,
+      effectiveDateTime: c.date,
+      valueQuantity: { value: c.activityMinutes, unit: 'min', system: 'http://unitsofmeasure.org', code: 'min' }
     });
   }
   return out;

@@ -1,7 +1,9 @@
 import type { Dict } from './en';
 
 /** Bangla. Drafted by the engineering team: needs native-speaker review before public use. */
-export const bn: Dict = {
+import { bnP2 } from './p2.bn';
+
+const bnBase = {
   'app.name': 'থাইপ্রো',
 
   'common.back': 'পিছনে',
@@ -221,11 +223,6 @@ export const bn: Dict = {
   'review.unknown': 'নিশ্চিত নই',
   'review.missing': 'তথ্য নেই',
   'review.missingNote': 'চেক-ইন ছাড়া দিনগুলো “তথ্য নেই” হিসেবে দেখানো হয়, ব্যর্থতা হিসেবে নয়।',
-  'review.runTitle': 'চলমান ধারা',
-  'review.run': 'টানা {n} দিন',
-  'review.runZero': 'এখন কোনো চলমান ধারা নেই। নতুন করে শুরু করার সুযোগ সবসময় আছে।',
-  'review.runOne': 'টানা 1 দিন',
-  'review.best': 'গত 4 সপ্তাহে সেরা ধারা: {n}',
   'review.trendTitle': 'আগের সপ্তাহের সঙ্গে তুলনা',
   'review.trend.up': 'বেশি দিন সম্পন্ন',
   'review.trend.same': 'প্রায় একই',
@@ -344,3 +341,5 @@ export const bn: Dict = {
   'reason.planPrefix': 'পরিকল্পনা যাচাই',
   'reason.unknown': 'কারণ পাওয়া যায়নি'
 };
+
+export const bn: Dict = { ...bnBase, ...bnP2 };

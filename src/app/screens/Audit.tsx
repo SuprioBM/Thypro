@@ -5,14 +5,15 @@ import { reasonText, useI18n, type Key } from '../../i18n';
 import { useStore } from '../store';
 import { Card, Chip, EmptyState, ScreenHeader } from '../ui/kit';
 
-const KINDS: AuditKind[] = ['safety', 'plan', 'escalation'];
-const RESULTS: AuditResult[] = ['pass', 'blocked', 'generated', 'escalated', 'fallback'];
+const KINDS: AuditKind[] = ['safety', 'plan', 'escalation', 'adaptation'];
+const RESULTS: AuditResult[] = ['pass', 'blocked', 'generated', 'escalated', 'adapted', 'fallback'];
 
 const RESULT_TONE: Record<AuditResult, 'good' | 'bad' | 'info' | 'warn' | 'neutral'> = {
   pass: 'good',
   generated: 'info',
   blocked: 'bad',
   escalated: 'warn',
+  adapted: 'info',
   fallback: 'neutral'
 };
 

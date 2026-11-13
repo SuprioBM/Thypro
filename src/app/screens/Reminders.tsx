@@ -1,6 +1,7 @@
 import React from 'react';
-import { BellRing } from 'lucide-react';
-import { useI18n } from '../../i18n';
+import { BellRing, SlidersHorizontal } from 'lucide-react';
+import { useI18n, type Key } from '../../i18n';
+import { go } from '../router';
 import { useStore } from '../store';
 import { Card, Chip, EmptyState, ScreenHeader, Switch } from '../ui/kit';
 
@@ -38,6 +39,16 @@ export const Reminders: React.FC = () => {
           {t('rem.sendTest')}
         </button>
         <p className="text-xs text-forest-800/70">{t('rem.channelNote')}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Chip tone="info">{t(`channel.${state.prefs.preferredChannel}` as Key)}</Chip>
+          {state.prefs.quietHours.enabled && (
+            <Chip>{`${t('settings.quiet')}: ${state.prefs.quietHours.start}–${state.prefs.quietHours.end}`}</Chip>
+          )}
+          <button type="button" onClick={() => go('settings')} className="thy-btn-quiet min-h-[44px]">
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            {t('nav.settings')}
+          </button>
+        </div>
       </Card>
 
       <Card index={1} labelledBy="log-title">
@@ -50,8 +61,11 @@ export const Reminders: React.FC = () => {
               <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
                 <span className="text-forest-950">{fmtDateTime(e.at)}</span>
                 <span className="flex flex-wrap items-center gap-1.5">
-                  <Chip tone={e.status === 'delivered' ? 'good' : 'bad'}>{e.status === 'delivered' ? t('rem.delivered') : t('rem.failed')}</Chip>
-                  <Chip>{e.channel}</Chip>
+                  <Chip tone={e.status === 'delivered' ? 'good' : e.status === 'suppressed' ? 'neutral' : 'bad'}>
+                    {e.status === 'delivered' ? t('rem.delivered') : e.status === 'suppressed' ? t('rem.suppressed') : t('rem.failed')}
+                  </Chip>
+                  {e.status === 'suppressed' && e.reason && <Chip>{t(`rem.reason.${e.reason}` as Key)}</Chip>}
+                  {e.channel !== 'none' && <Chip>{t(`channel.${e.channel}` as Key)}</Chip>}
                   {e.simulated && <Chip tone="warn">{t('rem.simulated')}</Chip>}
                 </span>
               </li>

@@ -2,25 +2,39 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { createDemoState } from '../data/demoSeed';
 import type {
   AppState,
+  Barrier,
+  ChannelId,
   CheckIn,
   CheckinStatus,
+  ContextProfile,
+  Demographics,
   FamilyField,
   Feel,
   GoalSetup,
   Lang,
   Plan,
   ReadingSource,
-  SessionMode
+  SessionMode,
+  UserPrefs
 } from '../domain/types';
 import { toDateKey } from '../domain/week';
 import { I18nProvider, translate } from '../i18n';
 import { evaluateSafety } from '../safety/engine';
 import { translateNote } from './languageLayer';
 import { createGuestPersistence, createLocalPersistence, type Persistence } from './persistence';
-import { InAppChannel, deliver, dueReminders } from './reminders';
-import { emptyState, isBlocked, reducer } from './reducer';
+import {
+  InAppChannel,
+  SimulatedMessageChannel,
+  SimulatedVoiceChannel,
+  deliver,
+  dueReminders,
+  planDelivery,
+  type ReminderChannel
+} from './reminders';
+import { NO_CONSENT, emptyState, isBlocked, reducer } from './reducer';
 import { endSession } from './session';
 import { leaveApp } from './router';
+import { speak } from './speech';
 
 export interface CheckinInput {
   status: CheckinStatus;
@@ -29,11 +43,15 @@ export interface CheckinInput {
   glucose?: { value: number; source: ReadingSource };
   note?: string;
   input: 'text' | 'voice';
+  activityMinutes?: number;
+  bp?: { systolic: number; diastolic: number };
+  weightKg?: number;
 }
 
 export interface Notice {
   id: string;
   text: string;
+  kind: ChannelId | 'info';
 }
 
 interface Store {
@@ -49,10 +67,23 @@ interface Store {
   completeSetup: (setup: GoalSetup) => 'ok' | 'blocked';
   saveCheckin: (input: CheckinInput) => Promise<CheckIn>;
   restartPlan: () => void;
+  recordBarrier: (barrier: Barrier) => void;
+  applyAdaptation: (index: number) => void;
+  dismissProposal: () => void;
+  respondStepUp: (accept: boolean) => void;
+  setPrefs: (patch: Partial<UserPrefs>) => void;
+  setContext: (context: ContextProfile) => void;
+  setDemographics: (d: Demographics) => void;
   setConsent: (field: FamilyField, value: boolean) => void;
+  setPersonConsent: (personId: string, field: FamilyField, value: boolean) => void;
+  addPerson: (name: string, relation: string) => void;
+  removePerson: (personId: string) => void;
   setReminderEnabled: (id: string, enabled: boolean) => void;
   setReminderTime: (id: string, time: string) => void;
   sendTestReminder: () => void;
+  /** Reads text aloud; returns false when the browser cannot. */
+  speakText: (text: string) => boolean;
+  deleteData: () => void;
   exitSession: () => void;
 }
 
@@ -85,6 +116,7 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
   const [langAssist, setLangAssist] = useState<'off' | 'failed'>('off');
 
   const lang = state.profile.lang;
+  const today = toDateKey(now);
   const stateRef = useRef(state);
   stateRef.current = state;
 
@@ -97,37 +129,75 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
     return () => clearInterval(t);
   }, []);
 
-  const notify = useCallback((text: string) => {
+  // A new day: let the ladder notice two missed days, even if the app was closed.
+  useEffect(() => {
+    dispatch({ type: 'tick', today, nowIso: new Date().toISOString(), seed: uid() });
+  }, [today]);
+
+  // Large-text mode scales every rem-based size while the app is open.
+  useEffect(() => {
+    document.documentElement.style.fontSize = state.prefs.largeText ? '118.75%' : '';
+    return () => {
+      document.documentElement.style.fontSize = '';
+    };
+  }, [state.prefs.largeText]);
+
+  const notify = useCallback((kind: Notice['kind']) => (text: string) => {
     const id = uid();
-    setNotices((n) => [...n, { id, text }]);
+    setNotices((n) => [...n, { id, text, kind }]);
     window.setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 9000);
   }, []);
 
-  const goalLabel = useCallback(
-    (s: AppState) => (s.setup ? translate(s.profile.lang, `goal.${s.setup.goalType}`) : translate(s.profile.lang, 'rem.noGoal')),
-    []
+  const speakText = useCallback((text: string) => speak(text, stateRef.current.profile.lang), []);
+
+  const channels = useMemo<Record<ChannelId, ReminderChannel>>(
+    () => ({
+      'in-app': new InAppChannel(notify('in-app')),
+      message: new SimulatedMessageChannel(notify('message')),
+      voice: new SimulatedVoiceChannel(notify('voice'), (text) => speak(text, stateRef.current.profile.lang))
+    }),
+    [notify]
   );
 
-  const channel = useMemo(() => new InAppChannel(notify), [notify]);
+  const reminderText = useCallback((s: AppState) => {
+    const goal = s.setup ? translate(s.profile.lang, `goal.${s.setup.goalType}`) : translate(s.profile.lang, 'rem.noGoal');
+    return translate(s.profile.lang, s.prefs.tone === 'encouraging' ? 'rem.messageWarm' : 'rem.message', { goal });
+  }, []);
 
-  // Scheduler: while the app is open, deliver reminders that are due (simulated, in-app).
-  useEffect(() => {
-    const due = dueReminders(state.reminders, now, state.deliveryLog);
-    due.forEach(async (r) => {
+  const send = useCallback(
+    async (force: boolean) => {
       const s = stateRef.current;
-      const text = translate(s.profile.lang, 'rem.message', { goal: goalLabel(s) });
-      const entry = await deliver(channel, r, text, new Date(), `d-${uid()}`);
+      const r = s.reminders[0];
+      if (!r) return;
+      const at = new Date();
+      const plan = planDelivery(r, s.prefs, at, force);
+      if (!plan.send) {
+        dispatch({
+          type: 'logDelivery',
+          entry: { id: `d-${uid()}`, at: at.toISOString(), reminderId: r.id, channel: 'none', status: 'suppressed', simulated: true, reason: plan.reason }
+        });
+        return;
+      }
+      const entry = await deliver(channels[plan.channel], r, reminderText(s), at, `d-${uid()}`);
       dispatch({ type: 'logDelivery', entry });
-    });
+    },
+    [channels, reminderText]
+  );
+
+  // Scheduler: while the app is open, deliver reminders that are due (simulated).
+  useEffect(() => {
+    if (dueReminders(state.reminders, now, state.deliveryLog).length > 0) void send(false);
     // Only re-evaluate when the clock ticks.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [now]);
+
+  const stamp = () => ({ nowIso: new Date().toISOString(), seed: uid() });
 
   const value = useMemo<Store>(
     () => ({
       state,
       lang,
-      today: toDateKey(now),
+      today,
       blocked: isBlocked(state),
       activePlan: state.plans[state.plans.length - 1],
       langAssist,
@@ -135,7 +205,7 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
       dismissNotice: (id) => setNotices((n) => n.filter((x) => x.id !== id)),
 
       completeSetup: (setup) => {
-        dispatch({ type: 'completeSetup', setup, nowIso: new Date().toISOString(), seed: uid() });
+        dispatch({ type: 'completeSetup', setup, ...stamp() });
         return evaluateSafety({ ownTargets: setup.ownTargets, screening: setup.screening }).result === 'blocked'
           ? 'blocked'
           : 'ok';
@@ -151,7 +221,10 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
           redFlags: input.redFlags,
           glucose: input.glucose ? { value: input.glucose.value, unit: 'mg/dL', source: input.glucose.source } : undefined,
           input: input.input,
-          createdAt: nowDate.toISOString()
+          createdAt: nowDate.toISOString(),
+          activityMinutes: input.activityMinutes,
+          bp: input.bp,
+          weightKg: input.weightKg
         };
         const seed = uid();
         const text = input.note?.trim();
@@ -173,18 +246,34 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
         return checkin;
       },
 
-      restartPlan: () => dispatch({ type: 'restartPlan', nowIso: new Date().toISOString(), seed: uid() }),
+      restartPlan: () => dispatch({ type: 'restartPlan', ...stamp() }),
+      recordBarrier: (barrier) => dispatch({ type: 'recordBarrier', barrier, today, ...stamp() }),
+      applyAdaptation: (index) => dispatch({ type: 'applyAdaptation', index, ...stamp() }),
+      dismissProposal: () => dispatch({ type: 'dismissProposal' }),
+      respondStepUp: (accept) => dispatch({ type: 'respondStepUp', accept, today, ...stamp() }),
+      setPrefs: (patch) => dispatch({ type: 'setPrefs', patch }),
+      setContext: (context) => dispatch({ type: 'setContext', context, ...stamp() }),
+      setDemographics: (demographics) => dispatch({ type: 'setDemographics', demographics }),
       setConsent: (field, v) => dispatch({ type: 'setConsent', field, value: v }),
+      setPersonConsent: (personId, field, v) => dispatch({ type: 'setPersonConsent', personId, field, value: v }),
+      addPerson: (name, relation) =>
+        dispatch({ type: 'addPerson', person: { id: `p-${uid()}`, name, relation, consent: { ...NO_CONSENT } } }),
+      removePerson: (personId) => dispatch({ type: 'removePerson', personId }),
       setReminderEnabled: (id, enabled) => dispatch({ type: 'setReminderEnabled', id, enabled }),
       setReminderTime: (id, time) => dispatch({ type: 'setReminderTime', id, time }),
+      sendTestReminder: () => void send(true),
+      speakText,
 
-      sendTestReminder: () => {
-        const r = stateRef.current.reminders[0];
-        if (!r) return;
-        const s = stateRef.current;
-        void deliver(channel, r, translate(s.profile.lang, 'rem.message', { goal: goalLabel(s) }), new Date(), `d-${uid()}`).then(
-          (entry) => dispatch({ type: 'logDelivery', entry })
-        );
+      deleteData: () => {
+        persistence.clear();
+        const fresh =
+          mode === 'guest'
+            ? (() => {
+                const demo = createDemoState(today);
+                return { ...demo, profile: { ...demo.profile, lang } };
+              })()
+            : emptyState('local', lang);
+        dispatch({ type: 'replace', state: fresh });
       },
 
       exitSession: () => {
@@ -193,7 +282,9 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
         leaveApp();
       }
     }),
-    [state, lang, now, langAssist, notices, channel, goalLabel, mode, persistence]
+    // stamp() reads the clock at call time and needs no dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state, lang, today, langAssist, notices, send, speakText, mode, persistence]
   );
 
   return (

@@ -1,7 +1,9 @@
 import type { Dict } from './en';
 
 /** Urdu (right-to-left). Drafted by the engineering team: needs native-speaker review before public use. */
-export const ur: Dict = {
+import { urP2 } from './p2.ur';
+
+const urBase = {
   'app.name': 'تھائی پرو',
 
   'common.back': 'واپس',
@@ -221,11 +223,6 @@ export const ur: Dict = {
   'review.unknown': 'یقین نہیں',
   'review.missing': 'کوئی ڈیٹا نہیں',
   'review.missingNote': 'بغیر چیک اِن والے دن “کوئی ڈیٹا نہیں” کے طور پر دکھائے جاتے ہیں، کوتاہی کے طور پر نہیں۔',
-  'review.runTitle': 'موجودہ سلسلہ',
-  'review.run': 'مسلسل {n} دن',
-  'review.runZero': 'ابھی کوئی سلسلہ نہیں ہے۔ نیا آغاز ہمیشہ تیار ہے۔',
-  'review.runOne': 'مسلسل 1 دن',
-  'review.best': 'پچھلے 4 ہفتوں کا بہترین سلسلہ: {n}',
   'review.trendTitle': 'پچھلے ہفتے سے موازنہ',
   'review.trend.up': 'زیادہ دن مکمل ہوئے',
   'review.trend.same': 'تقریباً اتنے ہی',
@@ -344,3 +341,5 @@ export const ur: Dict = {
   'reason.planPrefix': 'منصوبے کی جانچ',
   'reason.unknown': 'وجہ دستیاب نہیں'
 };
+
+export const ur: Dict = { ...urBase, ...urP2 };

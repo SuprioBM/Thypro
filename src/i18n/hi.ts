@@ -1,7 +1,9 @@
 import type { Dict } from './en';
 
 /** Hindi. Drafted by the engineering team: needs native-speaker review before public use. */
-export const hi: Dict = {
+import { hiP2 } from './p2.hi';
+
+const hiBase = {
   'app.name': 'थाइप्रो',
 
   'common.back': 'पीछे',
@@ -221,11 +223,6 @@ export const hi: Dict = {
   'review.unknown': 'पक्का नहीं',
   'review.missing': 'कोई डेटा नहीं',
   'review.missingNote': 'बिना चेक-इन वाले दिन “कोई डेटा नहीं” के रूप में दिखते हैं, चूक के रूप में नहीं।',
-  'review.runTitle': 'मौजूदा सिलसिला',
-  'review.run': 'लगातार {n} दिन',
-  'review.runZero': 'अभी कोई सिलसिला नहीं है। नई शुरुआत हमेशा तैयार है।',
-  'review.runOne': 'लगातार 1 दिन',
-  'review.best': 'पिछले 4 हफ़्तों का सबसे अच्छा सिलसिला: {n}',
   'review.trendTitle': 'पिछले सप्ताह से तुलना',
   'review.trend.up': 'ज़्यादा दिन पूरे हुए',
   'review.trend.same': 'लगभग उतने ही',
@@ -344,3 +341,5 @@ export const hi: Dict = {
   'reason.planPrefix': 'योजना जाँच',
   'reason.unknown': 'कारण उपलब्ध नहीं'
 };
+
+export const hi: Dict = { ...hiBase, ...hiP2 };

@@ -92,13 +92,19 @@ export function evaluateSafety(
  * shown, so a template or generator bug can never put an extreme target on screen.
  */
 export function evaluatePlan(
-  plan: Pick<Plan, 'targets'>,
+  plan: Pick<Plan, 'targets'> & Partial<Pick<Plan, 'goalType' | 'items'>>,
   config: SafetyRulesConfig = SAFETY_RULES_CONFIG
 ): SafetyDecision {
   const breaches: Breach[] = [];
   for (const rule of config.range) {
     const breach = checkRange(rule, plan.targets[rule.target as keyof Plan['targets']]);
     if (breach) breaches.push({ ...breach, reasonCode: `plan_${breach.reasonCode}` });
+  }
+  // Tobacco is referral-only: no targets and only the approved referral/support items.
+  if (plan.goalType === 'tobacco') {
+    const outside = (plan.items ?? []).some((i) => !config.tobacco.allowedItems.includes(i.templateItemId));
+    const hasTargets = Object.values(plan.targets).some((v) => v !== undefined);
+    if (outside || hasTargets) breaches.push({ ruleId: 'T-REFERRAL-ONLY', reasonCode: 'tobacco_referral_only' });
   }
   const blocked = breaches.length > 0;
   return {
@@ -113,7 +119,7 @@ export function evaluatePlan(
 /** Run both stages; the plan is only displayable when both pass. */
 export function isPlanDisplayable(
   input: SafetyInput,
-  plan: Pick<Plan, 'targets'>,
+  plan: Pick<Plan, 'targets'> & Partial<Pick<Plan, 'goalType' | 'items'>>,
   config: SafetyRulesConfig = SAFETY_RULES_CONFIG
 ): boolean {
   return evaluateSafety(input, config).result === 'pass' && evaluatePlan(plan, config).result === 'pass';

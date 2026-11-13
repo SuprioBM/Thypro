@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronDown, Mic, Square } from 'lucide-react';
+import { BatteryLow, Check, ChevronDown, HelpCircle, Meh, Mic, Minus, Smile, Square, Thermometer } from 'lucide-react';
 import type { CheckIn, CheckinStatus, Feel } from '../../domain/types';
 import { useI18n, type Key } from '../../i18n';
 import { useStore } from '../store';
@@ -10,6 +10,13 @@ const STATUSES: CheckinStatus[] = ['done', 'skipped', 'unknown'];
 const FEELS: Feel[] = ['good', 'okay', 'tired', 'unwell'];
 const FLAGS = ['chestPain', 'breathing', 'fainting', 'severePain', 'selfHarm'] as const;
 
+/** Picture mode: a large, familiar symbol above each choice for easier reading. */
+const STATUS_ICON = { done: Check, skipped: Minus, unknown: HelpCircle } as const;
+const FEEL_ICON = { good: Smile, okay: Meh, tired: BatteryLow, unwell: Thermometer } as const;
+
+const num = (v: string): number | undefined => (v.trim() === '' ? undefined : Number(v));
+const inRange = (v: number | undefined, lo: number, hi: number) => v === undefined || (Number.isFinite(v) && v >= lo && v <= hi);
+
 const choiceClass = (on: boolean) =>
   `min-h-[48px] flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-editorial focus-visible:outline-offset-2 ${
     on
@@ -19,7 +26,8 @@ const choiceClass = (on: boolean) =>
 
 export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> = ({ existing, onSaved }) => {
   const { t, lang } = useI18n();
-  const { saveCheckin } = useStore();
+  const { saveCheckin, state } = useStore();
+  const picture = state.prefs.pictureMode;
   const speech = useSpeech(lang);
 
   const [status, setStatus] = useState<CheckinStatus | undefined>(existing?.status);
@@ -30,12 +38,23 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
   const [glucose, setGlucose] = useState(existing?.glucose ? String(existing.glucose.value) : '');
   const [note, setNote] = useState(existing?.note?.original ?? '');
   const [viaVoice, setViaVoice] = useState(existing?.input === 'voice');
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [minutes, setMinutes] = useState(existing?.activityMinutes !== undefined ? String(existing.activityMinutes) : '');
+  const [sys, setSys] = useState(existing?.bp ? String(existing.bp.systolic) : '');
+  const [dia, setDia] = useState(existing?.bp ? String(existing.bp.diastolic) : '');
+  const [weight, setWeight] = useState(existing?.weightKg !== undefined ? String(existing.weightKg) : '');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const glucoseValue = glucose.trim() === '' ? undefined : Number(glucose);
   const glucoseInvalid = glucoseOpen && glucoseValue !== undefined && (!Number.isFinite(glucoseValue) || glucoseValue < 20 || glucoseValue > 600);
-  const canSave = status !== undefined && !glucoseInvalid && !saving;
+  const moreInvalid =
+    !inRange(num(minutes), 0, 600) ||
+    !inRange(num(sys), 60, 260) ||
+    !inRange(num(dia), 30, 160) ||
+    !inRange(num(weight), 20, 300) ||
+    (num(sys) === undefined) !== (num(dia) === undefined);
+  const canSave = status !== undefined && !glucoseInvalid && !moreInvalid && !saving;
 
   useEffect(() => {
     if (!saved) return;
@@ -54,7 +73,10 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
         redFlags: flags,
         glucose: glucoseOpen && glucoseValue !== undefined ? { value: glucoseValue, source: 'meter' } : undefined,
         note,
-        input: viaVoice ? 'voice' : 'text'
+        input: viaVoice ? 'voice' : 'text',
+        activityMinutes: num(minutes),
+        bp: num(sys) !== undefined && num(dia) !== undefined ? { systolic: num(sys)!, diastolic: num(dia)! } : undefined,
+        weightKg: num(weight)
       });
       setSaved(true);
     } finally {
@@ -86,8 +108,9 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
               role="radio"
               aria-checked={status === s}
               onClick={() => setStatus(s)}
-              className={choiceClass(status === s)}
+              className={`${choiceClass(status === s)} ${picture ? 'flex flex-col items-center gap-1 py-3' : ''}`}
             >
+              {picture && React.createElement(STATUS_ICON[s], { className: 'h-7 w-7', 'aria-hidden': true })}
               {t(`checkin.status.${s}` as Key)}
             </button>
           ))}
@@ -104,8 +127,9 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
               role="radio"
               aria-checked={feel === f}
               onClick={() => setFeel(feel === f ? 'unknown' : f)}
-              className={choiceClass(feel === f)}
+              className={`${choiceClass(feel === f)} ${picture ? 'flex flex-col items-center gap-1 py-3' : ''}`}
             >
+              {picture && React.createElement(FEEL_ICON[f], { className: 'h-7 w-7', 'aria-hidden': true })}
               {t(`checkin.feel.${f}` as Key)}
             </button>
           ))}
@@ -176,6 +200,50 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
             <p id="glucose-hint" className={`text-xs ${glucoseInvalid ? 'font-medium text-signal-crimson' : 'text-forest-800/65'}`}>
               {glucoseInvalid ? t('checkin.glucoseInvalid') : t('checkin.glucoseHint')}
             </p>
+          </div>
+        </Expandable>
+      </div>
+
+      <div>
+        <button
+          type="button"
+          aria-expanded={moreOpen}
+          aria-controls="more-panel"
+          onClick={() => setMoreOpen((o) => !o)}
+          className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-1 text-start text-sm font-semibold text-forest-950"
+        >
+          <span>
+            {t('checkin.more')} <span className="font-normal text-forest-800/60">({t('common.optional')})</span>
+          </span>
+          <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${moreOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+        </button>
+        <Expandable open={moreOpen} id="more-panel">
+          <div className="space-y-3 px-1 pb-1 pt-1">
+            <p className="text-xs text-forest-800/65">{t('checkin.moreHint')}</p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                { id: 'ci-min', label: t('checkin.minutes'), value: minutes, set: setMinutes },
+                { id: 'ci-sys', label: `${t('checkin.bp')} · ${t('checkin.sys')}`, value: sys, set: setSys },
+                { id: 'ci-dia', label: `${t('checkin.bp')} · ${t('checkin.dia')}`, value: dia, set: setDia },
+                { id: 'ci-kg', label: t('checkin.weight'), value: weight, set: setWeight }
+              ].map((f) => (
+                <div key={f.id}>
+                  <label htmlFor={f.id} className="mb-1 block text-xs font-medium text-forest-900">
+                    {f.label}
+                  </label>
+                  <input
+                    id={f.id}
+                    type="text"
+                    inputMode="decimal"
+                    tabIndex={moreOpen ? 0 : -1}
+                    value={f.value}
+                    onChange={(e) => f.set(e.target.value.replace(/[^\d.]/g, ''))}
+                    className="min-h-[44px] w-full rounded-xl border border-forest-900/20 bg-white px-3 text-base text-forest-950"
+                  />
+                </div>
+              ))}
+            </div>
+            {moreInvalid && <p className="text-xs font-medium text-signal-crimson" role="alert">{t('checkin.invalid')}</p>}
           </div>
         </Expandable>
       </div>

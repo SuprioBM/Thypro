@@ -42,7 +42,17 @@ export function reasonText(t: TFn, code: string, params?: Params): string {
     return flagKey in en ? `${t('reason.redflagPrefix')}: ${t(flagKey as Key)}` : t('reason.unknown');
   }
   const direct = `reason.${code}`;
-  if (direct in en) return t(direct as Key, params);
+  if (direct in en) {
+    // Adaptation reasons carry raw barrier and channel ids: show them in words.
+    const p = params ? { ...params } : undefined;
+    if (p && typeof p.barrier === 'string' && `barrier.${p.barrier}` in en) p.barrier = t(`barrier.${p.barrier}` as Key);
+    if (p && code === 'adapt_switch_channel') {
+      for (const k of ['from', 'to'] as const) {
+        if (typeof p[k] === 'string' && `channel.${p[k]}` in en) p[k] = t(`channel.${p[k]}` as Key);
+      }
+    }
+    return t(direct as Key, p);
+  }
   if (code.startsWith('plan_')) return `${t('reason.planPrefix')}: ${reasonText(t, code.slice('plan_'.length), params)}`;
   return t('reason.unknown');
 }

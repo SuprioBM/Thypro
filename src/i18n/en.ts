@@ -1,5 +1,7 @@
 /** English is the source of truth: every other language must define exactly these keys (checked by the compiler). */
-export const en = {
+import { enP2 } from './p2.en';
+
+const enBase = {
   'app.name': 'Thypro',
 
   'common.back': 'Back',
@@ -219,11 +221,6 @@ export const en = {
   'review.unknown': 'Not sure',
   'review.missing': 'No data',
   'review.missingNote': 'Days without a check-in are shown as no data, not as misses.',
-  'review.runTitle': 'Current run',
-  'review.run': '{n} days in a row',
-  'review.runZero': 'No current run. A fresh start is always ready.',
-  'review.runOne': '1 day in a row',
-  'review.best': 'Best run in the last 4 weeks: {n}',
   'review.trendTitle': 'Compared with the week before',
   'review.trend.up': 'More days done',
   'review.trend.same': 'About the same',
@@ -342,6 +339,8 @@ export const en = {
   'reason.planPrefix': 'Plan check',
   'reason.unknown': 'Reason not available'
 } as const;
+
+export const en = { ...enBase, ...enP2 } as const;
 
 export type Key = keyof typeof en;
 export type Dict = Record<Key, string>;
