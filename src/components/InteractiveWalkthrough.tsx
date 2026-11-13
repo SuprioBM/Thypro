@@ -13,13 +13,17 @@ import {
   Check,
   Link as LinkIcon
 } from 'lucide-react';
+import { RotateProgress, useAutoRotate } from './ui/autoRotate';
 
 interface InteractiveWalkthroughProps {
   lang: 'en' | 'bn';
 }
 
 export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ lang }) => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const rot = useAutoRotate(5, 0, 2000);
+  const currentStep = rot.index + 1;
+  /** In-panel Next / Back buttons count as the visitor taking over. */
+  const setCurrentStep = (n: number) => rot.select(n - 1);
   const [selectedField, setSelectedField] = useState<string>('glucose');
   const [previewPerspective, setPreviewPerspective] = useState<'tariq' | 'samira' | 'doctor'>('samira');
 
@@ -60,7 +64,9 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
         </div>
 
         {/* Step Navigation Bar */}
-        <div className="flex items-center justify-between overflow-x-auto pb-4 mb-8 border-b border-forest-900/10 gap-2 sm:gap-4 no-scrollbar">
+        <div {...rot.bind}>
+        <div className="mb-8 flex items-center justify-between gap-3">
+        <div className="thy-seg" role="tablist" aria-label={lang === 'en' ? 'Demo steps' : 'ডেমোর ধাপ'}>
           {steps.map((s) => {
             const Icon = s.icon;
             const isActive = currentStep === s.id;
@@ -69,31 +75,47 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
             return (
               <button
                 key={s.id}
+                type="button"
+                role="tab"
+                id={`walk-tab-${s.id}`}
+                aria-selected={isActive}
+                aria-controls="walk-panel"
                 onClick={() => setCurrentStep(s.id)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                  isActive
-                    ? 'bg-forest-900 text-ivory-50 shadow-soft-sm'
-                    : isCompleted
-                    ? 'bg-sage-100 text-forest-900'
-                    : 'bg-ivory-200/60 text-forest-800/70 hover:bg-ivory-300'
-                }`}
+                className="thy-seg-btn whitespace-nowrap"
               >
-                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                 <span>{s.title}</span>
-                {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-sage-700 ml-1" />}
+                {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-ochre-600" aria-hidden="true" />}
+                <RotateProgress
+                  active={isActive}
+                  autoplay={rot.autoplay}
+                  running={rot.running}
+                  intervalMs={rot.intervalMs}
+                  onDone={rot.next}
+                  cycleKey={rot.index}
+                  tone="dark"
+                />
               </button>
             );
           })}
         </div>
+        </div>
 
         {/* Interactive Workspace Container */}
-        <div className="bg-white rounded-xl border border-forest-900/15 shadow-editorial p-6 sm:p-10 min-h-[520px]">
+        <div
+          key={currentStep}
+          id="walk-panel"
+          role="tabpanel"
+          aria-labelledby={`walk-tab-${currentStep}`}
+          aria-live={rot.autoplay ? 'off' : 'polite'}
+          className="thy-luxe p-6 sm:p-10 min-h-[520px]"
+        >
           {/* STEP 1: UPLOAD */}
           {currentStep === 1 && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center thy-swap">
               <div className="lg:col-span-5 flex flex-col gap-4">
                 <span className="text-xs font-mono uppercase text-ochre-600 font-semibold">
-                  Step 01 / Document Ingestion
+                  Step 1 · Add a document
                 </span>
                 <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal">
                   A photo or scan is added in Dhaka
@@ -113,7 +135,7 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-forest-950">Origin Integrity:</span>
-                    <span className="text-sage-700 font-medium">TRU07 Fingerprint Logged</span>
+                    <span className="text-sage-700 font-medium">Original file kept</span>
                   </div>
                 </div>
 
@@ -161,13 +183,13 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
 
           {/* STEP 2: EXTRACTION WITH HIGHLIGHTED SOURCE PROVENANCE */}
           {currentStep === 2 && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start thy-swap">
               <div className="lg:col-span-5 flex flex-col gap-4">
                 <span className="text-xs font-mono uppercase text-ochre-600 font-semibold">
-                  Step 02 / Governed Extraction
+                  Step 2 · Read the values
                 </span>
                 <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal">
-                  Source-linked data with zero guesswork
+                  Every number points back to the page
                 </h3>
                 <p className="text-xs sm:text-sm text-forest-900/80 leading-relaxed font-normal">
                   Thypro's OCR and administrative assistant parses the values, but <strong className="text-forest-950">never invents numbers</strong>. Click any extracted item on the right to inspect its exact citation on the physical lab slip.
@@ -307,7 +329,7 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
 
                   <div className="pt-4 border-t text-[10px] text-forest-800/50 flex justify-between items-center">
                     <span>Verified by: Senior Biochemist, Popular Dhaka</span>
-                    <span className="font-mono">PROVENANCE: TRU07-HASH-CONFIRMED</span>
+                    <span className="font-mono">Source: original lab slip, page 1</span>
                   </div>
                 </div>
               </div>
@@ -316,10 +338,10 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
 
           {/* STEP 3: PERMISSION SCOPING */}
           {currentStep === 3 && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start thy-swap">
               <div className="lg:col-span-5 flex flex-col gap-4">
                 <span className="text-xs font-mono uppercase text-ochre-600 font-semibold">
-                  Step 03 / Permission Scoping
+                  Step 3 · Choose who sees it
                 </span>
                 <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal">
                   The patient decides who sees what
@@ -331,7 +353,7 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
                 <div className="p-4 rounded-lg bg-ivory-100 border border-forest-900/10 text-xs text-forest-900/80 space-y-1">
                   <div className="font-semibold text-forest-950 mb-1 flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5 text-sage-600" />
-                    <span>FAM01 Granular Boundary:</span>
+                    <span>Where the line is:</span>
                   </div>
                   <div>• Samira (London): Care Coordinator (Full adherence & appointment access)</div>
                   <div>• Farhan (Dubai): Payer Only (Can pay bills; doctor's notes hidden)</div>
@@ -420,10 +442,10 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
 
           {/* STEP 4: FOLLOW-UP & CARE COORDINATION */}
           {currentStep === 4 && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start thy-swap">
               <div className="lg:col-span-5 flex flex-col gap-4">
                 <span className="text-xs font-mono uppercase text-ochre-600 font-semibold">
-                  Step 04 / Care Task Coordination
+                  Step 4 · Turn it into a task
                 </span>
                 <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal">
                   Turn records into concrete follow-up tasks
@@ -433,7 +455,7 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
                 </p>
 
                 <div className="p-4 rounded-lg bg-ivory-100 border border-forest-900/10 space-y-2 text-xs text-forest-800/80">
-                  <div className="font-medium text-forest-950">Dhaka In-Person Support (FAM04 / FAM05):</div>
+                  <div className="font-medium text-forest-950">Help in person, in Dhaka:</div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-3.5 h-3.5 text-sage-600" />
                     <span>Clinic companion booked to assist Tariq with hospital paperwork</span>
@@ -511,14 +533,14 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
 
           {/* STEP 5: SYNCHRONIZED VIEWS */}
           {currentStep === 5 && (
-            <div className="flex flex-col gap-6 animate-fade-in-up">
+            <div className="flex flex-col gap-6 thy-swap">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-forest-900/10">
                 <div>
                   <span className="text-xs font-mono uppercase text-ochre-600 font-semibold block mb-1">
-                    Step 05 / Real-time Perspective Preview
+                    Step 5 · Same record, three views
                   </span>
                   <h3 className="font-editorial text-2xl sm:text-3xl text-forest-950 font-normal">
-                    One single truth, tailored for each role
+                    One record, shown differently to each person
                   </h3>
                 </div>
 
@@ -629,7 +651,7 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
                       </div>
                       <div className="flex justify-between">
                         <span>Allergies: Penicillin (Severe)</span>
-                        <span className="text-red-700 font-bold">Documented REC03</span>
+                        <span className="text-red-700 font-bold">On record</span>
                       </div>
                     </div>
                   </div>
@@ -645,11 +667,12 @@ export const InteractiveWalkthrough: React.FC<InteractiveWalkthroughProps> = ({ 
                   Restart demonstration from Step 1
                 </button>
                 <div className="text-xs text-forest-800/60 italic">
-                  Live conceptual representation using Thypro's production component system
+                  Illustration with invented data
                 </div>
               </div>
             </div>
           )}
+        </div>
         </div>
       </div>
     </section>
