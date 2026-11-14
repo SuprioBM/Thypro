@@ -34,6 +34,10 @@ import {
 } from '../domain/types';
 import { DEFAULT_LEVEL, clampLevel, generatePlan } from '../plan/generate';
 import { evaluateCheckin, evaluateSafety } from '../safety/engine';
+import { PROGRESSION_VERSION } from '../strength/progression';
+import { STRENGTH_SAFETY, firstBreach } from '../strength/safety';
+import { strengthReducer, type StrengthAction } from '../strength/reducer';
+import { EMPTY_STRENGTH } from '../strength/types';
 
 export type Action =
   | { type: 'setLang'; lang: Lang }
@@ -56,6 +60,7 @@ export type Action =
   | { type: 'setReminderTime'; id: string; time: string }
   | { type: 'logDelivery'; entry: DeliveryLogEntry }
   | { type: 'logFallback'; nowIso: string; seed: string; reasonCode: string }
+  | { type: 'strength'; action: StrengthAction; seed: string; nowIso: string }
   | { type: 'replace'; state: AppState };
 
 export const DEFAULT_CONSENT: ConsentMap = {
@@ -64,7 +69,8 @@ export const DEFAULT_CONSENT: ConsentMap = {
   feelings: false,
   plan: false,
   reminders: false,
-  notes: false
+  notes: false,
+  strength: false
 };
 
 export const NO_CONSENT: ConsentMap = {
@@ -73,7 +79,8 @@ export const NO_CONSENT: ConsentMap = {
   feelings: false,
   plan: false,
   reminders: false,
-  notes: false
+  notes: false,
+  strength: false
 };
 
 export function emptyState(mode: SessionMode, lang: Lang): AppState {
@@ -100,7 +107,8 @@ export function emptyState(mode: SessionMode, lang: Lang): AppState {
     proposal: null,
     prefs: { ...DEFAULT_PREFS, channels: { ...DEFAULT_PREFS.channels }, quietHours: { ...DEFAULT_PREFS.quietHours } },
     people: [],
-    signals: []
+    signals: [],
+    strength: { ...EMPTY_STRENGTH, sessions: [], bodyWeights: [] }
   };
 }
 
@@ -429,6 +437,47 @@ export function reducer(state: AppState, action: Action): AppState {
         ]
       };
 
+    case 'strength': {
+      const a = action.action;
+      const next = strengthReducer(state.strength, a);
+      if (next === state.strength) return state;
+      const audit: AuditEntry[] = [];
+      if (a.type === 'screen' && next.screening) {
+        const breach = firstBreach(a.answers);
+        audit.push({
+          id: `${action.seed}-ss`,
+          at: action.nowIso,
+          kind: 'safety',
+          ruleVersion: STRENGTH_SAFETY.version,
+          result: next.screening.result === 'blocked' ? 'blocked' : 'pass',
+          reasonCode: `strength_screen_${next.screening.result}`,
+          reasonParams: breach ? { question: breach } : undefined
+        });
+      }
+      if (a.type === 'startPlan' && next.plan) {
+        audit.push({
+          id: `${action.seed}-sp`,
+          at: action.nowIso,
+          kind: 'plan',
+          ruleVersion: PROGRESSION_VERSION,
+          result: 'generated',
+          reasonCode: 'strength_plan_started',
+          templateId: `strength-${a.starterId}`
+        });
+      }
+      if (a.type === 'finishWorkout' && a.stopped) {
+        audit.push({
+          id: `${action.seed}-su`,
+          at: action.nowIso,
+          kind: 'escalation',
+          ruleVersion: STRENGTH_SAFETY.version,
+          result: 'escalated',
+          reasonCode: 'strength_stopped_unwell'
+        });
+      }
+      return { ...state, strength: next, audit: audit.length ? [...state.audit, ...audit] : state.audit };
+    }
+
     case 'replace':
       return action.state;
 
@@ -458,7 +507,9 @@ export function normalizeState(raw: AppState): AppState {
       channels: { ...base.prefs.channels, ...(raw.prefs?.channels ?? {}) },
       quietHours: { ...base.prefs.quietHours, ...(raw.prefs?.quietHours ?? {}) }
     },
-    people: raw.people ?? [],
-    signals: raw.signals ?? []
+    consent: { ...base.consent, ...(raw.consent ?? {}) },
+    people: (raw.people ?? []).map((p) => ({ ...p, consent: { ...NO_CONSENT, ...p.consent } })),
+    signals: raw.signals ?? [],
+    strength: { ...base.strength, ...(raw.strength ?? {}) }
   };
 }

@@ -82,7 +82,7 @@ describe('demo seed produces the restart situation', () => {
 
 describe('buildFamilySummary — consent allow-list', () => {
   const state = createDemoState(TODAY);
-  const none = { goal: false, weeklyCompletion: false, feelings: false, plan: false, reminders: false, notes: false };
+  const none = { goal: false, weeklyCompletion: false, feelings: false, plan: false, reminders: false, notes: false, strength: false };
 
   it('contains nothing when nothing is shared', () => {
     expect(buildFamilySummary(state, TODAY, none)).toEqual({});
@@ -101,6 +101,14 @@ describe('buildFamilySummary — consent allow-list', () => {
     expect(json).not.toContain('মল');
     expect(json).not.toContain('tpl-');
     expect(json).not.toContain('feelings');
+  });
+
+  it('shares strength training only when switched on, and only counts (no exercises, weights or notes)', () => {
+    const s = buildFamilySummary(state, TODAY, { ...none, strength: true });
+    expect(Object.keys(s)).toEqual(['strength']);
+    expect(Object.keys(s.strength ?? {}).sort()).toEqual(['lastDate', 'minutes', 'sessions']);
+    expect(JSON.stringify(s)).not.toContain('kg');
+    expect(JSON.stringify(buildFamilySummary(state, TODAY, DEFAULT_CONSENT))).not.toContain('strength');
   });
 
   it('adds notes and feelings only when switched on', () => {

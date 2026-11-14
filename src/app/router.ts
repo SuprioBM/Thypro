@@ -21,11 +21,13 @@ export type Screen =
   | 'story'
   | 'techniques'
   | 'sponsor'
-  | 'pilot';
+  | 'pilot'
+  | 'strength'
+  | 'workout';
 
 const SCREENS: readonly Screen[] = [
   'start', 'today', 'plan', 'review', 'family', 'more', 'reminders', 'export', 'audit', 'setup', 'clinician',
-  'settings', 'story', 'techniques', 'sponsor', 'pilot'
+  'settings', 'story', 'techniques', 'sponsor', 'pilot', 'strength', 'workout'
 ];
 
 export interface Route {

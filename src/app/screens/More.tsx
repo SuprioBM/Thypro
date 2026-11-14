@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, BellRing, BookOpen, ChevronRight, FileDown, Globe, Lightbulb, LogOut, PieChart, ScrollText, SlidersHorizontal } from 'lucide-react';
+import { BarChart3, Dumbbell, BellRing, BookOpen, ChevronRight, FileDown, Globe, Lightbulb, LogOut, PieChart, ScrollText, SlidersHorizontal } from 'lucide-react';
 import type { Key } from '../../i18n';
 import { useI18n } from '../../i18n';
 import { go, type Screen } from '../router';
@@ -8,6 +8,7 @@ import { Card, ScreenHeader } from '../ui/kit';
 import { LanguageSelect } from '../components/LanguageSelect';
 
 const LINKS: { screen: Screen; icon: typeof BellRing; key: Key }[] = [
+  { screen: 'strength', icon: Dumbbell, key: 'nav.strength' },
   { screen: 'settings', icon: SlidersHorizontal, key: 'nav.settings' },
   { screen: 'story', icon: BookOpen, key: 'nav.story' },
   { screen: 'reminders', icon: BellRing, key: 'nav.reminders' },

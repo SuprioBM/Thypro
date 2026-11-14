@@ -7,7 +7,7 @@ import { useStore } from '../store';
 import { Card, Chip, ScreenHeader, Switch } from '../ui/kit';
 
 const SummaryView: React.FC<{ summary: FamilySummary }> = ({ summary }) => {
-  const { t } = useI18n();
+  const { t, fmtDate } = useI18n();
   if (Object.keys(summary).length === 0) {
     return (
       <p className="flex items-center gap-2 text-sm text-ivory-200/90">
@@ -52,6 +52,15 @@ const SummaryView: React.FC<{ summary: FamilySummary }> = ({ summary }) => {
         <div>
           <dt className="text-[11px] uppercase tracking-wider text-ivory-200/70">{t('family.field.reminders')}</dt>
           <dd>{summary.reminders.times.join(', ') || t('today.noReminder')}</dd>
+        </div>
+      )}
+      {summary.strength && (
+        <div>
+          <dt className="text-[11px] uppercase tracking-wider text-ivory-200/70">{t('family.field.strength')}</dt>
+          <dd>
+            {t('family.strength', { sessions: summary.strength.sessions, minutes: summary.strength.minutes })}
+            {summary.strength.lastDate && <span className="block text-xs text-ivory-200/70">{t('family.strength.last', { date: fmtDate(summary.strength.lastDate) })}</span>}
+          </dd>
         </div>
       )}
       {summary.notes && (

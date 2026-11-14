@@ -138,3 +138,39 @@ Date: 2026-11-14. Branch `feature/habit-loop-phase2`. The 13 features above were
 * `npm run typecheck`: 0 errors. `npm test`: 179 tests in 13 files pass (73 new: adaptation engine, ladder, lapse, tobacco rule, context matching, sponsor under-20 threshold, equity gap, delivery planning, schema migration, scenario replay). `npm run build`: succeeds.
 * No console errors on any app screen in guest and local mode, or on the landing page and the four public pages.
 * Known limits: the landing bundle is about 475 kB (153 kB gzip) because it imports the four dictionaries and technique data; Bangla/Hindi/Urdu wording needs native-speaker review; numeric limits and rule owners need clinical sign-off.
+
+---
+
+# Strength & mobility (web only)
+
+Date: 2026-11-14. Branch `zubayer-hasan`. Inspired by the features of an open-source gym log (per-weekday or rotating plans, double progression, personal records, a muscle map, a lighter week). **Nothing was copied**: its code is AGPL-3.0 and its exercise media is licensed to that project only, so Thypro's module is written from scratch with its own artwork and wording.
+
+## What it adds
+
+| Area | What |
+|---|---|
+| Plans | Three starter plans (chair and wall basics, full body three days, balance and mobility). Fixed weekdays or a rotation where the next session is the next one not yet done. |
+| Library | 29 gentle exercises with a "how to" in en, bn, hi, ur. Filter by muscle and equipment; search. |
+| Workout | Guided session: target and the reason for it, last time, steppers, per-set done, rest timer (speech cue if voice-first), "I don't feel well" stop, add or remove sets, discard. A draft survives a refresh. |
+| Progression | Double progression (`prog-2026.11.1`). Missed reps never add load; two missed sessions lower it by 10%; bodyweight and holds never invent a load and suggest a harder variation at the top. |
+| Progress | Personal bests (never on first-ever use), muscle map (this week / recently trained / not trained), 8-week activity grid, optional body weight. |
+| Safety | Three screening questions. Any "yes" blocks the plan and points to a clinician; "not sure" never counts as "no" and starts lighter. Stopping unwell is logged as an escalation. All in the audit log. |
+| Lighter week | One set fewer per exercise for seven days. |
+| Integration | Today card; family sharing field `strength` (counts only: sessions, minutes, last date; off by default); FHIR export adds strength minutes and self-entered body weight. Guest demo has a plan, five sessions and three weights, built by running the real reducer. |
+| Data | Local save schema 2 to 3 through `normalizeState` (old saves load unchanged; consent gains a `strength` flag). |
+
+## Decisions
+
+1. **Web only**; no app code touched.
+2. **Not a powerlifting log.** No estimated 1RM, plate maths or rep-max charts: they do not fit older users and imply precision the module should not claim.
+3. **Starter plans and the screening wording are placeholders** pending a physiotherapist and clinical review (owner field in `src/strength/safety.ts`). No clinical validation is claimed.
+4. **Translations** (bn, hi, ur) are the team's drafts and need native-speaker review, including exercise instructions.
+5. **No new dependencies.**
+
+## Tests
+
+`src/strength/strength.test.ts`: 33 tests (progression rules including "missed reps never add load", records, schedule, screening, reducer, audit entries, save upgrade, demo). Whole suite 213.
+
+## Known limits
+
+No exercise animations or photos (icons and a body map only). No custom exercises or routine editing yet (swap plan or mode only). Rest timer and speech cue need the app to stay open. Not verified: real devices, screen readers.

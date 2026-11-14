@@ -17,7 +17,9 @@ import type {
   SessionMode,
   UserPrefs
 } from '../domain/types';
-import { toDateKey } from '../domain/week';
+import { toDateKey, shiftDate } from '../domain/week';
+import type { ScreenAnswers } from '../strength/safety';
+import type { LoggedSet, ScheduleMode } from '../strength/types';
 import { I18nProvider, translate } from '../i18n';
 import { evaluateSafety } from '../safety/engine';
 import { translateNote } from './languageLayer';
@@ -54,8 +56,27 @@ export interface Notice {
   kind: ChannelId | 'info';
 }
 
+export interface StrengthApi {
+  screen: (answers: ScreenAnswers) => void;
+  startPlan: (starterId: string) => void;
+  stopPlan: () => void;
+  setMode: (mode: ScheduleMode) => void;
+  /** Starts a lighter week (7 days from today) or ends it. */
+  setLight: (on: boolean) => void;
+  startWorkout: (routineId: string) => void;
+  setSet: (ex: number, set: number, patch: Partial<LoggedSet>) => void;
+  addSet: (ex: number) => void;
+  removeSet: (ex: number, set: number) => void;
+  /** Saves the workout; returns its id (or null if there was nothing to save). */
+  finish: (stopped?: 'unwell') => string | null;
+  discard: () => void;
+  deleteSession: (id: string) => void;
+  logBodyWeight: (kg: number) => void;
+}
+
 interface Store {
   state: AppState;
+  strength: StrengthApi;
   lang: Lang;
   today: string;
   blocked: boolean;
@@ -203,6 +224,33 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
       langAssist,
       notices,
       dismissNotice: (id) => setNotices((n) => n.filter((x) => x.id !== id)),
+
+      strength: {
+        screen: (answers) => {
+          const s = stamp();
+          dispatch({ type: 'strength', action: { type: 'screen', answers, nowIso: s.nowIso }, ...s });
+        },
+        startPlan: (starterId) => dispatch({ type: 'strength', action: { type: 'startPlan', starterId, today }, ...stamp() }),
+        stopPlan: () => dispatch({ type: 'strength', action: { type: 'stopPlan' }, ...stamp() }),
+        setMode: (mode) => dispatch({ type: 'strength', action: { type: 'setMode', mode }, ...stamp() }),
+        setLight: (on) => dispatch({ type: 'strength', action: { type: 'setLight', until: on ? shiftDate(today, 6) : null }, ...stamp() }),
+        startWorkout: (routineId) => {
+          const s = stamp();
+          dispatch({ type: 'strength', action: { type: 'startWorkout', routineId, id: `w-${s.seed}`, nowIso: s.nowIso, today }, ...s });
+        },
+        setSet: (ex, set, patch) => dispatch({ type: 'strength', action: { type: 'setSet', ex, set, patch }, ...stamp() }),
+        addSet: (ex) => dispatch({ type: 'strength', action: { type: 'addSet', ex }, ...stamp() }),
+        removeSet: (ex, set) => dispatch({ type: 'strength', action: { type: 'removeSet', ex, set }, ...stamp() }),
+        finish: (stopped) => {
+          const id = stateRef.current.strength.draft?.id ?? null;
+          const s = stamp();
+          dispatch({ type: 'strength', action: { type: 'finishWorkout', nowIso: s.nowIso, stopped }, ...s });
+          return id;
+        },
+        discard: () => dispatch({ type: 'strength', action: { type: 'discardWorkout' }, ...stamp() }),
+        deleteSession: (id) => dispatch({ type: 'strength', action: { type: 'deleteSession', id }, ...stamp() }),
+        logBodyWeight: (kg) => dispatch({ type: 'strength', action: { type: 'logBodyWeight', date: today, kg }, ...stamp() })
+      },
 
       completeSetup: (setup) => {
         dispatch({ type: 'completeSetup', setup, ...stamp() });

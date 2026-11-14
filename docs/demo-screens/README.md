@@ -38,3 +38,13 @@ Same method (in-app browser, 360px and 1280px). The pilot has not started; every
 | 30 | Sponsor view: group totals only, groups under 20 suppressed | `30-sponsor-*` |
 | 31 | Pilot report: equity check flags a gap over 10 points | `31-pilot-equity-desktop` |
 | 32 | "How suggestions work" page in Urdu (right-to-left) | `32-how-suggestions-urdu-mobile` |
+
+## Strength & mobility
+
+Same method as above. Guest demo person, invented data.
+
+| # | Step | Files |
+|---|---|---|
+| 40 | Strength home: the next session with a body map and exercise list | `40-strength-today-desktop` |
+| 41 | Guided workout: target and reason per exercise, set steppers, progress bar | `41-strength-workout-desktop` |
+| 42 | Progress: muscle map (this week's work), per-muscle sets | `42-strength-muscle-map-mobile` |

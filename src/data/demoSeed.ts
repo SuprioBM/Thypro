@@ -10,7 +10,8 @@
 import { DEFAULT_CONTEXT, type AppState, type AuditEntry, type CheckIn, type DeliveryLogEntry, type Feel, type GoalSetup } from '../domain/types';
 import { shiftDate } from '../domain/week';
 import { generatePlan } from '../plan/generate';
-import { DEFAULT_CONSENT, NO_CONSENT, emptyState } from '../app/reducer';
+import { DEFAULT_CONSENT, NO_CONSENT, emptyState, reducer } from '../app/reducer';
+import type { StrengthAction } from '../strength/reducer';
 
 type Pattern = 'done' | 'skipped' | 'unknown' | null;
 
@@ -123,7 +124,7 @@ export function createDemoState(today: string): AppState {
     };
   });
 
-  return {
+  const base: AppState = {
     ...emptyState('guest', 'bn'),
     mode: 'guest',
     profile: {
@@ -145,4 +146,31 @@ export function createDemoState(today: string): AppState {
     progress: { level: 2 },
     people: [{ id: 'coach-1', name: 'Coach Farid (demo)', relation: 'Coach', consent: { ...NO_CONSENT, weeklyCompletion: true } }]
   };
+  return withStrength(base, today);
+}
+
+/**
+ * Invented strength history, built by running the real reducer so the demo
+ * can never drift from the app's own rules: five gentle sessions over the last
+ * two weeks (the next one is "today"), plus a few body-weight entries.
+ */
+function withStrength(state: AppState, today: string): AppState {
+  let s = state;
+  const run = (action: StrengthAction, date: string, hhmm: string, seed: string) => {
+    s = reducer(s, { type: 'strength', action, seed: `demo-${seed}`, nowIso: at(date, hhmm) });
+  };
+  const planStart = shiftDate(today, -13);
+  run({ type: 'screen', answers: { chest: 'no', faint: 'no', advised: 'no' }, nowIso: at(planStart, '17:50') }, planStart, '17:50', 'screen');
+  run({ type: 'startPlan', starterId: 'basics', today: planStart }, planStart, '17:55', 'plan');
+  [-12, -10, -8, -5, -3].forEach((offset, i) => {
+    const date = shiftDate(today, offset);
+    const routineId = s.strength.plan?.routines[i % 2].id ?? 'basics-a';
+    run({ type: 'startWorkout', routineId, id: `demo-ws-${i}`, nowIso: at(date, '17:30'), today: date }, date, '17:30', `start-${i}`);
+    const draft = s.strength.draft;
+    draft?.exercises.forEach((e, ex) => e.sets.forEach((_, set) => run({ type: 'setSet', ex, set, patch: { done: true } }, date, '17:40', `set-${i}-${ex}-${set}`)));
+    run({ type: 'finishWorkout', nowIso: at(date, '17:52') }, date, '17:52', `finish-${i}`);
+  });
+  const weights: [number, number][] = [[-13, 74.6], [-6, 74.3], [-1, 74.1]];
+  weights.forEach(([offset, kg]) => run({ type: 'logBodyWeight', date: shiftDate(today, offset), kg }, today, '08:00', `bw-${offset}`));
+  return s;
 }

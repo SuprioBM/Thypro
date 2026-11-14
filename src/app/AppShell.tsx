@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { ArrowLeft, BarChart3, BellRing, BookOpen, CalendarCheck, ClipboardList, FileDown, Home, LayoutGrid, Lightbulb, LogOut, MessageSquare, PieChart, ScrollText, SlidersHorizontal, Users, Volume2, X } from 'lucide-react';
+import { ArrowLeft, BarChart3, Dumbbell, BellRing, BookOpen, CalendarCheck, ClipboardList, FileDown, Home, LayoutGrid, Lightbulb, LogOut, MessageSquare, PieChart, ScrollText, SlidersHorizontal, Users, Volume2, X } from 'lucide-react';
 import { LogoMark } from '../components/ui/Logo';
 import { useI18n, type Key } from '../i18n';
 import { LanguageSelect } from './components/LanguageSelect';
@@ -23,6 +23,8 @@ const Story = lazy(() => import('./screens/Story').then((m) => ({ default: m.Sto
 const Techniques = lazy(() => import('./screens/Techniques').then((m) => ({ default: m.Techniques })));
 const Sponsor = lazy(() => import('./screens/Sponsor').then((m) => ({ default: m.Sponsor })));
 const Pilot = lazy(() => import('./screens/Pilot').then((m) => ({ default: m.Pilot })));
+const Strength = lazy(() => import('./screens/Strength').then((m) => ({ default: m.Strength })));
+const Workout = lazy(() => import('./screens/Workout').then((m) => ({ default: m.Workout })));
 
 const SCREENS: Record<Exclude<Screen, 'start'>, React.ReactNode> = {
   today: <Today />,
@@ -39,7 +41,9 @@ const SCREENS: Record<Exclude<Screen, 'start'>, React.ReactNode> = {
   story: <Story />,
   techniques: <Techniques />,
   sponsor: <Sponsor />,
-  pilot: <Pilot />
+  pilot: <Pilot />,
+  strength: <Strength />,
+  workout: <Workout />
 };
 
 const TABS: { screen: Screen; icon: typeof Home; key: 'nav.today' | 'nav.plan' | 'nav.review' | 'nav.family' | 'nav.more' }[] = [
@@ -51,6 +55,7 @@ const TABS: { screen: Screen; icon: typeof Home; key: 'nav.today' | 'nav.plan' |
 ];
 
 const SIDE: { screen: Screen; icon: typeof Home; key: Key }[] = [
+  { screen: 'strength', icon: Dumbbell, key: 'nav.strength' },
   { screen: 'settings', icon: SlidersHorizontal, key: 'nav.settings' },
   { screen: 'story', icon: BookOpen, key: 'nav.story' },
   { screen: 'reminders', icon: BellRing, key: 'nav.reminders' },

@@ -2,6 +2,7 @@ import type { Dict } from './en';
 
 /** Urdu (right-to-left). Drafted by the engineering team: needs native-speaker review before public use. */
 import { urP2 } from './p2.ur';
+import { urP3 } from './p3.ur';
 
 const urBase = {
   'app.name': 'تھائی پرو',
@@ -342,4 +343,4 @@ const urBase = {
   'reason.unknown': 'وجہ دستیاب نہیں'
 };
 
-export const ur: Dict = { ...urBase, ...urP2 };
+export const ur: Dict = { ...urBase, ...urP2, ...urP3 };
