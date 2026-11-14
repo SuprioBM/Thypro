@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Bell, ChevronRight, Volume2 } from 'lucide-react';
+import { Bell, ChevronRight, Dumbbell, Volume2 } from 'lucide-react';
 import { cumulativeDays, detectLapse, stepUpOffer } from '../../domain/ladder';
 import { weeklyStats } from '../../domain/week';
 import { maxLevel, resolvePlanItem } from '../../plan/templates';
 import { evaluateCheckin } from '../../safety/engine';
+import { nextSession } from '../../strength/schedule';
 import { useI18n, type Key } from '../../i18n';
 import { CheckInForm } from '../components/CheckInForm';
 import { EscalationCard } from '../components/EscalationCard';
@@ -29,6 +30,9 @@ export const Today: React.FC = () => {
   const nextReminder = state.reminders.find((r) => r.enabled);
   const name = state.profile.displayName;
   const max = state.setup ? maxLevel(state.setup.goalType) : 1;
+
+  const strengthPlan = state.strength.plan;
+  const strengthNext = strengthPlan ? (nextSession(strengthPlan, state.strength.sessions, today).routine ?? nextSession(strengthPlan, state.strength.sessions, today).nextDay?.routine ?? null) : null;
 
   const lapse = detectLapse(state.checkins, today);
   const answered = state.barriers.some((b) => b.episodeKey === lapse.episodeKey);
@@ -186,6 +190,24 @@ export const Today: React.FC = () => {
           {nextReminder ? t('today.nextReminder', { time: nextReminder.time }) : t('today.noReminder')}
           <span aria-hidden="true">·</span>
           <span>{t(`channel.${state.prefs.preferredChannel}` as Key)}</span>
+        </div>
+      </Card>
+
+      <Card index={4} labelledBy="strength-card-title">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-ochre-300">
+            <Dumbbell className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="strength-card-title" className="font-editorial text-lg text-forest-950">{t('st.card.title')}</h2>
+            <p className="truncate text-sm text-forest-900/75">
+              {strengthNext ? t('st.card.body', { routine: strengthNext.name[lang] }) : t('st.card.start')}
+            </p>
+          </div>
+          <button type="button" onClick={() => go('strength')} className="thy-btn-ghost min-h-[44px] !py-2">
+            {t('st.card.open')}
+            <ChevronRight className="h-4 w-4 flip-rtl" aria-hidden="true" />
+          </button>
         </div>
       </Card>
     </div>

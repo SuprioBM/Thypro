@@ -1,5 +1,6 @@
 /** English is the source of truth: every other language must define exactly these keys (checked by the compiler). */
 import { enP2 } from './p2.en';
+import { enP3 } from './p3.en';
 
 const enBase = {
   'app.name': 'Thypro',
@@ -340,7 +341,7 @@ const enBase = {
   'reason.unknown': 'Reason not available'
 } as const;
 
-export const en = { ...enBase, ...enP2 } as const;
+export const en = { ...enBase, ...enP2, ...enP3 } as const;
 
 export type Key = keyof typeof en;
 export type Dict = Record<Key, string>;

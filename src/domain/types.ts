@@ -3,6 +3,8 @@
  * Dates are local calendar days as 'YYYY-MM-DD'; timestamps are ISO strings.
  */
 
+import type { StrengthState } from '../strength/types';
+
 export type Lang = 'en' | 'bn' | 'hi' | 'ur';
 export const LANGS: readonly Lang[] = ['en', 'bn', 'hi', 'ur'] as const;
 export const RTL_LANGS: readonly Lang[] = ['ur'] as const;
@@ -334,14 +336,15 @@ export interface AuditEntry {
 
 /* ---------- Family consent ---------- */
 
-export type FamilyField = 'goal' | 'weeklyCompletion' | 'feelings' | 'plan' | 'reminders' | 'notes';
+export type FamilyField = 'goal' | 'weeklyCompletion' | 'feelings' | 'plan' | 'reminders' | 'notes' | 'strength';
 export const FAMILY_FIELDS: readonly FamilyField[] = [
   'goal',
   'weeklyCompletion',
   'feelings',
   'plan',
   'reminders',
-  'notes'
+  'notes',
+  'strength'
 ] as const;
 
 export type ConsentMap = Record<FamilyField, boolean>;
@@ -370,4 +373,6 @@ export interface AppState {
   /** Further people (a coach, a clinic) with their own sharing consent. */
   people: SharePerson[];
   signals: PilotSignal[];
+  /** Strength & mobility module. */
+  strength: StrengthState;
 }

@@ -218,6 +218,36 @@ export function buildFhirBundle(state: AppState, now: Date): FhirBundle {
     }
   }
 
+  // Strength sessions: minutes only (a count of time, not an interpretation), plus self-entered body weight.
+  for (const sess of state.strength.sessions) {
+    const id = `strength-${sess.id}`;
+    resources.push({
+      resourceType: 'Observation',
+      id,
+      status: 'final',
+      category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'activity', display: 'Activity' }] }],
+      code: { coding: [{ system: CS, code: 'strength-training-minutes', display: 'Strength and mobility minutes (self-recorded)' }], text: 'Strength and mobility minutes (self-recorded)' },
+      subject,
+      effectiveDateTime: sess.date,
+      valueQuantity: { value: sess.minutes, unit: 'min', system: 'http://unitsofmeasure.org', code: 'min' }
+    } as Json & { resourceType: string; id: string });
+    targets.push({ type: 'Observation', id });
+  }
+  for (const w of state.strength.bodyWeights) {
+    const id = `strength-weight-${w.date}`;
+    resources.push({
+      resourceType: 'Observation',
+      id,
+      status: 'final',
+      category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs', display: 'Vital Signs' }] }],
+      code: { coding: [{ system: 'http://loinc.org', code: '29463-7', display: 'Body weight' }], text: 'Body weight (self-recorded)' },
+      subject,
+      effectiveDateTime: w.date,
+      valueQuantity: { value: w.kg, unit: 'kg', system: 'http://unitsofmeasure.org', code: 'kg' }
+    } as Json & { resourceType: string; id: string });
+    targets.push({ type: 'Observation', id });
+  }
+
   resources.push({
     resourceType: 'Provenance',
     id: 'provenance-1',

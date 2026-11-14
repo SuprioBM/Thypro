@@ -7,7 +7,8 @@
  */
 
 import type { AppState, ConsentMap, Feel, GoalType } from './types';
-import { weeklyStats, type WeekStats } from './week';
+import { strengthStats } from '../strength/records';
+import { shiftDate, weeklyStats, type WeekStats } from './week';
 
 export interface FamilySummary {
   goal?: GoalType;
@@ -16,6 +17,8 @@ export interface FamilySummary {
   plan?: { templateId: string; version: number };
   reminders?: { times: string[] };
   notes?: string[];
+  /** This week only, as counts. Never exercises, weights or body weight. */
+  strength?: { sessions: number; minutes: number; lastDate: string | null };
 }
 
 export function buildFamilySummary(state: AppState, today: string, consent: ConsentMap = state.consent): FamilySummary {
@@ -47,6 +50,16 @@ export function buildFamilySummary(state: AppState, today: string, consent: Cons
 
   if (consent.notes) {
     summary.notes = weekCheckins.map((c) => c.note?.original).filter((n): n is string => Boolean(n));
+  }
+
+  if (consent.strength) {
+    const week = state.strength.sessions.filter((s) => s.date >= shiftDate(today, -6) && s.date <= today);
+    const stats = strengthStats(week, today);
+    summary.strength = {
+      sessions: stats.sessions,
+      minutes: stats.minutes,
+      lastDate: state.strength.sessions.length ? state.strength.sessions[state.strength.sessions.length - 1].date : null
+    };
   }
 
   return summary;

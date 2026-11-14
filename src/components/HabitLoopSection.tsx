@@ -107,7 +107,9 @@ export const HabitLoopSection: React.FC<HabitLoopSectionProps> = ({ lang, onRepl
                     {t(`goal.${g}` as Key)}
                   </li>
                 ))}
+                <li className="rounded-full border border-ochre-400/60 bg-ochre-500/20 px-3 py-1">{t('st.title')}</li>
               </ul>
+              <p className="mt-4 border-t border-white/10 pt-4 text-xs leading-relaxed text-ivory-200/80">{t('site.st.body')}</p>
             </div>
           </Reveal>
         </div>
