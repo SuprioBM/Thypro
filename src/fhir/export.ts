@@ -248,6 +248,48 @@ export function buildFhirBundle(state: AppState, now: Date): FhirBundle {
     targets.push({ type: 'Observation', id });
   }
 
+  // Daily planner: only self-recorded measurements, never inferred values.
+  for (const [date, day] of Object.entries(state.planner.entries).sort(([a], [b]) => (a < b ? -1 : 1))) {
+    const measures: [string, string, number | undefined, string][] = [
+      ['planner-water-glasses', 'Water (glasses, self-recorded)', day.hydration?.glasses, '{glasses}'],
+      ['planner-activity-minutes', 'Activity minutes (self-recorded)', day.activity?.minutes, 'min']
+    ];
+    for (const [code, display, value, unit] of measures) {
+      if (value === undefined) continue;
+      const id = `${code}-${date}`;
+      resources.push({
+        resourceType: 'Observation',
+        id,
+        status: 'final',
+        category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'activity', display: 'Activity' }] }],
+        code: { coding: [{ system: CS, code, display }], text: display },
+        subject,
+        effectiveDateTime: date,
+        valueQuantity: { value, unit, system: 'http://unitsofmeasure.org', code: unit }
+      } as Json & { resourceType: string; id: string });
+      targets.push({ type: 'Observation', id });
+    }
+  }
+
+  // Comeback Coach adjustments: what was proposed, what the person decided, and which rules ran.
+  for (const rec of state.coach.history) {
+    const id = `coach-${rec.id}`;
+    resources.push({
+      resourceType: 'Basic',
+      id,
+      code: { coding: [{ system: CS, code: 'coach-adjustment', display: 'Comeback Coach adjustment (rule-based, not a diagnosis)' }] },
+      subject,
+      created: rec.at.slice(0, 10),
+      extension: [
+        {
+          url: `${BASE}/ext/coach-adjustment`,
+          valueString: JSON.stringify({ action: rec.proposal.action, from: rec.proposal.from, to: rec.editedTo ?? rec.proposal.to, decision: rec.decision, configVersion: rec.configVersion, ruleVersion: rec.ruleVersion, wording: rec.explanation.source, model: rec.explanation.model ?? null })
+        }
+      ]
+    } as Json & { resourceType: string; id: string });
+    targets.push({ type: 'Basic', id });
+  }
+
   resources.push({
     resourceType: 'Provenance',
     id: 'provenance-1',

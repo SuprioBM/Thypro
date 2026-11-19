@@ -55,7 +55,7 @@ export const EscalationCard: React.FC<{
 
           {shown.length > 0 && (
             <div className="mt-3 border-t border-signal-crimson/20 pt-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-forest-900/70">{t('esc.why')}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-forest-900/80">{t('esc.why')}</p>
               <ul className="mt-1 list-disc ps-5 text-sm text-forest-900/85">
                 {shown.map((r, i) => (
                   <li key={i}>{reasonText(t, r.reasonCode, r.params)}</li>

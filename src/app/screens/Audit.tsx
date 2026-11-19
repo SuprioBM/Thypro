@@ -5,8 +5,8 @@ import { reasonText, useI18n, type Key } from '../../i18n';
 import { useStore } from '../store';
 import { Card, Chip, EmptyState, ScreenHeader } from '../ui/kit';
 
-const KINDS: AuditKind[] = ['safety', 'plan', 'escalation', 'adaptation'];
-const RESULTS: AuditResult[] = ['pass', 'blocked', 'generated', 'escalated', 'adapted', 'fallback'];
+const KINDS: AuditKind[] = ['safety', 'plan', 'escalation', 'adaptation', 'planner', 'coach'];
+const RESULTS: AuditResult[] = ['pass', 'blocked', 'generated', 'escalated', 'adapted', 'fallback', 'proposed', 'accepted', 'edited', 'declined', 'auto_applied', 'overridden', 'undone'];
 
 const RESULT_TONE: Record<AuditResult, 'good' | 'bad' | 'info' | 'warn' | 'neutral'> = {
   pass: 'good',
@@ -14,7 +14,14 @@ const RESULT_TONE: Record<AuditResult, 'good' | 'bad' | 'info' | 'warn' | 'neutr
   blocked: 'bad',
   escalated: 'warn',
   adapted: 'info',
-  fallback: 'neutral'
+  fallback: 'neutral',
+  proposed: 'info',
+  accepted: 'good',
+  edited: 'good',
+  declined: 'neutral',
+  auto_applied: 'info',
+  overridden: 'warn',
+  undone: 'neutral'
 };
 
 const FilterGroup = <T extends string>({
@@ -33,7 +40,7 @@ const FilterGroup = <T extends string>({
   allLabel: string;
 }) => (
   <div role="group" aria-label={label} className="flex flex-wrap items-center gap-1.5">
-    <span className="me-1 text-xs font-semibold uppercase tracking-wider text-forest-800/65">{label}</span>
+    <span className="me-1 text-xs font-semibold uppercase tracking-wider text-forest-800/85">{label}</span>
     {(['all', ...options] as (T | 'all')[]).map((o) => (
       <button
         key={o}
@@ -88,7 +95,7 @@ export const Audit: React.FC = () => {
         <EmptyState title={t('audit.empty')} />
       ) : (
         <>
-          <p className="text-xs text-forest-800/70" aria-live="polite">{t('audit.count', { n: rows.length })}</p>
+          <p className="text-xs text-forest-800/85" aria-live="polite">{t('audit.count', { n: rows.length })}</p>
           <ul className="space-y-2.5">
             {rows.map((a, i) => (
               <Card as="li" key={a.id} index={Math.min(i, 8)} className="!p-3.5">
@@ -100,10 +107,15 @@ export const Audit: React.FC = () => {
                   </span>
                 </div>
                 <p className="mt-1.5 text-sm text-forest-900/90">{reasonText(t, a.reasonCode, a.reasonParams)}</p>
-                <p className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-forest-800/65">
+                <p className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-forest-800/85">
                   <span className="font-mono">{t('audit.rules', { v: a.ruleVersion })}</span>
                   {a.templateId && <span className="font-mono">{t('audit.template', { id: a.templateId })}</span>}
                 </p>
+                {a.meta && (
+                  <p className="mt-1 break-words font-mono text-[11px] text-forest-800/85">
+                    {Object.entries(a.meta).map(([k, v]) => `${k}: ${v}`).join(' · ')}
+                  </p>
+                )}
               </Card>
             ))}
           </ul>

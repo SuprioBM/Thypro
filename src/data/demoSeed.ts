@@ -12,6 +12,8 @@ import { shiftDate } from '../domain/week';
 import { generatePlan } from '../plan/generate';
 import { DEFAULT_CONSENT, NO_CONSENT, emptyState, reducer } from '../app/reducer';
 import type { StrengthAction } from '../strength/reducer';
+import type { PlannerState } from '../planner/types';
+import { freshPlanner } from '../planner/types';
 
 type Pattern = 'done' | 'skipped' | 'unknown' | null;
 
@@ -43,7 +45,7 @@ export const DEMO_SETUP: GoalSetup = {
     insulinDiabetes: 'no',
     otherHighRisk: 'no'
   },
-  context: { ...DEFAULT_CONTEXT, heat: 'hot' }
+  context: { ...DEFAULT_CONTEXT, shiftWork: 'night', heat: 'hot' }
 };
 
 export function createDemoState(today: string): AppState {
@@ -146,7 +148,25 @@ export function createDemoState(today: string): AppState {
     progress: { level: 2 },
     people: [{ id: 'coach-1', name: 'Coach Farid (demo)', relation: 'Coach', consent: { ...NO_CONSENT, weeklyCompletion: true } }]
   };
-  return withStrength(base, today);
+  return withStrength({ ...base, planner: demoPlanner(today) }, today);
+}
+
+/** Invented planner history for the same three weeks. The last two days are empty on purpose, so the weekly freeze, the paused run and the coach all have something to show. */
+function demoPlanner(today: string): PlannerState {
+  const planner = freshPlanner();
+  planner.startedOn = shiftDate(today, -22);
+  PATTERN.forEach((status, i) => {
+    if (!status) return;
+    const date = shiftDate(today, -22 + i);
+    const day: PlannerState['entries'][string] = {};
+    const at = `${date}T18:00:00.000Z`;
+    if (status === 'done') day.activity = { done: true, minutes: 10 + (i % 3) * 2, at };
+    if (i % 4 !== 1) day.hydration = { done: true, glasses: 6, at };
+    if (i % 3 !== 2) day.sleep = { done: true, bedtime: '09:30', wake: '16:00', at };
+    if (i % 5 !== 3) day.nutrition = { done: true, mealsChecked: 2, at };
+    planner.entries[date] = day;
+  });
+  return planner;
 }
 
 /**

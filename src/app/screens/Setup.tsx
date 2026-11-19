@@ -172,13 +172,13 @@ export const Setup: React.FC = () => {
     <div>
       <div className="mb-4">
         <h1 className="font-editorial text-2xl text-forest-950 sm:text-3xl">{t('setup.title')}</h1>
-        <p className="mt-1 text-sm text-forest-900/70">
+        <p className="mt-1 text-sm text-forest-900/80">
           {t('setup.about')} · {state.mode === 'guest' ? t('setup.guestNote') : t('setup.localNote')}
         </p>
       </div>
 
       <div className="mb-5" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={stepIndex + 1} aria-label={t('setup.step', { n: stepIndex + 1, total })}>
-        <div className="mb-1 flex justify-between text-xs text-forest-800/70">
+        <div className="mb-1 flex justify-between text-xs text-forest-800/85">
           <span>{t('setup.step', { n: stepIndex + 1, total })}</span>
           <span>{stepTitle}</span>
         </div>
@@ -230,7 +230,7 @@ export const Setup: React.FC = () => {
                       <Icon className={`${picture ? 'h-9 w-9' : 'h-5 w-5'} shrink-0 ${on ? 'text-ochre-300' : 'text-ochre-700'}`} aria-hidden="true" />
                       <span>
                         <span className="block text-base font-medium">{t(`goal.${g}` as Key)}</span>
-                        <span className={`block text-xs ${on ? 'text-ivory-200/85' : 'text-forest-800/65'}`}>{t(`goal.${g}.desc` as Key)}</span>
+                        <span className={`block text-xs ${on ? 'text-ivory-200/85' : 'text-forest-800/85'}`}>{t(`goal.${g}.desc` as Key)}</span>
                       </span>
                     </span>
                     {on && <Check className="h-5 w-5 shrink-0" aria-hidden="true" />}
@@ -261,9 +261,9 @@ export const Setup: React.FC = () => {
             {draft.goalType !== 'tobacco' && (
               <fieldset>
                 <legend className="text-sm font-semibold text-forest-950">
-                  {t('setup.ownTitle')} <span className="font-normal text-forest-800/60">({t('common.optional')})</span>
+                  {t('setup.ownTitle')} <span className="font-normal text-forest-800/85">({t('common.optional')})</span>
                 </legend>
-                <p className="mb-2 text-xs text-forest-800/70">{t('setup.ownHint')}</p>
+                <p className="mb-2 text-xs text-forest-800/85">{t('setup.ownHint')}</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {OWN.map((k) => (
                     <div key={k}>

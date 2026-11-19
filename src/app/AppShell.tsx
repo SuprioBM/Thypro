@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { ArrowLeft, BarChart3, Dumbbell, BellRing, BookOpen, CalendarCheck, ClipboardList, FileDown, Home, LayoutGrid, Lightbulb, LogOut, MessageSquare, PieChart, ScrollText, SlidersHorizontal, Users, Volume2, X } from 'lucide-react';
+import { ArrowLeft, Bot, Cloud, ListChecks, PlayCircle, Stethoscope, BarChart3, Dumbbell, BellRing, BookOpen, CalendarCheck, ClipboardList, FileDown, Home, LayoutGrid, Lightbulb, LogOut, MessageSquare, PieChart, ScrollText, SlidersHorizontal, Users, Volume2, X } from 'lucide-react';
 import { LogoMark } from '../components/ui/Logo';
 import { useI18n, type Key } from '../i18n';
 import { LanguageSelect } from './components/LanguageSelect';
@@ -25,6 +25,11 @@ const Sponsor = lazy(() => import('./screens/Sponsor').then((m) => ({ default: m
 const Pilot = lazy(() => import('./screens/Pilot').then((m) => ({ default: m.Pilot })));
 const Strength = lazy(() => import('./screens/Strength').then((m) => ({ default: m.Strength })));
 const Workout = lazy(() => import('./screens/Workout').then((m) => ({ default: m.Workout })));
+const Planner = lazy(() => import('./screens/Planner').then((m) => ({ default: m.Planner })));
+const Coach = lazy(() => import('./screens/Coach').then((m) => ({ default: m.Coach })));
+const Replay = lazy(() => import('./screens/Replay').then((m) => ({ default: m.Replay })));
+const Account = lazy(() => import('./screens/Account').then((m) => ({ default: m.Account })));
+const ClinicianView = lazy(() => import('./screens/ClinicianView').then((m) => ({ default: m.ClinicianView })));
 
 const SCREENS: Record<Exclude<Screen, 'start'>, React.ReactNode> = {
   today: <Today />,
@@ -43,7 +48,12 @@ const SCREENS: Record<Exclude<Screen, 'start'>, React.ReactNode> = {
   sponsor: <Sponsor />,
   pilot: <Pilot />,
   strength: <Strength />,
-  workout: <Workout />
+  workout: <Workout />,
+  planner: <Planner />,
+  coach: <Coach />,
+  replay: <Replay />,
+  clinicianView: <ClinicianView />,
+  account: <Account />
 };
 
 const TABS: { screen: Screen; icon: typeof Home; key: 'nav.today' | 'nav.plan' | 'nav.review' | 'nav.family' | 'nav.more' }[] = [
@@ -55,6 +65,11 @@ const TABS: { screen: Screen; icon: typeof Home; key: 'nav.today' | 'nav.plan' |
 ];
 
 const SIDE: { screen: Screen; icon: typeof Home; key: Key }[] = [
+  { screen: 'account', icon: Cloud, key: 'nav.account' },
+  { screen: 'planner', icon: ListChecks, key: 'nav.planner' },
+  { screen: 'coach', icon: Bot, key: 'nav.coach' },
+  { screen: 'replay', icon: PlayCircle, key: 'nav.replay' },
+  { screen: 'clinicianView', icon: Stethoscope, key: 'nav.clinicianView' },
   { screen: 'strength', icon: Dumbbell, key: 'nav.strength' },
   { screen: 'settings', icon: SlidersHorizontal, key: 'nav.settings' },
   { screen: 'story', icon: BookOpen, key: 'nav.story' },
@@ -105,7 +120,7 @@ export const AppShell: React.FC<{ screen: Exclude<Screen, 'start'> }> = ({ scree
         <div className={`border-t px-4 py-2 text-xs ${guest ? 'border-ochre-300 bg-signal-amberSoft text-forest-950' : 'border-sage-300 bg-sage-50 text-forest-900'}`}>
           <p className="mx-auto max-w-6xl">
             {guest ? t('shell.demoBanner') : t('shell.localBanner')}
-            {guest && <span className="block text-forest-800/70">{t('shell.demoPersona')}</span>}
+            {guest && <span className="block text-forest-800/85">{t('shell.demoPersona')}</span>}
           </p>
         </div>
       </header>
@@ -143,7 +158,7 @@ export const AppShell: React.FC<{ screen: Exclude<Screen, 'start'> }> = ({ scree
               </div>
             </Suspense>
           </ErrorBoundary>
-          <p className="mx-auto mt-10 max-w-2xl text-center text-[11px] leading-relaxed text-forest-800/65">{t('shell.disclaimer')}</p>
+          <p className="mx-auto mt-10 max-w-2xl text-center text-[11px] leading-relaxed text-forest-800/85">{t('shell.disclaimer')}</p>
         </main>
       </div>
 
@@ -157,7 +172,7 @@ export const AppShell: React.FC<{ screen: Exclude<Screen, 'start'> }> = ({ scree
                   type="button"
                   aria-current={on ? 'page' : undefined}
                   onClick={() => go(s)}
-                  className={`flex min-h-[56px] w-full flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${on ? 'text-forest-800' : 'text-forest-800/65'}`}
+                  className={`flex min-h-[56px] w-full flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${on ? 'text-forest-800' : 'text-forest-800/85'}`}
                 >
                   <span className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors duration-300 ${on ? 'bg-ochre-100 text-ochre-800' : ''}`}>
                     <Icon className="h-5 w-5" aria-hidden="true" />

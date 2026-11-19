@@ -25,15 +25,15 @@ export const Techniques: React.FC = () => {
               </h2>
               <dl className="mt-2 space-y-2 text-sm">
                 <div>
-                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('tech.rationale')}</dt>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('tech.rationale')}</dt>
                   <dd className="text-forest-950">{text.rationale}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('tech.limits')}</dt>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('tech.limits')}</dt>
                   <dd className="text-forest-900/85">{text.limits}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('tech.usedIn')}</dt>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('tech.usedIn')}</dt>
                   <dd className="mt-1 flex flex-wrap gap-1.5">
                     {tech.features.map((f) => (
                       <Chip key={f}>{t(`tech.feature.${f}` as Key)}</Chip>
@@ -46,7 +46,7 @@ export const Techniques: React.FC = () => {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('tech.source')}</dt>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('tech.source')}</dt>
                   <dd>
                     <a href={tech.source.url} target="_blank" rel="noreferrer noopener" lang="en" dir="ltr" className="inline-flex items-center gap-1 text-ochre-700 underline">
                       {tech.source.label}

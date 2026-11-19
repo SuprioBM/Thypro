@@ -45,7 +45,7 @@ export const ClinicianPath: React.FC = () => {
 
       {decision.breaches.length > 0 && (
         <Card index={1} labelledBy="clin-why">
-          <h2 id="clin-why" className="text-sm font-semibold uppercase tracking-wider text-forest-800/70">
+          <h2 id="clin-why" className="text-sm font-semibold uppercase tracking-wider text-forest-800/85">
             {t('clinician.why')}
           </h2>
           <ul className="mt-2 list-disc space-y-1.5 ps-5 text-sm text-forest-950">
@@ -69,13 +69,13 @@ export const ClinicianPath: React.FC = () => {
           <span>{contact ? t('esc.contact', { name: contact.name, relation: contact.relation, phone: contact.phone }) : t('esc.noContact')}</span>
         </div>
         <p className="mt-3 text-sm font-semibold text-forest-950">{t('esc.emergency')}</p>
-        <p className="mt-1 text-xs text-forest-900/70">{t('esc.honest')}</p>
+        <p className="mt-1 text-xs text-forest-900/80">{t('esc.honest')}</p>
         <button type="button" className="thy-btn-ghost mt-4 min-h-[48px]" onClick={() => go('setup')}>
           {t('clinician.edit')}
         </button>
       </Card>
 
-      <p className="text-xs text-forest-800/65">{t('clinician.logged')}</p>
+      <p className="text-xs text-forest-800/85">{t('clinician.logged')}</p>
     </div>
   );
 };

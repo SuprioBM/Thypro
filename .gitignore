@@ -38,3 +38,7 @@ Thumbs.db
 .env.test.local
 .env.production.local
 node_modules
+
+# Playwright output
+test-results
+playwright-report

@@ -75,24 +75,24 @@ export const Story: React.FC = () => {
         <div className="flex flex-wrap items-center gap-5">
           <Ring value={week.fill} size={104} label={t('review.ringLabel', { done: week.done })}>
             <span className="font-editorial text-3xl leading-none text-forest-950">{week.done}</span>
-            <span dir="ltr" className="text-[11px] text-forest-800/65">/ 7</span>
+            <span dir="ltr" className="text-[11px] text-forest-800/85">/ 7</span>
           </Ring>
           <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-3 text-sm">
             <div>
-              <dt className="text-xs text-forest-800/70">{t('story.levelNow')}</dt>
+              <dt className="text-xs text-forest-800/85">{t('story.levelNow')}</dt>
               <dd className="mt-1">
                 <LadderSteps key={now.progress.level} level={now.progress.level} from={prevLevel} max={max} label={t('ladder.level', { n: now.progress.level, max })} />
               </dd>
             </div>
             <div>
-              <dt className="text-xs text-forest-800/70">{t('story.timeNow')}</dt>
+              <dt className="text-xs text-forest-800/85">{t('story.timeNow')}</dt>
               <dd className="mt-1 flex items-center gap-1.5 font-editorial text-xl text-forest-950">
                 <Clock className="h-4 w-4 text-ochre-700" aria-hidden="true" />
                 {now.setup?.usualTime}
               </dd>
             </div>
             <div className="col-span-2">
-              <dt className="text-xs text-forest-800/70">{t('story.channelNow')}</dt>
+              <dt className="text-xs text-forest-800/85">{t('story.channelNow')}</dt>
               <dd className="mt-1">
                 <Chip tone="info">
                   <BellRing className="h-3.5 w-3.5" aria-hidden="true" />

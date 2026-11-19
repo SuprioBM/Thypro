@@ -46,6 +46,10 @@ export function reasonText(t: TFn, code: string, params?: Params): string {
     // Adaptation reasons carry raw barrier and channel ids: show them in words.
     const p = params ? { ...params } : undefined;
     if (p && typeof p.barrier === 'string' && `barrier.${p.barrier}` in en) p.barrier = t(`barrier.${p.barrier}` as Key);
+    if (p && typeof p.action === 'string' && `coach.action.${p.action}` in en) p.action = t(`coach.action.${p.action}` as Key);
+    if (p && typeof p.signal === 'string' && `coach.signal.${p.signal}` in en) p.signal = t(`coach.signal.${p.signal}` as Key);
+    if (p && typeof p.track === 'string' && `planner.track.${p.track}` in en) p.track = t(`planner.track.${p.track}` as Key);
+    if (p && typeof p.rule === 'string' && `coach.rule.${p.rule}` in en) p.rule = t(`coach.rule.${p.rule}` as Key);
     if (p && code === 'adapt_switch_channel') {
       for (const k of ['from', 'to'] as const) {
         if (typeof p[k] === 'string' && `channel.${p[k]}` in en) p[k] = t(`channel.${p[k]}` as Key);

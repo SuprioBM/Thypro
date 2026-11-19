@@ -68,7 +68,7 @@ export const BodyMap: React.FC<{
         <div className="min-h-0 flex-1 aspect-[1/2]">
           <Figure shapes={FRONT} levels={levels} />
         </div>
-        {frontLabel && <figcaption className="mt-1 text-[11px] text-forest-800/65">{frontLabel}</figcaption>}
+        {frontLabel && <figcaption className="mt-1 text-[11px] text-forest-800/85">{frontLabel}</figcaption>}
       </figure>
     )}
     {view !== 'front' && (
@@ -76,7 +76,7 @@ export const BodyMap: React.FC<{
         <div className="min-h-0 flex-1 aspect-[1/2]">
           <Figure shapes={BACK} levels={levels} />
         </div>
-        {backLabel && <figcaption className="mt-1 text-[11px] text-forest-800/65">{backLabel}</figcaption>}
+        {backLabel && <figcaption className="mt-1 text-[11px] text-forest-800/85">{backLabel}</figcaption>}
       </figure>
     )}
   </div>

@@ -3,6 +3,8 @@ import type { Dict } from './en';
 /** Bangla. Drafted by the engineering team: needs native-speaker review before public use. */
 import { bnP2 } from './p2.bn';
 import { bnP3 } from './p3.bn';
+import { bnP4 } from './p4.bn';
+import { bnP5 } from './p5.bn';
 
 const bnBase = {
   'app.name': 'থাইপ্রো',
@@ -343,4 +345,4 @@ const bnBase = {
   'reason.unknown': 'কারণ পাওয়া যায়নি'
 };
 
-export const bn: Dict = { ...bnBase, ...bnP2, ...bnP3 };
+export const bn: Dict = { ...bnBase, ...bnP2, ...bnP3, ...bnP4, ...bnP5 };

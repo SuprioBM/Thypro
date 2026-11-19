@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Bell, ChevronRight, Dumbbell, Volume2 } from 'lucide-react';
+import { Bell, Bot, ChevronRight, Dumbbell, ListChecks, Volume2 } from 'lucide-react';
+import { resolveActions } from '../../planner/context';
+import { DEFAULT_CONTEXT } from '../../domain/types';
 import { cumulativeDays, detectLapse, stepUpOffer } from '../../domain/ladder';
 import { weeklyStats } from '../../domain/week';
 import { maxLevel, resolvePlanItem } from '../../plan/templates';
@@ -18,6 +20,8 @@ export const Today: React.FC = () => {
   const store = useStore();
   const { state, today, activePlan, blocked } = store;
   const [skippedBarrier, setSkippedBarrier] = useState(false);
+  const plannerActions = state.setup ? resolveActions(state.planner, state.setup.context ?? DEFAULT_CONTEXT, state.setup.screening).filter((a) => a.visible) : [];
+  const plannerDone = plannerActions.filter((a) => state.planner.entries[today]?.[a.track]?.done).length;
   const todayCheckin = state.checkins.find((c) => c.date === today);
   const [editing, setEditing] = useState(!todayCheckin);
 
@@ -47,7 +51,7 @@ export const Today: React.FC = () => {
         <h1 id="screen-title" className="font-editorial text-2xl text-forest-950 sm:text-3xl">
           {name ? t('today.greeting', { name }) : t('today.greetingAnon')}
         </h1>
-        <p className="mt-1 text-sm text-forest-900/70">{fmtDate(today, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+        <p className="mt-1 text-sm text-forest-900/80">{fmtDate(today, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
       </div>
 
       {escalation && <EscalationCard decision={escalation} contact={state.profile.familyContact} />}
@@ -97,7 +101,7 @@ export const Today: React.FC = () => {
         <div className="flex items-center gap-5">
           <Ring value={week.fill} size={104} label={t('review.ringLabel', { done: week.done })}>
             <span className="font-editorial text-3xl leading-none text-forest-950">{week.done}</span>
-            <span dir="ltr" className="text-[11px] text-forest-800/65">/ 7</span>
+            <span dir="ltr" className="text-[11px] text-forest-800/85">/ 7</span>
           </Ring>
           <div className="min-w-0">
             <h2 id="week-title" className="font-editorial text-lg text-forest-950">
@@ -132,15 +136,15 @@ export const Today: React.FC = () => {
             )}
             {todayCheckin.note && (
               <div className="rounded-xl bg-ivory-100 p-3 text-sm text-forest-950">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('checkin.original')}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('checkin.original')}</p>
                 <p className="mt-0.5 whitespace-pre-wrap">{todayCheckin.note.original}</p>
                 {todayCheckin.note.translation ? (
                   <>
-                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('checkin.translated')}</p>
+                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('checkin.translated')}</p>
                     <p className="mt-0.5 whitespace-pre-wrap">{todayCheckin.note.translation.text}</p>
                   </>
                 ) : (
-                  todayCheckin.note.lang !== 'en' && <p className="mt-2 text-xs text-forest-800/65">{t('checkin.translationUnavailable')}</p>
+                  todayCheckin.note.lang !== 'en' && <p className="mt-2 text-xs text-forest-800/85">{t('checkin.translationUnavailable')}</p>
                 )}
               </div>
             )}
@@ -185,7 +189,7 @@ export const Today: React.FC = () => {
             </button>
           </div>
         )}
-        <div className="mt-3 flex items-center gap-2 border-t border-forest-900/10 pt-3 text-xs text-forest-800/70">
+        <div className="mt-3 flex items-center gap-2 border-t border-forest-900/10 pt-3 text-xs text-forest-800/85">
           <Bell className="h-4 w-4" aria-hidden="true" />
           {nextReminder ? t('today.nextReminder', { time: nextReminder.time }) : t('today.noReminder')}
           <span aria-hidden="true">·</span>
@@ -193,7 +197,39 @@ export const Today: React.FC = () => {
         </div>
       </Card>
 
-      <Card index={4} labelledBy="strength-card-title">
+      <Card index={4} labelledBy="planner-card-title">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-ochre-300">
+            <ListChecks className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="planner-card-title" className="font-editorial text-lg text-forest-950">{t('today.planner.title')}</h2>
+            <p className="text-sm text-forest-900/75">{plannerActions.length ? t('planner.progress', { done: plannerDone, total: plannerActions.length }) : t('today.planner.body')}</p>
+          </div>
+          <button type="button" onClick={() => go('planner')} className="thy-btn-ghost min-h-[44px] !py-2">
+            {t('st.card.open')}
+            <ChevronRight className="h-4 w-4 flip-rtl" aria-hidden="true" />
+          </button>
+        </div>
+      </Card>
+
+      <Card index={5} labelledBy="coach-card-title">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-ochre-300">
+            <Bot className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="coach-card-title" className="font-editorial text-lg text-forest-950">{t('today.coach.title')}</h2>
+            <p className="text-sm text-forest-900/75">{state.coach.pending ? t('today.coach.pending') : t('today.coach.body')}</p>
+          </div>
+          <button type="button" onClick={() => go('coach')} className="thy-btn-ghost min-h-[44px] !py-2">
+            {t('st.card.open')}
+            <ChevronRight className="h-4 w-4 flip-rtl" aria-hidden="true" />
+          </button>
+        </div>
+      </Card>
+
+      <Card index={6} labelledBy="strength-card-title">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-ochre-300">
             <Dumbbell className="h-5 w-5" aria-hidden="true" />

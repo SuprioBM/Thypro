@@ -14,8 +14,8 @@ import type { AppState } from '../domain/types';
 import { normalizeState } from './reducer';
 
 const KEY = 'thypro.local.v1';
-/** 1 = phase 1. 2 = phase 2 (ladder, prefs, barriers, people). 3 = strength & mobility. Older data is migrated on load, never dropped. */
-export const SCHEMA = 3;
+/** 1 = phase 1. 2 = phase 2 (ladder, prefs, barriers, people). 3 = strength & mobility. 4 = daily planner, coach and device signals. Older data is migrated on load, never dropped. */
+export const SCHEMA = 4;
 
 export interface StorageLike {
   getItem(key: string): string | null;
@@ -24,7 +24,7 @@ export interface StorageLike {
 }
 
 export interface Persistence {
-  kind: 'memory' | 'local';
+  kind: 'memory' | 'local' | 'cloud';
   load(): AppState | null;
   save(state: AppState): void;
   clear(): void;
@@ -53,7 +53,7 @@ export function createLocalPersistence(storage: StorageLike): Persistence {
         if (!raw) return null;
         const parsed = JSON.parse(raw) as { schema?: number; state?: AppState };
         if (!parsed.state || parsed.state.mode !== 'local') return null;
-        if (parsed.schema !== 1 && parsed.schema !== 2 && parsed.schema !== SCHEMA) return null;
+        if (parsed.schema !== 1 && parsed.schema !== 2 && parsed.schema !== 3 && parsed.schema !== SCHEMA) return null;
         return normalizeState(parsed.state);
       } catch {
         return null;

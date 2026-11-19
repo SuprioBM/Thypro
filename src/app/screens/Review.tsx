@@ -71,7 +71,7 @@ export const Review: React.FC = () => {
     { key: 'done', n: week.done, tone: 'text-forest-700' },
     { key: 'skipped', n: week.skipped, tone: 'text-ochre-700' },
     { key: 'unknown', n: week.unknown, tone: 'text-forest-800' },
-    { key: 'missing', n: week.missing, tone: 'text-forest-800/70' }
+    { key: 'missing', n: week.missing, tone: 'text-forest-800/85' }
   ];
 
   return (
@@ -86,13 +86,13 @@ export const Review: React.FC = () => {
         <div className="flex items-center gap-5">
           <Ring value={week.fill} size={116} label={t('review.ringLabel', { done: week.done })}>
             <span className="font-editorial text-4xl leading-none text-forest-950">{week.done}</span>
-            <span dir="ltr" className="text-xs text-forest-800/65">/ 7</span>
+            <span dir="ltr" className="text-xs text-forest-800/85">/ 7</span>
           </Ring>
           <dl className="grid flex-1 grid-cols-2 gap-x-3 gap-y-2">
             {stats.map((s) => (
               <div key={s.key}>
                 <dd className={`font-editorial text-2xl leading-none ${s.tone}`}>{s.n}</dd>
-                <dt className="text-xs text-forest-800/70">{t(STATE_LABEL[s.key])}</dt>
+                <dt className="text-xs text-forest-800/85">{t(STATE_LABEL[s.key])}</dt>
               </div>
             ))}
           </dl>
@@ -104,13 +104,13 @@ export const Review: React.FC = () => {
         <ul className="grid grid-cols-7 gap-1 text-center">
           {week.days.map((d) => (
             <li key={d.date} className="flex flex-col items-center gap-1.5">
-              <span className="text-[11px] text-forest-800/70">{fmtDate(d.date, { weekday: 'short' })}</span>
+              <span className="text-[11px] text-forest-800/85">{fmtDate(d.date, { weekday: 'short' })}</span>
               <DayMark state={d.state} />
               <span className="sr-only">{`${fmtDate(d.date)}: ${t(STATE_LABEL[d.state])}`}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-xs text-forest-800/70">{t('review.missingNote')}</p>
+        <p className="mt-3 text-xs text-forest-800/85">{t('review.missingNote')}</p>
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -118,13 +118,13 @@ export const Review: React.FC = () => {
           <TotalDays total={cumulativeDays(state.checkins)} />
         </Card>
         <Card index={4}>
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/70">{t('review.trendTitle')}</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/85">{t('review.trendTitle')}</h2>
           <p className="mt-1 font-editorial text-xl text-forest-950">{t(`review.trend.${week.trend}` as Key)}</p>
         </Card>
       </div>
 
       <Card index={5}>
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/70">{t('review.fourWeeks')}</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-forest-800/85">{t('review.fourWeeks')}</h2>
         <ul className="mt-3 grid grid-cols-4 items-end gap-3">
           {weeks.map((w) => (
             <li key={w.end} className="flex flex-col items-center gap-1">
@@ -140,8 +140,8 @@ export const Review: React.FC = () => {
                   />
                 )}
               </div>
-              <span className="text-[11px] text-forest-800/70">{w.noData ? t('review.missing') : `${w.done}/7`}</span>
-              <span className="text-[10px] text-forest-800/55">{fmtDate(w.end, { day: 'numeric', month: 'short' })}</span>
+              <span className="text-[11px] text-forest-800/85">{w.noData ? t('review.missing') : `${w.done}/7`}</span>
+              <span className="text-[10px] text-forest-800/85">{fmtDate(w.end, { day: 'numeric', month: 'short' })}</span>
             </li>
           ))}
         </ul>

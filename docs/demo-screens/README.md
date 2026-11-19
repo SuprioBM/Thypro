@@ -48,3 +48,27 @@ Same method as above. Guest demo person, invented data.
 | 40 | Strength home: the next session with a body map and exercise list | `40-strength-today-desktop` |
 | 41 | Guided workout: target and reason per exercise, set steppers, progress bar | `41-strength-workout-desktop` |
 | 42 | Progress: muscle map (this week's work), per-muscle sets | `42-strength-muscle-map-mobile` |
+
+## Phase 3: planner, Comeback Coach, replay (Playwright)
+
+Captured automatically by `npm run test:e2e` (Chromium, `mobile-360` and `desktop` projects) into `e2e/`. Every person and number is invented.
+
+Recording sequence (under three minutes): Guest, Language, Goal, Planner, Technique card, Week replay with coach, Control panel, Sponsor view, Export.
+
+| # | Step | Files |
+|---|---|---|
+| 01 | Landing with **Continue as Guest** | `e2e/*-01-landing` |
+| 02 | Guest today (synthetic Bangla-speaking night-shift worker) | `e2e/*-02-guest-today` |
+| 03 | Language switch to Urdu (right-to-left) | `e2e/*-03-urdu-rtl` |
+| 04 | Goal setup | `e2e/*-04-goal` |
+| 05 | Daily planner, four tracks, runs and "total days are safe" | `e2e/*-05-planner` |
+| 06 | Technique card (rationale, limits, source) | `e2e/*-06-technique` |
+| 07 | Comeback Coach: honest line, top factors, one suggestion | `e2e/*-07-coach-proposal` |
+| 08 | Week replay with coach (SIMULATION) | `e2e/*-08-replay-with` |
+| 09 | Week replay without coach (automatic step-down) | `e2e/*-09-replay-without` |
+| 10 | Control panel | `e2e/*-10-controls` |
+| 11 | Sponsor view (groups under 20 never shown) | `e2e/*-11-sponsor` |
+| 12 | Export | `e2e/*-12-export` |
+| 13 | Clinician coach view (demo) | `e2e/*-13-clinician` |
+| lang | Planner and coach in Bangla, Hindi, Urdu, English | `e2e/*-lang-*` |
+| local | Own-plan mode empty states | `e2e/*-local-empty-states` |

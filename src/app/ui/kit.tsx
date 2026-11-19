@@ -38,7 +38,7 @@ export const ScreenHeader: React.FC<{ title: string; subtitle?: string; id?: str
       <h1 id={id} className="font-editorial text-2xl sm:text-3xl text-forest-950 leading-tight">
         {title}
       </h1>
-      {subtitle && <p className="mt-1 text-sm text-forest-900/70 leading-relaxed">{subtitle}</p>}
+      {subtitle && <p className="mt-1 text-sm text-forest-900/80 leading-relaxed">{subtitle}</p>}
     </div>
     {right}
   </div>
@@ -78,7 +78,7 @@ export const Switch: React.FC<{
   >
     <span className="min-w-0">
       <span className="block text-sm font-medium text-forest-950">{label}</span>
-      {hint && <span className="block text-xs text-forest-800/65">{hint}</span>}
+      {hint && <span className="block text-xs text-forest-800/85">{hint}</span>}
     </span>
     <span
       aria-hidden="true"
@@ -180,7 +180,7 @@ export const ScreenSkeleton: React.FC = () => {
 export const EmptyState: React.FC<{ title: string; body?: string; action?: React.ReactNode }> = ({ title, body, action }) => (
   <div className="stagger-in rounded-card border border-dashed border-forest-900/20 bg-ivory-50 p-6 text-center">
     <p className="font-editorial text-lg text-forest-950">{title}</p>
-    {body && <p className="mx-auto mt-1 max-w-sm text-sm text-forest-900/70">{body}</p>}
+    {body && <p className="mx-auto mt-1 max-w-sm text-sm text-forest-900/80">{body}</p>}
     {action && <div className="mt-4 flex justify-center">{action}</div>}
   </div>
 );

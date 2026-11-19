@@ -3,7 +3,10 @@
  * Dates are local calendar days as 'YYYY-MM-DD'; timestamps are ISO strings.
  */
 
+import type { CoachState } from '../coach/types';
+import type { PlannerState } from '../planner/types';
 import type { StrengthState } from '../strength/types';
+import type { WearableState } from '../wearables/feed';
 
 export type Lang = 'en' | 'bn' | 'hi' | 'ur';
 export const LANGS: readonly Lang[] = ['en', 'bn', 'hi', 'ur'] as const;
@@ -319,8 +322,21 @@ export interface SharePerson {
 
 /* ---------- Audit ---------- */
 
-export type AuditKind = 'safety' | 'plan' | 'escalation' | 'adaptation';
-export type AuditResult = 'pass' | 'blocked' | 'generated' | 'escalated' | 'fallback' | 'adapted';
+export type AuditKind = 'safety' | 'plan' | 'escalation' | 'adaptation' | 'planner' | 'coach';
+export type AuditResult =
+  | 'pass'
+  | 'blocked'
+  | 'generated'
+  | 'escalated'
+  | 'fallback'
+  | 'adapted'
+  | 'proposed'
+  | 'accepted'
+  | 'edited'
+  | 'declined'
+  | 'auto_applied'
+  | 'overridden'
+  | 'undone';
 
 export interface AuditEntry {
   id: string;
@@ -332,6 +348,8 @@ export interface AuditEntry {
   reasonParams?: Record<string, string | number>;
   /** For plan entries. */
   templateId?: string;
+  /** Coach entries: input summary, config version, model and outcome. Plain strings and numbers only. */
+  meta?: Record<string, string | number>;
 }
 
 /* ---------- Family consent ---------- */
@@ -375,4 +393,10 @@ export interface AppState {
   signals: PilotSignal[];
   /** Strength & mobility module. */
   strength: StrengthState;
+  /** Daily habit planner (four tracks). */
+  planner: PlannerState;
+  /** Explainable Comeback Coach. */
+  coach: CoachState;
+  /** Optional device signals: simulated or CSV only. */
+  wearables: WearableState;
 }
