@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { AppShell } from './AppShell';
 import { Entry } from './Entry';
 import { go, parseHash, useRoute, type Screen } from './router';
-import { readSession, startSession } from './session';
+import { endSession, readSession, startSession, type EntryMode } from './session';
+import { AccountGate } from './cloud/AccountGate';
 import { StoreProvider } from './store';
-import type { Lang, SessionMode } from '../domain/types';
+import type { Lang } from '../domain/types';
 
 /**
  * Entry point for everything under #/app.
@@ -31,7 +32,7 @@ const AppRoot: React.FC = () => {
     return (
       <Entry
         initialLang="en"
-        onStart={(mode: SessionMode, lang: Lang) => {
+        onStart={(mode: EntryMode, lang: Lang) => {
           startSession(mode, lang);
           setSession({ mode, lang });
           go(mode === 'local' ? 'setup' : 'today');
@@ -41,6 +42,24 @@ const AppRoot: React.FC = () => {
   }
 
   const screen: Exclude<Screen, 'start'> = route.screen === 'start' ? 'today' : route.screen;
+  if (session.mode === 'account') {
+    return (
+      <AccountGate
+        lang={session.lang}
+        onCancel={() => {
+          endSession();
+          setSession(null);
+          go('start');
+        }}
+      >
+        {({ persistence, onExit }) => (
+          <StoreProvider mode="local" lang={session.lang} persistence={persistence} onExit={onExit}>
+            <AppShell screen={screen} />
+          </StoreProvider>
+        )}
+      </AccountGate>
+    );
+  }
   return (
     <StoreProvider mode={session.mode} lang={session.lang}>
       <AppShell screen={screen} />

@@ -38,7 +38,7 @@ export const Reminders: React.FC = () => {
           <BellRing className="h-4 w-4" aria-hidden="true" />
           {t('rem.sendTest')}
         </button>
-        <p className="text-xs text-forest-800/70">{t('rem.channelNote')}</p>
+        <p className="text-xs text-forest-800/85">{t('rem.channelNote')}</p>
         <div className="flex flex-wrap items-center gap-2">
           <Chip tone="info">{t(`channel.${state.prefs.preferredChannel}` as Key)}</Chip>
           {state.prefs.quietHours.enabled && (

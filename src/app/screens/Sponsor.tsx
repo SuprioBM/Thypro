@@ -23,7 +23,7 @@ const Stats: React.FC<{ s: GroupStats }> = ({ s }) => {
       {rows.map(([k, v]) => (
         <div key={k}>
           <dd className="font-editorial text-xl leading-tight text-forest-950">{v}</dd>
-          <dt className="text-xs text-forest-800/70">{k}</dt>
+          <dt className="text-xs text-forest-800/85">{k}</dt>
         </div>
       ))}
     </dl>
@@ -61,7 +61,7 @@ export const Sponsor: React.FC = () => {
                   <Users className="h-5 w-5 text-ochre-700" aria-hidden="true" />
                   <span lang="en" dir="ltr">{g.group}</span>
                 </h2>
-                {g.suppressed ? <p className="mt-2 text-sm font-medium text-forest-800/75">{t('sponsor.notEnough')}</p> : <Stats s={g} />}
+                {g.suppressed ? <p className="mt-2 text-sm font-medium text-forest-800/85">{t('sponsor.notEnough')}</p> : <Stats s={g} />}
               </Card>
             ))}
           </ul>

@@ -105,7 +105,7 @@ const PersonBlock: React.FC<{
             </button>
           )}
         </div>
-        <p className="text-xs text-forest-800/70">{t('family.toggles')}</p>
+        <p className="text-xs text-forest-800/85">{t('family.toggles')}</p>
         <div className="divide-y divide-forest-900/8">
           {FAMILY_FIELDS.map((f) => (
             <Switch key={f} checked={consent[f]} onChange={(v) => onToggle(f, v)} label={t(`family.field.${f}` as Key)} />
@@ -139,7 +139,7 @@ export const Family: React.FC = () => {
 
       <Card tone="soft" index={0} className="text-sm text-forest-900/85">
         {t('family.demoNote')}
-        {!contact && <p className="mt-1 text-forest-800/70">{t('family.noContact')}</p>}
+        {!contact && <p className="mt-1 text-forest-800/85">{t('family.noContact')}</p>}
       </Card>
 
       {contact && (

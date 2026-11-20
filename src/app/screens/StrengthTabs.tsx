@@ -107,7 +107,7 @@ export const Onboarding: React.FC = () => {
     <div className="space-y-5 thy-swap">
       <div>
         <h2 className="font-editorial text-xl text-forest-950">{t('st.start.title')}</h2>
-        <p className="mt-1 text-sm text-forest-900/70">{t('st.start.intro')}</p>
+        <p className="mt-1 text-sm text-forest-900/80">{t('st.start.intro')}</p>
       </div>
 
       <div className="grid gap-3" role="radiogroup" aria-label={t('st.start.title')}>
@@ -148,7 +148,7 @@ export const Onboarding: React.FC = () => {
       <Expandable open={picked !== null} id="st-screen">
         <Card tone="soft" className="mt-1">
           <h3 className="font-editorial text-lg text-forest-950">{t('st.screen.title')}</h3>
-          <p className="mt-1 text-sm text-forest-900/70">{t('st.screen.intro')}</p>
+          <p className="mt-1 text-sm text-forest-900/80">{t('st.screen.intro')}</p>
           <div className="mt-4 space-y-4">
             {STRENGTH_SAFETY.questions.map((q) => (
               <fieldset key={q}>
@@ -273,11 +273,11 @@ export const TodayTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
           {week.map((d, i) => (
             <li key={d.date} className="text-center">
               <span
-                className={`mx-auto flex h-9 w-full items-center justify-center rounded-xl text-xs font-semibold transition-colors duration-500 ${d.n > 0 ? 'bg-forest-800 text-ivory-50' : 'bg-forest-900/[0.06] text-forest-800/50'} ${i === 6 ? 'ring-2 ring-ochre-400/60' : ''}`}
+                className={`mx-auto flex h-9 w-full items-center justify-center rounded-xl text-xs font-semibold transition-colors duration-500 ${d.n > 0 ? 'bg-forest-800 text-ivory-50' : 'bg-forest-900/[0.06] text-forest-800/85'} ${i === 6 ? 'ring-2 ring-ochre-400/60' : ''}`}
               >
                 {d.n > 0 ? <Check className="h-4 w-4" aria-label={`${d.label}: ${d.n}`} /> : null}
               </span>
-              <span className="mt-1 block text-[10px] text-forest-800/65">{d.label}</span>
+              <span className="mt-1 block text-[10px] text-forest-800/85">{d.label}</span>
             </li>
           ))}
         </ol>
@@ -301,7 +301,7 @@ export const TodayTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
       <Card index={3} labelledBy="st-recent">
         <h3 id="st-recent" className="mb-3 font-editorial text-lg text-forest-950">{t('st.recent')}</h3>
         {recent.length === 0 ? (
-          <p className="text-sm text-forest-900/65">{t('st.recent.none')}</p>
+          <p className="text-sm text-forest-900/80">{t('st.recent.none')}</p>
         ) : (
           <ul className="divide-y divide-forest-900/[0.08]">
             {recent.map((x) => {
@@ -313,7 +313,7 @@ export const TodayTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium text-forest-950">{r?.name[lang] ?? x.routineId}</div>
-                    <div className="text-xs text-forest-800/70">
+                    <div className="text-xs text-forest-800/85">
                       {fmtDate(x.date)} · {t('st.session.line', { n: x.exercises.length, min: x.minutes })}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-1">
@@ -327,7 +327,7 @@ export const TodayTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
                       {t('st.session.delete')}
                     </button>
                   ) : (
-                    <button type="button" onClick={() => setConfirmId(x.id)} aria-label={t('st.session.delete')} className="flex h-11 w-11 items-center justify-center rounded-xl text-forest-800/60 hover:bg-forest-900/[0.05]">
+                    <button type="button" onClick={() => setConfirmId(x.id)} aria-label={t('st.session.delete')} className="flex h-11 w-11 items-center justify-center rounded-xl text-forest-800/85 hover:bg-forest-900/[0.05]">
                       <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                   )}
@@ -355,10 +355,10 @@ export const PlanTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
     <div className="space-y-4">
       <Card className="thy-swap" labelledBy="st-plan-title">
         <h2 id="st-plan-title" className="font-editorial text-xl text-forest-950">{plan.name[lang]}</h2>
-        <p className="mt-1 text-xs text-forest-800/70">{t('st.plan.started', { date: fmtDate(plan.startedOn) })}</p>
+        <p className="mt-1 text-xs text-forest-800/85">{t('st.plan.started', { date: fmtDate(plan.startedOn) })}</p>
 
         <div className="mt-5">
-          <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-forest-800/60">{t('st.plan.mode')}</div>
+          <div className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-forest-800/85">{t('st.plan.mode')}</div>
           <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t('st.plan.mode')}>
             {(['weekly', 'rotation'] as const).map((m) => {
               const on = plan.mode === m;
@@ -377,7 +377,7 @@ export const PlanTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
               );
             })}
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-forest-900/70">{t(plan.mode === 'weekly' ? 'st.mode.weeklyHint' : 'st.mode.rotationHint')}</p>
+          <p className="mt-2 text-xs leading-relaxed text-forest-900/80">{t(plan.mode === 'weekly' ? 'st.mode.weeklyHint' : 'st.mode.rotationHint')}</p>
         </div>
 
         {plan.mode === 'weekly' ? (
@@ -386,8 +386,8 @@ export const PlanTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
               const r = plan.routines.find((q) => q.id === id);
               return (
                 <li key={i} className="text-center">
-                  <span className="block text-[10px] text-forest-800/65">{days[i]}</span>
-                  <span className={`mt-1 flex h-10 items-center justify-center rounded-xl px-0.5 text-[10px] font-semibold leading-tight ${r ? 'bg-forest-800 text-ivory-50' : 'bg-forest-900/[0.06] text-forest-800/50'}`}>
+                  <span className="block text-[10px] text-forest-800/85">{days[i]}</span>
+                  <span className={`mt-1 flex h-10 items-center justify-center rounded-xl px-0.5 text-[10px] font-semibold leading-tight ${r ? 'bg-forest-800 text-ivory-50' : 'bg-forest-900/[0.06] text-forest-800/85'}`}>
                     {r ? r.name[lang].split(' ').slice(-1)[0] : t('st.plan.restDay')}
                   </span>
                 </li>
@@ -423,9 +423,9 @@ export const PlanTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="font-editorial text-lg text-forest-950">{r.name[lang]}</div>
-                <div className="text-xs text-forest-800/70">{t('st.today.exercises', { n: r.items.length })} · {t('st.plan.min', { n: estimateMinutes(r.items) })}</div>
+                <div className="text-xs text-forest-800/85">{t('st.today.exercises', { n: r.items.length })} · {t('st.plan.min', { n: estimateMinutes(r.items) })}</div>
               </div>
-              <ChevronDown className={`h-5 w-5 shrink-0 text-forest-800/60 transition-transform duration-500 ease-editorial ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+              <ChevronDown className={`h-5 w-5 shrink-0 text-forest-800/85 transition-transform duration-500 ease-editorial ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
             <Expandable open={isOpen} id={`routine-${r.id}`}>
               <ul className="divide-y divide-forest-900/[0.07] border-t border-forest-900/[0.07]">
@@ -439,7 +439,7 @@ export const PlanTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium text-forest-950">{exName(rx.exerciseId, lang)}</div>
-                        <div className="text-[11px] text-forest-800/65">{t('st.plan.rest', { n: rx.restSec })}</div>
+                        <div className="text-[11px] text-forest-800/85">{t('st.plan.rest', { n: rx.restSec })}</div>
                       </div>
                       <span className="shrink-0 font-mono text-xs text-ochre-700">{rxText(rx, e, t)}</span>
                     </li>
@@ -455,7 +455,7 @@ export const PlanTab: React.FC<{ plan: ActivePlan }> = ({ plan }) => {
         <button type="button" onClick={() => strength.stopPlan()} className="thy-btn-ghost min-h-[44px]">
           {t('st.plan.change')}
         </button>
-        <p className="mt-2 text-xs text-forest-800/70">{t('st.plan.stopHint')}</p>
+        <p className="mt-2 text-xs text-forest-800/85">{t('st.plan.stopHint')}</p>
       </Card>
     </div>
   );
@@ -488,7 +488,7 @@ export const LibraryTab: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="relative">
-        <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-forest-800/50" aria-hidden="true" />
+        <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-forest-800/85" aria-hidden="true" />
         <input
           type="search"
           value={q}
@@ -516,10 +516,10 @@ export const LibraryTab: React.FC = () => {
         </div>
       </div>
 
-      <p className="px-1 text-xs text-forest-800/65" aria-live="polite">{t('st.lib.count', { n: list.length })}</p>
+      <p className="px-1 text-xs text-forest-800/85" aria-live="polite">{t('st.lib.count', { n: list.length })}</p>
 
       {list.length === 0 ? (
-        <Card><p className="text-sm text-forest-900/70">{t('st.lib.none')}</p></Card>
+        <Card><p className="text-sm text-forest-900/80">{t('st.lib.none')}</p></Card>
       ) : (
         <ul className="space-y-2.5">
           {list.map((e) => {
@@ -540,7 +540,7 @@ export const LibraryTab: React.FC = () => {
                       <Chip>{t(`st.equip.${e.equipment}` as Key)}</Chip>
                     </div>
                   </div>
-                  <ChevronDown className={`h-5 w-5 shrink-0 text-forest-800/55 transition-transform duration-500 ease-editorial ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  <ChevronDown className={`h-5 w-5 shrink-0 text-forest-800/85 transition-transform duration-500 ease-editorial ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                 </button>
                 <Expandable open={isOpen} id={`ex-${e.id}`}>
                   <div className="flex items-start gap-4 border-t border-forest-900/[0.07] p-4">
@@ -563,7 +563,7 @@ export const LibraryTab: React.FC = () => {
           })}
         </ul>
       )}
-      <p className="px-1 text-[11px] leading-relaxed text-forest-800/65">{t('st.lib.note')}</p>
+      <p className="px-1 text-[11px] leading-relaxed text-forest-800/85">{t('st.lib.note')}</p>
     </div>
   );
 };
@@ -622,7 +622,7 @@ export const ProgressTab: React.FC = () => {
         ].map(([label, value], i) => (
           <Card key={String(label)} index={i} className="!p-4 text-center">
             <div className="font-editorial text-3xl text-forest-950">{value}</div>
-            <div className="mt-0.5 text-[11px] text-forest-800/70">{label}</div>
+            <div className="mt-0.5 text-[11px] text-forest-800/85">{label}</div>
           </Card>
         ))}
       </div>
@@ -641,7 +641,7 @@ export const ProgressTab: React.FC = () => {
             <BodyMap levels={levels} frontLabel={t('st.map.front')} backLabel={t('st.map.back')} className="h-full" />
           </div>
         </div>
-        <div className="mx-auto mt-3 flex max-w-xs items-center gap-2 text-[10px] text-forest-800/65" aria-hidden="true">
+        <div className="mx-auto mt-3 flex max-w-xs items-center gap-2 text-[10px] text-forest-800/85" aria-hidden="true">
           <span>{t('st.map.less')}</span>
           <span className="h-2 flex-1 rounded-full" style={{ background: 'linear-gradient(90deg, rgba(10,51,44,0.07), rgba(245,112,31,0.96))' }} />
           <span>{t('st.map.more')}</span>
@@ -653,7 +653,7 @@ export const ProgressTab: React.FC = () => {
               <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-forest-900/[0.08]" aria-hidden="true">
                 <span className="block h-full rounded-full bg-ochre-500 transition-all duration-700 ease-editorial" style={{ width: `${Math.round(levels[m] * 100)}%` }} />
               </span>
-              <span className="w-20 shrink-0 text-end text-forest-800/70">{detail(m)}</span>
+              <span className="w-20 shrink-0 text-end text-forest-800/85">{detail(m)}</span>
             </li>
           ))}
         </ul>
@@ -670,7 +670,7 @@ export const ProgressTab: React.FC = () => {
             />
           ))}
         </div>
-        <p className="mt-2 text-[11px] text-forest-800/65">{t('st.prog.activityNote')}</p>
+        <p className="mt-2 text-[11px] text-forest-800/85">{t('st.prog.activityNote')}</p>
       </Card>
 
       <Card index={4} labelledBy="st-rec">
@@ -679,13 +679,13 @@ export const ProgressTab: React.FC = () => {
           {t('st.prog.records.title')}
         </h3>
         {records.length === 0 ? (
-          <p className="text-sm text-forest-900/70">{t('st.prog.records.none')}</p>
+          <p className="text-sm text-forest-900/80">{t('st.prog.records.none')}</p>
         ) : (
           <ul className="divide-y divide-forest-900/[0.07]">
             {records.map((r, i) => (
               <li key={`${r.date}-${r.exerciseId}-${i}`} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                 <span className="min-w-0 text-forest-950">{t(`st.rec.${r.kind}` as Key, { name: exName(r.exerciseId, lang), value: r.value })}</span>
-                <span className="shrink-0 text-xs text-forest-800/65">{fmtDate(r.date)}</span>
+                <span className="shrink-0 text-xs text-forest-800/85">{fmtDate(r.date)}</span>
               </li>
             ))}
           </ul>
@@ -694,16 +694,16 @@ export const ProgressTab: React.FC = () => {
 
       <Card index={5} labelledBy="st-bw">
         <h3 id="st-bw" className="font-editorial text-lg text-forest-950">{t('st.prog.bw')}</h3>
-        <p className="mt-1 text-xs text-forest-800/70">{t('st.prog.bwNote')}</p>
+        <p className="mt-1 text-xs text-forest-800/85">{t('st.prog.bwNote')}</p>
         <div className="mt-3">
           {s.bodyWeights.length === 0 ? (
-            <p className="text-sm text-forest-900/65">{t('st.prog.bwNone')}</p>
+            <p className="text-sm text-forest-900/80">{t('st.prog.bwNone')}</p>
           ) : (
             <WeightChart points={s.bodyWeights} label={t('st.prog.bwChart')} />
           )}
         </div>
         <form onSubmit={submitBw} className="mt-4 flex items-end gap-2">
-          <label className="min-w-0 flex-1 text-xs text-forest-800/75">
+          <label className="min-w-0 flex-1 text-xs text-forest-800/85">
             {t('st.prog.bwLabel')}
             <input
               inputMode="decimal"

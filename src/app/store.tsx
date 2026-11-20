@@ -34,6 +34,14 @@ import {
   type ReminderChannel
 } from './reminders';
 import { NO_CONSENT, emptyState, isBlocked, reducer } from './reducer';
+import { selectProposal, validateProposal } from '../coach/actions';
+import { explainProposal, coachApiUrl } from '../coach/explain';
+import { buildCoachContext, buildCoachInput, trackCompletion } from '../coach/input';
+import { assessRisk } from '../coach/risk';
+import type { CoachSignal } from '../coach/types';
+import type { Track } from '../planner/config';
+import type { TrackEntry, TrackSettings } from '../planner/types';
+import { parseCsv, simulatedFeed, type CsvResult } from '../wearables/feed';
 import { endSession } from './session';
 import { leaveApp } from './router';
 import { speak } from './speech';
@@ -74,8 +82,34 @@ export interface StrengthApi {
   logBodyWeight: (kg: number) => void;
 }
 
+export interface PlannerApi {
+  complete: (track: Track, measure?: Partial<Omit<TrackEntry, 'done' | 'at'>>) => void;
+  undo: (track: Track) => void;
+  setTrack: (track: Track, patch: Partial<TrackSettings>) => void;
+  restoreLevel: (track: Track) => void;
+  stepUp: (track: Track, accept: boolean) => void;
+}
+
+export interface CoachApi {
+  /** True while a suggestion is being prepared. */
+  checking: boolean;
+  setEnabled: (v: boolean) => void;
+  setAuto: (v: boolean) => void;
+  setSignal: (signal: CoachSignal, v: boolean) => void;
+  setClinicianShare: (v: boolean) => void;
+  refresh: () => Promise<void>;
+  decide: (decision: 'accepted' | 'edited' | 'not_now', editedTo?: string) => void;
+  undo: (id: string) => void;
+  clinician: (id: string, decision: 'accepted' | 'overridden') => void;
+  loadSimulatedFeed: () => void;
+  importCsv: (text: string) => CsvResult;
+  clearWearables: () => void;
+}
+
 interface Store {
   state: AppState;
+  planner: PlannerApi;
+  coach: CoachApi;
   strength: StrengthApi;
   lang: Lang;
   today: string;
@@ -122,19 +156,25 @@ function initialState(mode: SessionMode, lang: Lang, persistence: Persistence): 
   return emptyState('local', lang);
 }
 
-export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: React.ReactNode }> = ({
-  mode,
-  lang: startLang,
-  children
-}) => {
+export const StoreProvider: React.FC<{
+  mode: SessionMode;
+  lang: Lang;
+  children: React.ReactNode;
+  /** Account mode supplies its own (cloud) persistence and an exit hook that signs out. */
+  persistence?: Persistence;
+  onExit?: () => void;
+}> = ({ mode, lang: startLang, children, persistence: given, onExit }) => {
   const persistence = useMemo<Persistence>(
-    () => (mode === 'guest' ? createGuestPersistence() : createLocalPersistence(window.localStorage)),
-    [mode]
+    () => given ?? (mode === 'guest' ? createGuestPersistence() : createLocalPersistence(window.localStorage)),
+    [mode, given]
   );
   const [state, dispatch] = useReducer(reducer, undefined, () => initialState(mode, startLang, persistence));
   const [now, setNow] = useState(() => new Date());
   const [notices, setNotices] = useState<Notice[]>([]);
   const [langAssist, setLangAssist] = useState<'off' | 'failed'>('off');
+  const [checking, setChecking] = useState(false);
+  const llmCooldown = useRef<number | null>(null);
+  const refreshing = useRef(false);
 
   const lang = state.profile.lang;
   const today = toDateKey(now);
@@ -224,6 +264,74 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
       langAssist,
       notices,
       dismissNotice: (id) => setNotices((n) => n.filter((x) => x.id !== id)),
+
+      planner: {
+        complete: (track, measure) => dispatch({ type: 'planner', action: { type: 'complete', track, date: today, nowIso: new Date().toISOString(), measure }, ...stamp() }),
+        undo: (track) => dispatch({ type: 'planner', action: { type: 'undo', track, date: today }, ...stamp() }),
+        setTrack: (track, patch) => dispatch({ type: 'planner', action: { type: 'setTrack', track, patch }, ...stamp() }),
+        restoreLevel: (track) => dispatch({ type: 'planner', action: { type: 'restoreLevel', track }, ...stamp() }),
+        stepUp: (track, accept) => dispatch({ type: 'planner', action: { type: 'stepUp', track, accept, today }, ...stamp() })
+      },
+
+      coach: {
+        checking,
+        setEnabled: (value) => dispatch({ type: 'coach', action: { type: 'setEnabled', value, ...stamp() } }),
+        setAuto: (value) => dispatch({ type: 'coach', action: { type: 'setAuto', value, ...stamp() } }),
+        setSignal: (signal, value) => dispatch({ type: 'coach', action: { type: 'setSignal', signal, value, ...stamp() } }),
+        setClinicianShare: (value) => dispatch({ type: 'coach', action: { type: 'setClinicianShare', value } }),
+        refresh: async () => {
+          const s = stateRef.current;
+          if (refreshing.current || !s.coach.enabled || s.coach.pending || s.coach.snoozedOn === today) return;
+          refreshing.current = true;
+          setChecking(true);
+          try {
+            // The wording call can be slow and state may move meanwhile (e.g. a step-down), so a
+            // proposal is re-validated against the latest state and recomputed once if it went stale.
+            for (let attempt = 0; attempt < 2; attempt++) {
+              const cur = stateRef.current;
+              const input = buildCoachInput(cur, today);
+              const risk = assessRisk(input);
+              const st = stamp();
+              const proposal = selectProposal({ input, risk, ctx: buildCoachContext(cur), trackCompletion: trackCompletion(cur, today), id: `cp-${st.seed}`, nowIso: st.nowIso });
+              if (!proposal) return;
+              const l = cur.profile.lang;
+              const res = await explainProposal(proposal, {
+                t: (k, p) => translate(l, k, p),
+                lang: l,
+                tone: cur.prefs.tone,
+                url: coachApiUrl(),
+                now: Date.now(),
+                cooldownUntil: llmCooldown.current
+              });
+              llmCooldown.current = res.cooldownUntil;
+              const latest = stateRef.current;
+              if (attempt === 0 && (latest.coach.pending || !validateProposal(proposal, buildCoachContext(latest)).ok)) {
+                if (latest.coach.pending) return;
+                continue;
+              }
+              dispatch({
+                type: 'coach',
+                action: { type: 'propose', proposal, explanation: res.record, inputSummary: `score ${risk.score}; top ${risk.top.map((f) => f.id).join(',')}; signals ${input.used.join(',') || 'none'}`, nowIso: st.nowIso, seed: st.seed }
+              });
+              return;
+            }
+          } finally {
+            refreshing.current = false;
+            setChecking(false);
+          }
+        },
+        decide: (decision, editedTo) => dispatch({ type: 'coach', action: { type: 'decide', decision, editedTo, today, ...stamp() } }),
+        undo: (id) => dispatch({ type: 'coach', action: { type: 'undo', id, ...stamp() } }),
+        clinician: (id, decision) => dispatch({ type: 'coach', action: { type: 'clinician', id, decision, ...stamp() } }),
+        loadSimulatedFeed: () =>
+          dispatch({ type: 'coach', action: { type: 'setWearables', wearables: { source: 'simulated', data: simulatedFeed(today, 14, 'night-shift', shiftDate), importedAt: new Date().toISOString() }, ...stamp() } }),
+        importCsv: (text) => {
+          const r = parseCsv(text);
+          if (r.rows > 0) dispatch({ type: 'coach', action: { type: 'setWearables', wearables: { source: 'csv', data: r.data, importedAt: new Date().toISOString() }, ...stamp() } });
+          return r;
+        },
+        clearWearables: () => dispatch({ type: 'coach', action: { type: 'clearWearables', ...stamp() } })
+      },
 
       strength: {
         screen: (answers) => {
@@ -327,12 +435,12 @@ export const StoreProvider: React.FC<{ mode: SessionMode; lang: Lang; children: 
       exitSession: () => {
         if (mode === 'guest') persistence.clear();
         endSession();
+        onExit?.();
         leaveApp();
       }
     }),
     // stamp() reads the clock at call time and needs no dependency.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state, lang, today, langAssist, notices, send, speakText, mode, persistence]
+    [state, lang, today, langAssist, notices, send, speakText, mode, persistence, checking, onExit]
   );
 
   return (

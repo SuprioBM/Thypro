@@ -64,7 +64,7 @@ export const Plan: React.FC = () => {
           </ul>
         )}
 
-        <p className="text-xs text-forest-800/65" aria-live="polite">
+        <p className="text-xs text-forest-800/85" aria-live="polite">
           {langAssist === 'failed' ? t('plan.langFailed') : t('plan.langOff')}
         </p>
       </Card>
@@ -93,11 +93,11 @@ export const Plan: React.FC = () => {
               <Expandable open={isOpen} id={panelId}>
                 <dl className="mt-1 space-y-2 rounded-xl bg-ivory-100 p-3 text-sm text-forest-900/90">
                   <div>
-                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('plan.reason')}</dt>
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('plan.reason')}</dt>
                     <dd>{text.reason}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('plan.templateLabel')}</dt>
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('plan.templateLabel')}</dt>
                     <dd className="font-mono text-xs">{text.templateId}</dd>
                   </div>
                   <div className="rounded-lg border border-ochre-200 bg-white p-2.5">
@@ -105,7 +105,7 @@ export const Plan: React.FC = () => {
                       {t('plan.technique')}: {techniqueText(text.technique, lang).name}
                     </dt>
                     <dd className="mt-1">{techniqueText(text.technique, lang).rationale}</dd>
-                    <dd className="mt-1 text-xs text-forest-800/75">
+                    <dd className="mt-1 text-xs text-forest-800/85">
                       <span className="font-semibold">{t('tech.limits')}:</span> {techniqueText(text.technique, lang).limits}
                     </dd>
                     <dd className="mt-1">
@@ -115,7 +115,7 @@ export const Plan: React.FC = () => {
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/60">{t('plan.guidance')}</dt>
+                    <dt className="text-[11px] font-semibold uppercase tracking-wider text-forest-800/85">{t('plan.guidance')}</dt>
                     <dd>
                       {text.guidanceSource.url ? (
                         <a href={text.guidanceSource.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-ochre-700 underline" lang="en" dir="ltr">
@@ -143,7 +143,7 @@ export const Plan: React.FC = () => {
             {t('plan.makeSmaller')}
           </button>
         )}
-        {earlier > 0 && <span className="text-xs text-forest-800/65">{t('plan.earlier', { n: earlier })}</span>}
+        {earlier > 0 && <span className="text-xs text-forest-800/85">{t('plan.earlier', { n: earlier })}</span>}
       </div>
     </div>
   );

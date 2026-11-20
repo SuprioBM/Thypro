@@ -20,7 +20,7 @@ const Stepper: React.FC<{
   const set = (v: number) => onChange(Math.max(0, Math.min(999, Math.round(v * 10) / 10)));
   return (
     <div className="min-w-0 flex-1">
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-forest-800/60">{label}</div>
+      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-forest-800/85">{label}</div>
       <div className="flex items-center overflow-hidden rounded-xl border border-forest-900/15 bg-white">
         <button type="button" onClick={() => set(value - step)} aria-label={`${label} −`} className="flex h-11 w-10 shrink-0 items-center justify-center text-forest-800 hover:bg-forest-900/[0.05] active:bg-forest-900/10">
           <Minus className="h-4 w-4" aria-hidden="true" />
@@ -82,7 +82,7 @@ export const Workout: React.FC = () => {
             {t('st.sum.records')}
           </h2>
           {finished.records.length === 0 ? (
-            <p className="mt-2 text-sm text-forest-900/70">{t('st.sum.none')}</p>
+            <p className="mt-2 text-sm text-forest-900/80">{t('st.sum.none')}</p>
           ) : (
             <ul className="mt-3 space-y-2">
               {finished.records.map((r) => (
@@ -195,7 +195,7 @@ export const Workout: React.FC = () => {
                     <Chip tone="info">{t('st.w.target')}: {targetText}</Chip>
                     <Chip>{lastText ? `${t('st.w.last')}: ${lastText}` : t('st.w.noLast')}</Chip>
                   </div>
-                  <p className="mt-2 text-xs leading-relaxed text-forest-900/70">{t(`st.reason.${e.target.reason}` as Key)}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-forest-900/80">{t(`st.reason.${e.target.reason}` as Key)}</p>
                 </div>
               </div>
 
@@ -237,7 +237,7 @@ export const Workout: React.FC = () => {
                   {t('st.w.addSet')}
                 </button>
                 {e.sets.length > 1 && (
-                  <button type="button" onClick={() => strength.removeSet(exIdx, e.sets.length - 1)} className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 text-xs font-semibold text-forest-800/75 hover:bg-forest-900/[0.05]">
+                  <button type="button" onClick={() => strength.removeSet(exIdx, e.sets.length - 1)} className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 text-xs font-semibold text-forest-800/85 hover:bg-forest-900/[0.05]">
                     <Minus className="h-3.5 w-3.5" aria-hidden="true" />
                     {t('st.w.removeSet')}
                   </button>
@@ -281,7 +281,7 @@ export const Workout: React.FC = () => {
               <OctagonAlert className="h-4 w-4" aria-hidden="true" />
               {t('st.w.unwell')}
             </button>
-            <button type="button" onClick={() => setPanel('discard')} className="min-h-[44px] rounded-xl px-3 text-sm font-medium text-forest-800/70 hover:bg-forest-900/[0.05]">
+            <button type="button" onClick={() => setPanel('discard')} className="min-h-[44px] rounded-xl px-3 text-sm font-medium text-forest-800/85 hover:bg-forest-900/[0.05]">
               {t('st.w.discard')}
             </button>
           </div>

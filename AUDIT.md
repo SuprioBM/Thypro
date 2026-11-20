@@ -174,3 +174,89 @@ Date: 2026-11-14. Branch `zubayer-hasan`. Inspired by the features of an open-so
 ## Known limits
 
 No exercise animations or photos (icons and a body map only). No custom exercises or routine editing yet (swap plan or mode only). Rest timer and speech cue need the app to stay open. Not verified: real devices, screen readers.
+
+
+---
+
+# Phase 3: Final product (Wellness Challenge 09)
+
+Date: 2026-11-20. Branch `zubayer-hasan`. Audit done before any change; existing features were extended, never rebuilt.
+
+## Baseline (before changes)
+
+`tsc`: 0 errors. `vitest`: 213 passed. `vite build`: OK. No ESLint, no Playwright, no backend, no database (so there are no database migrations; the save-schema upgrade is `normalizeState`). Git tree clean.
+
+## Feature audit
+
+| Feature | Existing implementation | Required changes | Status |
+|---|---|---|---|
+| Guest mode | Synthetic Bangla persona, 3 weeks of check-ins, in-memory only, tested | Persona made a night-shift worker; planner history added | Done |
+| Languages en/bn/hi/ur, RTL | Complete, tested for key parity | +~230 keys (p4) in all four; Urdu RTL checked in browser | Done, needs native review |
+| Goal setup (4 goals, context, tobacco referral-only) | Exists | None | Retained |
+| Adaptive plans, step-down/up | Exists for the main goal | Same rules added per planner track | Done |
+| Daily check-in, reminders, quiet hours, channels | Exists (simulated) | None | Retained |
+| Lapse recovery, barrier question | Exists | Barrier feeds the coach | Done |
+| Safety engine | Exists, versioned, tested | Planner/hydration rules (planner-2026.11.1) and coach validation (coach-safety-2026.11.1) | Done |
+| Technique cards, How suggestions work | Exists | Planner actions tagged with technique, rationale, limits, source | Done |
+| User controls, export, deletion | Exists | Export/deletion cover coach, planner and device data | Done |
+| Family, clinician pathway, sponsor, pilot/equity, audit log | Exist | Audit gains planner and coach entries with input summary, versions, model, outcome | Done |
+| Daily habit planner (4 tracks) | Missing | New: runs, weekly freeze, context adaptation, hydration safety | Done |
+| Comeback Coach | Missing | New: weighted risk score, top-3 factors, one proposal from 6 allowed actions, Accept/Edit/Not now, Turn Off, auto-adjust off by default, per-signal consent | Done |
+| LLM wording | Language layer for notes only | New proxy (Groq), redaction, schema + safety validation, template fallback, cooldown | Built, **not live-tested** |
+| Wearables | Missing | Simulated feed + CSV import, consent, missing values, no glucose | Done |
+| Personas / replay with and without coach | One-week story exists | 3 personas through the real reducer | Done |
+| Clinician coach view | Missing | Demo view with confirm/override and audit trail | Done (demo) |
+| ESLint | Missing | Added (0 problems) | Done |
+| Playwright 360px + desktop | Missing | 18 browser tests incl. axe-core | Done |
+| Technical documentation | Missing | `docs/TECHNICAL_DOCUMENTATION.md` | Done |
+| Deploy to thypro.app | Site is on Vercel under an account this machine's login does not own | None possible here | **Not done** |
+
+## Cost and integration table
+
+| Item | Provider | Cost | Status |
+|---|---|---|---|
+| AI explanations | Groq, free tier (`openai/gpt-oss-20b`) via `api/coach-explain.ts` | $0 | **Fallback active.** Integration unit-tested with a mock; not called live (no key supplied here) |
+| Database | None (browser memory / localStorage) | $0 | n/a |
+| Hosting | Vercel (existing, thypro.app) | $0 added | Not deployed from here (see below) |
+| PDF generation | Browser print pipeline (existing) | $0 | Working |
+| Notifications | In-app simulation | $0 | Simulated |
+| Wearables | Simulated feed + CSV | $0 | Simulated / working CSV |
+| Lint, e2e, a11y tests | ESLint, Playwright, axe-core (open source) | $0 | Working |
+
+## Missing credentials
+
+| Provider | Purpose | Needed |
+|---|---|---|
+| Groq | Coach wording | `GROQ_API_KEY` set as a **server-side** env var on the host (or `.env.local` for `npm run dev`), plus `VITE_COACH_API_URL` (public URL, no secret). Free key: https://console.groq.com/keys |
+| Vercel | Deploying to thypro.app | Access to the Vercel account/team that owns the thypro.app project, or push access to `SuprioBM/Thypro` if it auto-deploys from `main` |
+
+## Decisions
+
+1. **Coach is rule-based and hand-weighted.** Nothing was trained; the UI and docs say so.
+2. **Local mode starts with no signal consent**; Guest starts with invented non-device signals on, device signals off.
+3. **Weekly freeze** absorbs a track's first miss in a week (only when a run exists), so step-down needs two misses beyond it. This is why a first lapse is gentle.
+4. **Coach needs a lapse signal** (misses or trend); shift, heat or barriers alone never trigger a nudge.
+5. **The week replay is a toy model** with hand-set capacities; it is labelled SIMULATION and proves nothing about results.
+6. **The step-down appears in the "without coach" replay**: with the coach the proactive change comes first and prevents the second miss.
+7. **Contrast:** secondary text in the app was darkened (opacity 85) to pass axe-core AA.
+8. **Deployment not attempted**: creating a project in an unrelated account would not reach thypro.app and was not authorised.
+
+## Known gaps
+
+Per-person learning, clinician approval console, voice scam screening, hospital integration, blood donor network and clinical validation are not built. Screen readers and real devices were not tested. The marketing bundle is ~580 kB (192 kB gzip).
+
+## Phase 4: Supabase backend (accounts, sync, sharing)
+
+| Feature | Existing implementation | Required changes | Status |
+|---|---|---|---|
+| Database | None | Supabase Postgres, migrations in `supabase/migrations`, applied to the project | Done |
+| Auth | None | Email magic link (PKCE), lazy client, Entry option "Sign in or create an account" | Done; see email limits |
+| Sync | localStorage only | Cloud persistence with debounce, retry, offline status, audit mirror | Done, unit tested |
+| Sharing | Demo only | Real grants, accept, consent-filtered `shared_view`, instant revocation | Done, tested live |
+| Sponsor aggregate | Synthetic only | `sponsor_group_totals()` enforces n>=20 in SQL; shown for sponsor accounts | Done in DB; no groups seeded |
+| Delete | Local only | `delete_my_data`, `delete_my_account` | Done, tested live |
+| Security tests | None | `supabase/tests/rls.sql` and `e2e/account.spec.ts` | Pass |
+
+Costs: Supabase free plan, $0. Limits: about 2 auth emails/hour on the built-in sender; email templates locked; projects pause after a week idle.
+
+Credentials: the project URL and publishable key are bundled by design. The Supabase access token and DB password were used only for migrations and tests, from `.env.local`; rotate them (they were shared in chat). Vercel needs `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` before the build.

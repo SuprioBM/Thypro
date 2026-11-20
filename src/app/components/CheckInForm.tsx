@@ -96,7 +96,7 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
 
   return (
     <form onSubmit={submit} className="space-y-5" noValidate>
-      <p className="text-xs text-forest-800/65">{t('checkin.timeHint')}</p>
+      <p className="text-xs text-forest-800/85">{t('checkin.timeHint')}</p>
 
       <fieldset>
         <legend className="mb-2 text-sm font-semibold text-forest-950">{t('checkin.qStatus')}</legend>
@@ -145,7 +145,7 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
           className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-1 text-start text-sm font-semibold text-forest-950"
         >
           <span>
-            {t('checkin.qFlags')} <span className="font-normal text-forest-800/60">({t('common.optional')})</span>
+            {t('checkin.qFlags')} <span className="font-normal text-forest-800/85">({t('common.optional')})</span>
           </span>
           <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${flagsOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
@@ -177,7 +177,7 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
           className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-1 text-start text-sm font-semibold text-forest-950"
         >
           <span>
-            {t('checkin.qGlucose')} <span className="font-normal text-forest-800/60">({t('common.optional')})</span>
+            {t('checkin.qGlucose')} <span className="font-normal text-forest-800/85">({t('common.optional')})</span>
           </span>
           <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${glucoseOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
@@ -195,9 +195,9 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
                 aria-describedby="glucose-hint"
                 className="min-h-[44px] w-28 rounded-xl border border-forest-900/20 bg-white px-3 text-base text-forest-950"
               />
-              <span className="text-sm text-forest-800/70">mg/dL</span>
+              <span className="text-sm text-forest-800/85">mg/dL</span>
             </div>
-            <p id="glucose-hint" className={`text-xs ${glucoseInvalid ? 'font-medium text-signal-crimson' : 'text-forest-800/65'}`}>
+            <p id="glucose-hint" className={`text-xs ${glucoseInvalid ? 'font-medium text-signal-crimson' : 'text-forest-800/85'}`}>
               {glucoseInvalid ? t('checkin.glucoseInvalid') : t('checkin.glucoseHint')}
             </p>
           </div>
@@ -213,13 +213,13 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
           className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-1 text-start text-sm font-semibold text-forest-950"
         >
           <span>
-            {t('checkin.more')} <span className="font-normal text-forest-800/60">({t('common.optional')})</span>
+            {t('checkin.more')} <span className="font-normal text-forest-800/85">({t('common.optional')})</span>
           </span>
           <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${moreOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
         <Expandable open={moreOpen} id="more-panel">
           <div className="space-y-3 px-1 pb-1 pt-1">
-            <p className="text-xs text-forest-800/65">{t('checkin.moreHint')}</p>
+            <p className="text-xs text-forest-800/85">{t('checkin.moreHint')}</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 { id: 'ci-min', label: t('checkin.minutes'), value: minutes, set: setMinutes },
@@ -251,7 +251,7 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
           <label htmlFor="checkin-note" className="text-sm font-semibold text-forest-950">
-            {t('checkin.qNote')} <span className="font-normal text-forest-800/60">({t('common.optional')})</span>
+            {t('checkin.qNote')} <span className="font-normal text-forest-800/85">({t('common.optional')})</span>
           </label>
           {speech.supported && (
             <button
@@ -282,7 +282,7 @@ export const CheckInForm: React.FC<{ existing?: CheckIn; onSaved: () => void }> 
           placeholder={t('checkin.notePlaceholder')}
           className="w-full rounded-xl border border-forest-900/20 bg-white p-3 text-base text-forest-950"
         />
-        <p className="mt-1 text-xs text-forest-800/65" aria-live="polite">
+        <p className="mt-1 text-xs text-forest-800/85" aria-live="polite">
           {speech.supported
             ? speech.listening
               ? t('voice.listening')

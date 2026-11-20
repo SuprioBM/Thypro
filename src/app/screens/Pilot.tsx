@@ -31,33 +31,33 @@ export const Pilot: React.FC = () => {
         <h2 id="mine-title" className="font-editorial text-lg text-forest-950">{t('pilot.mine')}</h2>
         <dl className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <dt className="text-xs text-forest-800/70">{t('pilot.persistence')}</dt>
+            <dt className="text-xs text-forest-800/85">{t('pilot.persistence')}</dt>
             <dd className="font-editorial text-xl text-forest-950">
               {mine.persistence === null ? '—' : `${pct(mine.persistence)} · ${t('pilot.persistenceVal', { done: mine.doneDays, span: mine.spanDays })}`}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-forest-800/70">{t('pilot.recovery')}</dt>
+            <dt className="text-xs text-forest-800/85">{t('pilot.recovery')}</dt>
             <dd className="font-editorial text-xl text-forest-950">{mine.recoveries.length ? mine.recoveries.join(', ') : t('pilot.recoveryNone')}</dd>
           </div>
           <div>
-            <dt className="text-xs text-forest-800/70">{t('pilot.minutes')}</dt>
+            <dt className="text-xs text-forest-800/85">{t('pilot.minutes')}</dt>
             <dd className="font-editorial text-xl text-forest-950">{mine.activityMinutes}</dd>
           </div>
           <div>
-            <dt className="text-xs text-forest-800/70">{t('pilot.bp')}</dt>
+            <dt className="text-xs text-forest-800/85">{t('pilot.bp')}</dt>
             <dd className="text-sm text-forest-950">
               {mine.latestBp ? `${mine.latestBp.systolic}/${mine.latestBp.diastolic} mmHg · ${fmtDate(mine.latestBp.date)}` : t('pilot.notRecorded')}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-forest-800/70">{t('pilot.weight')}</dt>
+            <dt className="text-xs text-forest-800/85">{t('pilot.weight')}</dt>
             <dd className="text-sm text-forest-950">
               {mine.latestWeight ? `${mine.latestWeight.kg} kg · ${fmtDate(mine.latestWeight.date)}` : t('pilot.notRecorded')}
             </dd>
           </div>
         </dl>
-        <p className="mt-3 text-xs text-forest-800/70">{t('checkin.moreHint')}</p>
+        <p className="mt-3 text-xs text-forest-800/85">{t('checkin.moreHint')}</p>
       </Card>
 
       <Card index={1} labelledBy="signals-title">
@@ -65,7 +65,7 @@ export const Pilot: React.FC = () => {
         <p className="mt-1 text-sm text-forest-950">
           {signals.mostCommonHour === null ? t('pilot.noSignals') : t('pilot.commonHour', { hour: String(signals.mostCommonHour).padStart(2, '0') })}
         </p>
-        <p className="mt-1 text-xs text-forest-800/70">{t('pilot.signalsNote')}</p>
+        <p className="mt-1 text-xs text-forest-800/85">{t('pilot.signalsNote')}</p>
       </Card>
 
       <h2 className="pt-2 font-editorial text-xl text-forest-950">{t('pilot.equity')}</h2>
@@ -97,21 +97,21 @@ export const Pilot: React.FC = () => {
                   <li key={r.group} className="grid grid-cols-[minmax(6rem,auto)_1fr_auto] items-center gap-3 text-sm">
                     <span className="text-forest-950">{groupLabel(t, d.dimension, r.group)}</span>
                     {r.suppressed ? (
-                      <span className="col-span-2 text-forest-800/70">{t('sponsor.notEnough')}</span>
+                      <span className="col-span-2 text-forest-800/85">{t('sponsor.notEnough')}</span>
                     ) : (
                       <>
                         <span className="h-2.5 overflow-hidden rounded-full bg-forest-900/10" aria-hidden="true">
                           <span className="block h-full rounded-full bg-gradient-to-r from-forest-700 to-sage-500 transition-[width] duration-700 ease-editorial" style={{ width: pct(r.persistence) }} />
                         </span>
                         <span className="tabular-nums text-forest-950">
-                          {pct(r.persistence)} <span className="text-xs text-forest-800/60">(n={r.n})</span>
+                          {pct(r.persistence)} <span className="text-xs text-forest-800/85">(n={r.n})</span>
                         </span>
                       </>
                     )}
                   </li>
                 ))}
               </ul>
-              {d.gapPP !== null && <p className="mt-2 text-xs text-forest-800/75">{t('pilot.gap', { gap: d.gapPP })}</p>}
+              {d.gapPP !== null && <p className="mt-2 text-xs text-forest-800/85">{t('pilot.gap', { gap: d.gapPP })}</p>}
             </Card>
           ))}
         </>

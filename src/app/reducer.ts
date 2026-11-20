@@ -32,6 +32,11 @@ import {
   type SharePerson,
   type UserPrefs
 } from '../domain/types';
+import { coachReducer, emptyCoach, type CoachAct } from '../coach/reducer';
+import { plannerReducer, type PlannerAction } from '../planner/reducer';
+import { PLANNER_RULES } from '../planner/config';
+import { freshPlanner } from '../planner/types';
+import { EMPTY_WEARABLES } from '../wearables/feed';
 import { DEFAULT_LEVEL, clampLevel, generatePlan } from '../plan/generate';
 import { evaluateCheckin, evaluateSafety } from '../safety/engine';
 import { PROGRESSION_VERSION } from '../strength/progression';
@@ -61,6 +66,8 @@ export type Action =
   | { type: 'logDelivery'; entry: DeliveryLogEntry }
   | { type: 'logFallback'; nowIso: string; seed: string; reasonCode: string }
   | { type: 'strength'; action: StrengthAction; seed: string; nowIso: string }
+  | { type: 'planner'; action: PlannerAction; seed: string; nowIso: string }
+  | { type: 'coach'; action: CoachAct }
   | { type: 'replace'; state: AppState };
 
 export const DEFAULT_CONSENT: ConsentMap = {
@@ -108,7 +115,10 @@ export function emptyState(mode: SessionMode, lang: Lang): AppState {
     prefs: { ...DEFAULT_PREFS, channels: { ...DEFAULT_PREFS.channels }, quietHours: { ...DEFAULT_PREFS.quietHours } },
     people: [],
     signals: [],
-    strength: { ...EMPTY_STRENGTH, sessions: [], bodyWeights: [] }
+    strength: { ...EMPTY_STRENGTH, sessions: [], bodyWeights: [] },
+    planner: freshPlanner(),
+    coach: emptyCoach(mode),
+    wearables: { ...EMPTY_WEARABLES, data: {} }
   };
 }
 
@@ -247,6 +257,22 @@ function lastDeliveredChannel(state: AppState, date: string) {
   return (entry?.channel as UserPrefs['preferredChannel'] | undefined) ?? null;
 }
 
+/** Runs one planner action and logs any automatic level change to the audit log. */
+function plannerStep(state: AppState, a: PlannerAction, seed: string, nowIso: string): AppState {
+  const { state: planner, events } = plannerReducer(state.planner, a);
+  if (planner === state.planner) return state;
+  const audit: AuditEntry[] = events.map((e, i) => ({
+    id: `${seed}-pl${i}`,
+    at: nowIso,
+    kind: 'planner',
+    ruleVersion: PLANNER_RULES.version,
+    result: 'adapted',
+    reasonCode: `planner_${e.kind}`,
+    reasonParams: { track: e.track, from: e.from, to: e.to }
+  }));
+  return { ...state, planner, audit: audit.length ? [...state.audit, ...audit] : state.audit };
+}
+
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'setLang':
@@ -317,8 +343,16 @@ export function reducer(state: AppState, action: Action): AppState {
       return ladderTick(saved, action.checkin.date, action.nowIso, action.seed);
     }
 
-    case 'tick':
-      return ladderTick(state, action.today, action.nowIso, action.seed);
+    case 'tick': {
+      const laddered = ladderTick(state, action.today, action.nowIso, action.seed);
+      return plannerStep(laddered, { type: 'tick', today: action.today }, action.seed, action.nowIso);
+    }
+
+    case 'planner':
+      return plannerStep(state, action.action, action.seed, action.nowIso);
+
+    case 'coach':
+      return coachReducer(state, action.action);
 
     case 'recordBarrier': {
       if (!state.setup) return state;
@@ -510,6 +544,9 @@ export function normalizeState(raw: AppState): AppState {
     consent: { ...base.consent, ...(raw.consent ?? {}) },
     people: (raw.people ?? []).map((p) => ({ ...p, consent: { ...NO_CONSENT, ...p.consent } })),
     signals: raw.signals ?? [],
-    strength: { ...base.strength, ...(raw.strength ?? {}) }
+    strength: { ...base.strength, ...(raw.strength ?? {}) },
+    planner: { ...base.planner, ...(raw.planner ?? {}), tracks: { ...base.planner.tracks, ...(raw.planner?.tracks ?? {}) }, preShift: { ...base.planner.preShift, ...(raw.planner?.preShift ?? {}) } },
+    coach: { ...base.coach, ...(raw.coach ?? {}), consent: { ...base.coach.consent, ...(raw.coach?.consent ?? {}) }, history: raw.coach?.history ?? [] },
+    wearables: { ...base.wearables, ...(raw.wearables ?? {}), data: raw.wearables?.data ?? {} }
   };
 }

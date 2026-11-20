@@ -3,6 +3,8 @@ import type { Dict } from './en';
 /** Hindi. Drafted by the engineering team: needs native-speaker review before public use. */
 import { hiP2 } from './p2.hi';
 import { hiP3 } from './p3.hi';
+import { hiP4 } from './p4.hi';
+import { hiP5 } from './p5.hi';
 
 const hiBase = {
   'app.name': 'थाइप्रो',
@@ -343,4 +345,4 @@ const hiBase = {
   'reason.unknown': 'कारण उपलब्ध नहीं'
 };
 
-export const hi: Dict = { ...hiBase, ...hiP2, ...hiP3 };
+export const hi: Dict = { ...hiBase, ...hiP2, ...hiP3, ...hiP4, ...hiP5 };

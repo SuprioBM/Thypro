@@ -130,7 +130,7 @@ export const Settings: React.FC = () => {
             <Volume2 className="h-4 w-4" aria-hidden="true" />
             {t('rem.voiceSample')}
           </button>
-          {!canSpeak() && <span className="text-xs text-forest-800/70">{t('rem.voiceUnsupported')}</span>}
+          {!canSpeak() && <span className="text-xs text-forest-800/85">{t('rem.voiceUnsupported')}</span>}
         </div>
       </Section>
 
@@ -150,7 +150,7 @@ export const Settings: React.FC = () => {
       </Section>
 
       <Section icon={UserRound} title={t('settings.about')} index={5}>
-        <p className="text-xs text-forest-800/70">{t('settings.aboutHint')}</p>
+        <p className="text-xs text-forest-800/85">{t('settings.aboutHint')}</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-sm text-forest-950">
             <span className="mb-1 block font-medium">{t('settings.gender')}</span>
@@ -196,7 +196,7 @@ export const Settings: React.FC = () => {
             </button>
           )}
         </div>
-        {state.mode === 'guest' && <p className="text-xs text-forest-800/70">{t('settings.deleteGuest')}</p>}
+        {state.mode === 'guest' && <p className="text-xs text-forest-800/85">{t('settings.deleteGuest')}</p>}
         {confirmDelete && (
           <div role="alertdialog" aria-labelledby="del-q" className="rounded-xl border border-signal-crimson/30 bg-signal-crimsonSoft p-3">
             <p id="del-q" className="text-sm text-forest-950">{t('settings.deleteConfirm')}</p>

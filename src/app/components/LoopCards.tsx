@@ -66,7 +66,7 @@ export const BarrierCard: React.FC<{
               );
             })}
           </div>
-          <button type="button" onClick={onSkip} className="mt-2 min-h-[44px] text-sm text-forest-800/75 underline-offset-2 hover:underline">
+          <button type="button" onClick={onSkip} className="mt-2 min-h-[44px] text-sm text-forest-800/85 underline-offset-2 hover:underline">
             {t('barrier.skip')}
           </button>
         </div>
@@ -204,9 +204,9 @@ export const TotalDays: React.FC<{ total: number }> = ({ total }) => {
   const milestone = [...MILESTONES].reverse().find((m) => total >= m);
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wider text-forest-800/70">{t('review.totalTitle')}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-forest-800/85">{t('review.totalTitle')}</p>
       <p className="mt-1 font-editorial text-2xl text-forest-950">{t('ladder.total', { n: total })}</p>
-      <p className="mt-0.5 text-xs text-forest-800/70">{t('ladder.totalNote')}</p>
+      <p className="mt-0.5 text-xs text-forest-800/85">{t('ladder.totalNote')}</p>
       {milestone && <p className="mt-2 inline-flex rounded-full bg-ochre-100 px-3 py-1 text-xs font-medium text-ochre-800">{t('ladder.milestone', { n: milestone })}</p>}
     </div>
   );

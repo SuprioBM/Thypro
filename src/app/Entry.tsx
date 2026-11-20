@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Sparkles, User } from 'lucide-react';
+import { ArrowLeft, Cloud, Sparkles, User } from 'lucide-react';
+import { cloudConfigured } from '../cloud/client';
 import { LogoMark } from '../components/ui/Logo';
-import { LANGS, type Lang, type SessionMode } from '../domain/types';
+import { LANGS, type Lang } from '../domain/types';
 import { LANG_NAMES, isRtl, translate } from '../i18n';
 import { leaveApp } from './router';
+import type { EntryMode } from './session';
 
 /** First screen of the app: pick a language, then a guest demo or your own plan. */
-export const Entry: React.FC<{ initialLang: Lang; onStart: (mode: SessionMode, lang: Lang) => void }> = ({ initialLang, onStart }) => {
+export const Entry: React.FC<{ initialLang: Lang; onStart: (mode: EntryMode, lang: Lang) => void }> = ({ initialLang, onStart }) => {
   const [lang, setLang] = useState<Lang>(initialLang);
   const t = (k: Parameters<typeof translate>[1], p?: Parameters<typeof translate>[2]) => translate(lang, k, p);
 
@@ -49,18 +51,27 @@ export const Entry: React.FC<{ initialLang: Lang; onStart: (mode: SessionMode, l
               <Sparkles className="h-5 w-5" aria-hidden="true" />
               {t('entry.guest')}
             </button>
-            <p className="mt-1.5 text-xs text-forest-800/70">{t('entry.guestHint')}</p>
+            <p className="mt-1.5 text-xs text-forest-800/85">{t('entry.guestHint')}</p>
           </div>
           <div>
             <button type="button" onClick={() => onStart('local', lang)} className="thy-btn-ghost min-h-[56px] w-full text-base">
               <User className="h-5 w-5" aria-hidden="true" />
               {t('entry.local')}
             </button>
-            <p className="mt-1.5 text-xs text-forest-800/70">{t('entry.localHint')}</p>
+            <p className="mt-1.5 text-xs text-forest-800/85">{t('entry.localHint')}</p>
           </div>
+          {cloudConfigured() && (
+            <div>
+              <button type="button" onClick={() => onStart('account', lang)} className="thy-btn-ghost min-h-[56px] w-full text-base">
+                <Cloud className="h-5 w-5" aria-hidden="true" />
+                {t('entry.account')}
+              </button>
+              <p className="mt-1.5 text-xs text-forest-800/85">{t('entry.accountHint')}</p>
+            </div>
+          )}
         </div>
 
-        <p className="mt-8 text-[11px] leading-relaxed text-forest-800/65">{t('shell.disclaimer')}</p>
+        <p className="mt-8 text-[11px] leading-relaxed text-forest-800/85">{t('shell.disclaimer')}</p>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Dumbbell, BellRing, BookOpen, ChevronRight, FileDown, Globe, Lightbulb, LogOut, PieChart, ScrollText, SlidersHorizontal } from 'lucide-react';
+import { Bot, Cloud, ListChecks, PlayCircle, Stethoscope, BarChart3, Dumbbell, BellRing, BookOpen, ChevronRight, FileDown, Globe, Lightbulb, LogOut, PieChart, ScrollText, SlidersHorizontal } from 'lucide-react';
 import type { Key } from '../../i18n';
 import { useI18n } from '../../i18n';
 import { go, type Screen } from '../router';
@@ -8,6 +8,11 @@ import { Card, ScreenHeader } from '../ui/kit';
 import { LanguageSelect } from '../components/LanguageSelect';
 
 const LINKS: { screen: Screen; icon: typeof BellRing; key: Key }[] = [
+  { screen: 'account', icon: Cloud, key: 'nav.account' },
+  { screen: 'planner', icon: ListChecks, key: 'nav.planner' },
+  { screen: 'coach', icon: Bot, key: 'nav.coach' },
+  { screen: 'replay', icon: PlayCircle, key: 'nav.replay' },
+  { screen: 'clinicianView', icon: Stethoscope, key: 'nav.clinicianView' },
   { screen: 'strength', icon: Dumbbell, key: 'nav.strength' },
   { screen: 'settings', icon: SlidersHorizontal, key: 'nav.settings' },
   { screen: 'story', icon: BookOpen, key: 'nav.story' },
@@ -32,7 +37,7 @@ export const More: React.FC = () => {
               <button type="button" onClick={() => go(screen)} className="flex min-h-[52px] w-full items-center gap-3 rounded-xl px-3 text-start hover:bg-forest-900/[0.04]">
                 <Icon className="h-5 w-5 text-ochre-700" aria-hidden="true" />
                 <span className="flex-1 text-base text-forest-950">{t(key)}</span>
-                <ChevronRight className="h-4 w-4 text-forest-800/50 flip-rtl" aria-hidden="true" />
+                <ChevronRight className="h-4 w-4 text-forest-800/85 flip-rtl" aria-hidden="true" />
               </button>
             </li>
           ))}
